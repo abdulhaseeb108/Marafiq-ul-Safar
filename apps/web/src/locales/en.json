@@ -1,0 +1,13 @@
+{
+  "app": {
+    "name": "Marafiq us Safar"
+  },
+  "hello": {
+    "title": "Plan your Umrah",
+    "body": "This is the Phase 0 hello page. The Umrah calculator and quote request will appear here.",
+    "notice": "No prices are shown yet. Rates can change without notice."
+  },
+  "language": {
+    "label": "Language"
+  }
+}

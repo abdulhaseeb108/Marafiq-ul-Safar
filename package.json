@@ -1,0 +1,33 @@
+{
+  "name": "marafiq-us-safar",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run build -w @marafiq/shared && concurrently -k -n shared,api,web -c gray,cyan,magenta \"npm run dev -w @marafiq/shared\" \"npm run dev -w @marafiq/api\" \"npm run dev -w @marafiq/web\"",
+    "build": "npm run build -w @marafiq/shared && npm run build -w @marafiq/api && npm run build -w @marafiq/web",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "eslint . && prettier --check .",
+    "format": "prettier --write .",
+    "seed": "node scripts/placeholder.mjs seed \"Phase 2\"",
+    "e2e": "node scripts/placeholder.mjs e2e \"Phase 5\""
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "concurrently": "^10.0.7",
+    "eslint": "^10.14.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.14.0",
+    "prettier": "^3.9.10",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.2"
+  }
+}

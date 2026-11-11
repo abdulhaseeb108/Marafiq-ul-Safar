@@ -1,0 +1,11 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-urdu: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', 'Urdu Typesetting', serif;
+}
+
+/* Nastaliq script needs a taller line to stay readable. */
+html[lang='ur'] body {
+  font-family: var(--font-urdu);
+  line-height: 2.2;
+}

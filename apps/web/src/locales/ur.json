@@ -1,0 +1,14 @@
+{
+  "_review": "[URDU REVIEW] AI draft. A native speaker must approve this file before public launch (docs/05 #15).",
+  "app": {
+    "name": "مرافق السفر"
+  },
+  "hello": {
+    "title": "اپنے عمرہ کی منصوبہ بندی کریں",
+    "body": "یہ فیز 0 کا ابتدائی صفحہ ہے۔ عمرہ کیلکولیٹر اور کوٹیشن کی درخواست یہاں دستیاب ہوگی۔",
+    "notice": "ابھی کوئی قیمت نہیں دکھائی جا رہی۔ نرخ بغیر اطلاع کے تبدیل ہو سکتے ہیں۔"
+  },
+  "language": {
+    "label": "زبان"
+  }
+}

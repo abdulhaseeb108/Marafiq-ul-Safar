@@ -1,0 +1,23 @@
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Secrets: never commit
+.env
+.env.*
+!.env.example
+
+# Local uploads (dev storage adapter, Phase 3)
+.local-storage/
+
+# Test output
+playwright-report/
+test-results/
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+npm-debug.log*

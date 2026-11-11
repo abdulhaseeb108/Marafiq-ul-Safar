@@ -1,0 +1,8 @@
+node_modules
+dist
+coverage
+package-lock.json
+# Build-pack documents are kept exactly as supplied
+CLAUDE.md
+README-START-HERE.md
+docs
