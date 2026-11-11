@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => ({
   server: {
     port: 5175,
     strictPort: true,
-    proxy: { '/api': 'http://localhost:4000' },
+    proxy: { '/api': 'http://localhost:4002' },
   },
   test: {
     environment: 'jsdom',
