@@ -1,4 +1,4 @@
-import type { Role } from '@marafiq/shared';
+import type { Role, SupplierType } from '@marafiq/shared';
 import type { Express } from 'express';
 import { generate, generateSecret } from 'otplib';
 import request, { type Response } from 'supertest';
@@ -130,4 +130,60 @@ export async function signInWithRole(
 ): Promise<{ jar: CookieJar; seeded: SeededUser }> {
   const seeded = await seedUser({ role });
   return { jar: await signInAs(app, seeded), seeded };
+}
+
+// --- master data (Phase 2) -------------------------------------------------
+
+export async function seedSupplier(
+  overrides: Partial<{ name: string; type: SupplierType; active: boolean }> = {},
+): Promise<{ id: string; name: string }> {
+  const { SupplierModel } = await import('../modules/suppliers/supplier.model.js');
+  const name = overrides.name ?? `Supplier ${++counter}`;
+  const doc = await SupplierModel.create({
+    name,
+    searchName: name.trim().toLowerCase(),
+    type: overrides.type ?? 'hotel_operator',
+    active: overrides.active ?? true,
+  });
+  return { id: doc.id as string, name: doc.name };
+}
+
+export async function seedHotel(
+  overrides: Partial<{
+    city: 'makkah' | 'madinah';
+    canonicalName: string;
+    aliases: string[];
+    active: boolean;
+  }> = {},
+): Promise<{ id: string; canonicalName: string }> {
+  const { HotelModel } = await import('../modules/hotels/hotel.model.js');
+  const canonicalName = overrides.canonicalName ?? `Hotel ${++counter}`;
+  const aliases = overrides.aliases ?? [];
+  const doc = await HotelModel.create({
+    city: overrides.city ?? 'makkah',
+    canonicalName,
+    aliases,
+    searchNames: [canonicalName, ...aliases].map((name) => name.trim().toLowerCase()),
+    distanceNote: '',
+    transport: 'unknown',
+    active: overrides.active ?? true,
+  });
+  return { id: doc.id as string, canonicalName: doc.canonicalName };
+}
+
+export async function seedFlightEstimate(
+  overrides: Partial<{ originCity: string; validTo: string; destination: 'JED' | 'MED' }> = {},
+): Promise<{ id: string; originCity: string }> {
+  const { FlightEstimateModel } =
+    await import('../modules/flight-estimates/flight-estimate.model.js');
+  const doc = await FlightEstimateModel.create({
+    originCity: overrides.originCity ?? `City ${++counter}`,
+    destination: overrides.destination ?? 'JED',
+    lowMinor: 15_000_000,
+    highMinor: 21_000_000,
+    currency: 'PKR',
+    validTo: overrides.validTo ?? '2027-12-31',
+    source: 'partner quote 2026-11-05',
+  });
+  return { id: doc.id as string, originCity: doc.originCity };
 }

@@ -8,13 +8,27 @@ import { FailureLimiter } from './lib/rate-limiter.js';
 import { auditAdminRoutes } from './modules/audit/audit.routes.js';
 import { makeAuthMiddleware } from './modules/auth/auth.middleware.js';
 import { createAuthRouter } from './modules/auth/auth.routes.js';
+import { flightEstimatesAdminRoutes } from './modules/flight-estimates/flight-estimates.routes.js';
+import { fxAdminRoutes } from './modules/fx/fx.routes.js';
 import { healthRouter } from './modules/health/health.routes.js';
+import { hotelsAdminRoutes } from './modules/hotels/hotels.routes.js';
+import { publicRouter } from './modules/public/public.routes.js';
+import { settingsAdminRoutes } from './modules/settings/settings.routes.js';
+import { suppliersAdminRoutes } from './modules/suppliers/suppliers.routes.js';
 import { usersAdminRoutes } from './modules/users/users.routes.js';
 
 const ADMIN_PREFIX = '/api/v1/admin';
 
 /** Every /admin route in the API. Add new modules' routes here. */
-const adminRoutes: AdminRoute[] = [...usersAdminRoutes, ...auditAdminRoutes];
+const adminRoutes: AdminRoute[] = [
+  ...usersAdminRoutes,
+  ...auditAdminRoutes,
+  ...suppliersAdminRoutes,
+  ...hotelsAdminRoutes,
+  ...settingsAdminRoutes,
+  ...fxAdminRoutes,
+  ...flightEstimatesAdminRoutes,
+];
 
 /** "METHOD /path" for each admin route; the permission test checks this list. */
 export function listAdminRoutes(): string[] {
@@ -28,7 +42,6 @@ const notFoundHandler: RequestHandler = (_req, res) => {
 
 function makeErrorHandler(config: AppConfig): ErrorRequestHandler {
   // Express identifies error handlers by their four arguments.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   return (err: unknown, _req, res, _next) => {
     if (err instanceof HttpError) {
       if (err.headers) res.set(err.headers);
@@ -78,6 +91,7 @@ export function createApp(options: { config: AppConfig }): Express {
 
   // Public
   app.use('/api/v1/health', healthRouter);
+  app.use('/api/v1/public', publicRouter);
   app.use('/api/v1/auth', createAuthRouter({ config, limiter }, requireAuth));
 
   // Staff only: each route is mounted behind sign-in and its role check.

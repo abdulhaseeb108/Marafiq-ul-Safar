@@ -11,12 +11,12 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "npm run build -w @marafiq/shared && concurrently -k -n shared,api,web -c gray,cyan,magenta \"npm run dev -w @marafiq/shared\" \"npm run dev -w @marafiq/api\" \"npm run dev -w @marafiq/web\"",
+    "dev": "npm run build -w @marafiq/shared && concurrently -k -n shared,api,web -c gray,cyan,magenta \"npm run dev -w @marafiq/shared\" \"npm run dev -w @marafiq/api\" \"node scripts/wait-for-api.mjs && npm run dev -w @marafiq/web\"",
     "build": "npm run build -w @marafiq/shared && npm run build -w @marafiq/api && npm run build -w @marafiq/web",
     "test": "npm run test --workspaces --if-present",
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
-    "seed": "node scripts/placeholder.mjs seed \"Phase 2\"",
+    "seed": "npm run build -w @marafiq/shared && npm run seed -w @marafiq/api",
     "e2e": "node scripts/placeholder.mjs e2e \"Phase 5\""
   },
   "devDependencies": {
@@ -29,8 +29,5 @@
     "prettier": "^3.9.10",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.72.2"
-  },
-  "dependencies": {
-    "mongodb": "^7.8.0"
   }
 }

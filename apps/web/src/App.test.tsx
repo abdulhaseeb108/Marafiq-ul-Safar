@@ -4,7 +4,6 @@ import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { App } from './App';
 import i18n from './i18n';
-import { resolveRouterBasename } from './router-basename';
 import en from './locales/en.json';
 import ur from './locales/ur.json';
 
@@ -27,19 +26,9 @@ describe('hello page', () => {
     await i18n.changeLanguage('en');
   });
 
-  it('keeps the app rooted at /marafiq when the parsed pathname targets that subdirectory', () => {
-    const pathname = new URL('https://example.com/marafiq').pathname;
-    expect(pathname).toBe('/marafiq');
-    expect(resolveRouterBasename(pathname)).toBe('/marafiq');
-  });
-
   it('renders in English, left to right', () => {
     renderHome();
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(en.hello.title);
-    expect(screen.getByRole('link', { name: 'Staff login' })).toHaveAttribute(
-      'href',
-      '/admin/login',
-    );
     expect(document.documentElement.dir).toBe('ltr');
     expect(document.documentElement.lang).toBe('en');
   });

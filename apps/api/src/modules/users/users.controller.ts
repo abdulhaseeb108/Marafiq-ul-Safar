@@ -1,6 +1,6 @@
 import { CreateUserBodySchema, ListQuerySchema, UpdateUserBodySchema } from '@marafiq/shared';
 import type { Request, Response } from 'express';
-import { unauthenticated } from '../../lib/http-error.js';
+import { actorOf } from '../../lib/actor.js';
 import { parseOrThrow } from '../../lib/validate.js';
 import {
   createUser,
@@ -9,13 +9,7 @@ import {
   listUsers,
   resetTwoFactor,
   updateUser,
-  type Actor,
 } from './users.service.js';
-
-function actorOf(req: Request): Actor {
-  if (!req.auth) throw unauthenticated();
-  return { id: req.auth.userId, role: req.auth.role, ip: req.ip };
-}
 
 const idOf = (req: Request): string => String(req.params.id ?? '');
 

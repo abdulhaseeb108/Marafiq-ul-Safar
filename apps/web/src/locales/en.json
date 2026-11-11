@@ -1,7 +1,6 @@
 {
   "app": {
-    "name": "Marafiq us Safar",
-    "staffLogin": "Staff login"
+    "name": "Marafiq us Safar"
   },
   "hello": {
     "title": "Plan your Umrah",
@@ -13,7 +12,15 @@
   },
   "admin": {
     "common": {
-      "loading": "Loading…"
+      "loading": "Loading…",
+      "status": "Status",
+      "actions": "Actions",
+      "active": "Active",
+      "inactive": "Deactivated",
+      "deactivate": "Deactivate",
+      "reactivate": "Reactivate",
+      "save": "Save",
+      "cancel": "Cancel"
     },
     "roles": {
       "admin": "Admin",
@@ -44,7 +51,12 @@
     },
     "menu": {
       "dashboard": "Dashboard",
-      "users": "Users"
+      "users": "Users",
+      "suppliers": "Suppliers",
+      "hotels": "Hotels",
+      "settings": "Settings",
+      "fx": "Exchange rate",
+      "flights": "Flight estimates"
     },
     "dashboard": {
       "title": "Welcome, {{name}}",
@@ -82,7 +94,121 @@
       "2fa_required": "Admin accounts must sign in with two-factor authentication.",
       "unauthenticated": "Your session has ended. Please sign in again.",
       "forbidden": "You do not have permission to view this page.",
-      "unknown": "Something went wrong. Please try again."
+      "unknown": "Something went wrong. Please try again.",
+      "supplier_name_taken": "A supplier with this name already exists.",
+      "name_in_use": "Another hotel in this city already uses that name. Merge the two instead.",
+      "cannot_merge_into_self": "Choose a different hotel to merge into.",
+      "different_city": "Hotels can only be merged within the same city.",
+      "already_merged": "That hotel has already been merged into another one.",
+      "large_fx_change": "That rate is very different from the current one. Please confirm it.",
+      "not_found": "That record no longer exists. Reload the page."
+    },
+    "suppliers": {
+      "title": "Suppliers",
+      "addTitle": "Add a supplier",
+      "listTitle": "All suppliers",
+      "name": "Name",
+      "type": "Type",
+      "contact": "Contact",
+      "contactName": "Contact name",
+      "phone": "Phone",
+      "email": "Email",
+      "notes": "Notes (staff only)",
+      "add": "Add supplier",
+      "types": {
+        "hotel_operator": "Hotel operator",
+        "transport": "Transport",
+        "flight_partner": "Flight partner",
+        "other": "Other"
+      }
+    },
+    "hotels": {
+      "title": "Hotels",
+      "addTitle": "Add a hotel",
+      "listTitle": "All hotels",
+      "city": "City",
+      "name": "Name as printed on the sheet",
+      "aliases": "Other names, one per line",
+      "distanceMeters": "Distance (metres)",
+      "distanceNote": "Distance note",
+      "transport": "Getting to the Haram",
+      "starRating": "Star rating",
+      "starHint": "Leave the star rating empty unless the supplier states it.",
+      "add": "Add hotel",
+      "alsoKnownAs": "Also known as",
+      "editAliases": "Edit other names",
+      "mergeInto": "Merge into…",
+      "merge": "Merge",
+      "mergedAway": "Merged into another hotel. Kept for history; its names now belong to that hotel.",
+      "stars": "{{count}}-star",
+      "cities": {
+        "makkah": "Makkah",
+        "madinah": "Madinah"
+      },
+      "transports": {
+        "walking": "Walking",
+        "shuttle": "Shuttle",
+        "unknown": "Not stated"
+      }
+    },
+    "settings": {
+      "title": "Settings",
+      "saved": "Settings saved.",
+      "pricing": "Pricing",
+      "customerFacing": "What customers see",
+      "travelers": "Travelers",
+      "markupPercent": "Markup (%)",
+      "markupHint": "Added to supplier rates before converting to rupees. 0 means customers see the supplier price as given.",
+      "estimateExpiryHours": "Estimate valid for (hours)",
+      "expiryHint": "An estimate expires after this many hours, or when the rate pack ends, whichever is sooner.",
+      "responseTimeText": "Reply time shown on the inquiry form",
+      "showSupplierRates": "Show supplier rates to customers",
+      "showSupplierRatesHint": "When off, the public site shows \"From PKR X\" instead of the rate itself.",
+      "childAsAdult": "Price children (2–11) as adults",
+      "childAsAdultHint": "Confirm with the supplier before changing this (open decision 7).",
+      "infantHotelCharge": "Infant hotel charge",
+      "infantNone": "None (shown as an assumption)"
+    },
+    "fx": {
+      "title": "Exchange rate",
+      "addTitle": "Set a new rate",
+      "historyTitle": "History",
+      "rate": "PKR per 1 SAR",
+      "rateRule": "Use a decimal such as 75.00.",
+      "current": "Current rate: {{rate}} PKR per SAR, set {{date}}.",
+      "noneYet": "No rate has been set yet. The calculator cannot show rupee prices until you set one.",
+      "add": "Save rate",
+      "appendOnly": "Rates are never edited or deleted. Each new rate is added to the history, so saved estimates and sent quotes keep the rate they were priced with.",
+      "effectiveAt": "In effect from",
+      "setBy": "Set by",
+      "setBySystem": "Seed",
+      "latest": "Latest",
+      "confirmTitle": "That is a big change. Please check it.",
+      "confirmBody": "{{rate}} differs from the current rate ({{previous}}) by more than {{percent}}%. If that is correct, confirm to save it.",
+      "confirmSave": "Yes, save this rate"
+    },
+    "flights": {
+      "title": "Flight estimates",
+      "intro": "Ranges entered by hand from your partner agency. Shown to customers as an estimate, never as a fare quote. There is no live fare search in this version.",
+      "addTitle": "Add an estimate",
+      "listTitle": "All estimates",
+      "originCity": "Departure city",
+      "destination": "Arrival airport",
+      "low": "Low (PKR per adult)",
+      "high": "High (PKR per adult)",
+      "range": "Range (PKR)",
+      "validTo": "Valid until",
+      "changeValidTo": "Change the valid-until date for {{city}}",
+      "note": "Note (staff only)",
+      "source": "Source",
+      "add": "Add estimate",
+      "expired": "Expired",
+      "amountRule": "Enter the low and high amounts in whole rupees.",
+      "rangeRule": "The high estimate cannot be below the low estimate.",
+      "destinations": {
+        "JED": "Jeddah (JED)",
+        "MED": "Madinah (MED)"
+      }
     }
   }
 }

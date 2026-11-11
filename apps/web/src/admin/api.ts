@@ -18,7 +18,7 @@ export class ApiRequestError extends Error {
 const BASE = '/api/v1';
 
 interface Options {
-  method?: 'GET' | 'POST' | 'PATCH';
+  method?: 'GET' | 'POST' | 'PATCH' | 'PUT';
   body?: unknown;
   /** Set false for the auth endpoints themselves. */
   retryOn401?: boolean;

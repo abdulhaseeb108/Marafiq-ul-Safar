@@ -8,16 +8,10 @@ import type {
 } from '@marafiq/shared';
 import mongoose from 'mongoose';
 import { HttpError, notFound } from '../../lib/http-error.js';
-import { recordAudit, type ActorRole } from '../audit/audit.service.js';
+import { recordAudit, type Actor } from '../audit/audit.service.js';
 import { hashPassword } from '../auth/password.js';
 import { revokeUserSessions } from '../auth/sessions.service.js';
 import { UserModel, type UserDoc } from './user.model.js';
-
-export interface Actor {
-  id?: string;
-  role: ActorRole;
-  ip?: string;
-}
 
 /** The only shape of a user that leaves the API. No hash, no secrets. */
 export function toPublicUser(user: UserDoc): PublicUser {

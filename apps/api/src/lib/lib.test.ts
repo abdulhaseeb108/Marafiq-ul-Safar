@@ -73,7 +73,7 @@ describe('loadEnv', () => {
 
   it('accepts a valid environment and treats blank values as unset', () => {
     const env = loadEnv({ ...valid, COOKIE_DOMAIN: '', SEED_ADMIN_EMAIL: '' });
-    expect(env.PORT).toBe(4002);
+    expect(env.PORT).toBe(4000);
     expect(env.COOKIE_DOMAIN).toBeUndefined();
   });
 

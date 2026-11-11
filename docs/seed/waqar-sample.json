@@ -1,0 +1,4055 @@
+{
+  "_about": "Rate sheet data for Waqar-e-Madina Group (WMT), read from the two supplier PDFs named in _sourceFiles. Hotel names, cities, distances, aliases and prices are transcribed from those sheets. Nothing here is invented.",
+  "_sourceFiles": [
+    "WMT_RAMADAN_27_OCT_2026.pdf",
+    "WMT_RAMADAN_2027_2.pdf"
+  ],
+  "_readOn": "2026-11-11",
+  "_checks": "Every printed per-person figure was verified to equal ceil(room / occupancy) for occupancies 5, 4, 3 and 2. Test cases T1, T2, T4 and T6 in docs/03 section 7 were reproduced from this data and match.",
+  "_howToUse": "`hotels` is the master list the Phase 2 seed reads. `extractions` is one entry per sheet page, in the shape of the extraction schema in docs/03 section 3, for use as Phase 3 fixtures.",
+  "supplier": {
+    "name": "Waqar-e-Madina Group (WMT)",
+    "type": "hotel_operator",
+    "city": "Islamabad",
+    "country": "Pakistan"
+  },
+  "hotels": [
+    {
+      "city": "makkah",
+      "name": "Qasr Al Sharq Tower",
+      "aliasesPrinted": [],
+      "distanceText": "Shahra Mansoor",
+      "distancePrinted": "SHUTTLE SERVICE",
+      "distanceMeters": null,
+      "transportText": "Shuttle service"
+    },
+    {
+      "city": "makkah",
+      "name": "Hiba Hijrah-6",
+      "aliasesPrinted": [],
+      "distanceText": null,
+      "distancePrinted": "(Economy Plus) SHUTTLE SERVICE",
+      "distanceMeters": null,
+      "transportText": "Shuttle service"
+    },
+    {
+      "city": "makkah",
+      "name": "Qila Ajiyad",
+      "aliasesPrinted": [],
+      "distanceText": "Shahra Ajiad",
+      "distancePrinted": "(Economy Plus) 1100-M",
+      "distanceMeters": 1100,
+      "transportText": null
+    },
+    {
+      "city": "makkah",
+      "name": "Diyar Mather",
+      "aliasesPrinted": [],
+      "distanceText": "Shahra Ibrahim Khalil",
+      "distancePrinted": "(Economy Plus) 1200-M",
+      "distanceMeters": 1200,
+      "transportText": null
+    },
+    {
+      "city": "makkah",
+      "name": "Fundaq Bilal",
+      "aliasesPrinted": [],
+      "distanceText": "Shahra Ibrahim Khalil",
+      "distancePrinted": "SHUTTLE SERVICE",
+      "distanceMeters": null,
+      "transportText": "Shuttle service"
+    },
+    {
+      "city": "makkah",
+      "name": "Afwaj Al Momayaza /Shaza Wasam-3/4 Wahdat Al Khair",
+      "aliasesPrinted": [
+        "Qased Al Khair"
+      ],
+      "distanceText": "Shahra Ajiad",
+      "distancePrinted": "STAR 650-M",
+      "distanceMeters": 650,
+      "transportText": null
+    },
+    {
+      "city": "makkah",
+      "name": "Shaza Al Wasam-2",
+      "aliasesPrinted": [],
+      "distanceText": "Shahra Ajiad",
+      "distancePrinted": "STAR 600-M",
+      "distanceMeters": 600,
+      "transportText": null
+    },
+    {
+      "city": "makkah",
+      "name": "Swaed Al Khaima",
+      "aliasesPrinted": [
+        "Fawad Nassa"
+      ],
+      "distanceText": "Shahra Ibrahim Khalil near Kabotar Chowk",
+      "distancePrinted": "STAR 400-M/500-M",
+      "distanceMeters": null,
+      "transportText": null
+    },
+    {
+      "city": "makkah",
+      "name": "Badar Al Masa/Yasmin Al Majd",
+      "aliasesPrinted": [],
+      "distanceText": "Shahra Ibrahim Khalil",
+      "distancePrinted": "STAR 600-M",
+      "distanceMeters": 600,
+      "transportText": null
+    },
+    {
+      "city": "makkah",
+      "name": "Akabir Hijrah/Areej Wafa/Mather Elite",
+      "aliasesPrinted": [],
+      "distanceText": "Kabotar Chowk",
+      "distancePrinted": "STAR 300-M",
+      "distanceMeters": 300,
+      "transportText": null
+    },
+    {
+      "city": "makkah",
+      "name": "Al Kiswah Tower",
+      "aliasesPrinted": [],
+      "distanceText": "Shahra Al-Taysir",
+      "distancePrinted": "4-STAR SHUTTLE SERVICE",
+      "distanceMeters": null,
+      "transportText": "Shuttle service"
+    },
+    {
+      "city": "makkah",
+      "name": "Voco",
+      "aliasesPrinted": [],
+      "distanceText": null,
+      "distancePrinted": "4-Star SHUTTLE SERVICE",
+      "distanceMeters": null,
+      "transportText": "Shuttle service"
+    },
+    {
+      "city": "makkah",
+      "name": "Novotel Thakher",
+      "aliasesPrinted": [],
+      "distanceText": "Ghaza Bus Station",
+      "distancePrinted": "4-STAR SHUTTLE SERVICE",
+      "distanceMeters": null,
+      "transportText": "Shuttle service"
+    },
+    {
+      "city": "makkah",
+      "name": "M Hotel Makkah By Millennium",
+      "aliasesPrinted": [],
+      "distanceText": null,
+      "distancePrinted": "5-STAR SHUTTLE SERVICE",
+      "distanceMeters": null,
+      "transportText": "Shuttle service"
+    },
+    {
+      "city": "makkah",
+      "name": "M Millenium Dana",
+      "aliasesPrinted": [],
+      "distanceText": null,
+      "distancePrinted": "SHUTTLE SERVICE",
+      "distanceMeters": null,
+      "transportText": "Shuttle service"
+    },
+    {
+      "city": "makkah",
+      "name": "Four Points By Sheraton",
+      "aliasesPrinted": [],
+      "distanceText": "Makkah Al Naseem",
+      "distancePrinted": "5-STAR SHUTTLE SERVICE",
+      "distanceMeters": null,
+      "transportText": "Shuttle service"
+    },
+    {
+      "city": "madinah",
+      "name": "Waqar Salmiya/Jood Marjan",
+      "aliasesPrinted": [],
+      "distanceText": "Masjid Bilal Side",
+      "distancePrinted": "STAR SHUTTLE SERVICE",
+      "distanceMeters": null,
+      "transportText": "Shuttle service"
+    },
+    {
+      "city": "madinah",
+      "name": "Waqar Rotana",
+      "aliasesPrinted": [],
+      "distanceText": "Luxury Star",
+      "distancePrinted": "STAR SHUTTLE SERVICE",
+      "distanceMeters": null,
+      "transportText": "Shuttle service"
+    },
+    {
+      "city": "madinah",
+      "name": "Marina Zahbi",
+      "aliasesPrinted": [],
+      "distanceText": "Walking distance",
+      "distancePrinted": "STAR 700-M",
+      "distanceMeters": 700,
+      "transportText": "Walking distance"
+    },
+    {
+      "city": "madinah",
+      "name": "Waqar International",
+      "aliasesPrinted": [],
+      "distanceText": "Masjid Bilal Side",
+      "distancePrinted": "STAR 700-M",
+      "distanceMeters": 700,
+      "transportText": null
+    },
+    {
+      "city": "madinah",
+      "name": "Ajiyal -2",
+      "aliasesPrinted": [],
+      "distanceText": "Shumalia Side",
+      "distancePrinted": "STAR 650-M",
+      "distanceMeters": 650,
+      "transportText": null
+    },
+    {
+      "city": "madinah",
+      "name": "Nuzul Waqar",
+      "aliasesPrinted": [],
+      "distanceText": "Masjid Bilal Side",
+      "distancePrinted": "STAR 550-M",
+      "distanceMeters": 550,
+      "transportText": null
+    },
+    {
+      "city": "madinah",
+      "name": "Nida Taiba",
+      "aliasesPrinted": [],
+      "distanceText": "Masjid Bilal Side",
+      "distancePrinted": "STAR 550-M",
+      "distanceMeters": 550,
+      "transportText": null
+    },
+    {
+      "city": "madinah",
+      "name": "Shams Madinah",
+      "aliasesPrinted": [],
+      "distanceText": "100-M after Al Baik Markazia, Awali side",
+      "distancePrinted": "STAR 500-M",
+      "distanceMeters": 500,
+      "transportText": null
+    },
+    {
+      "city": "madinah",
+      "name": "Ajiyal Taiba",
+      "aliasesPrinted": [],
+      "distanceText": "Luxury Star",
+      "distancePrinted": "STAR 500-M",
+      "distanceMeters": 500,
+      "transportText": null
+    },
+    {
+      "city": "madinah",
+      "name": "Rose Platinum",
+      "aliasesPrinted": [
+        "Retaj Rawdah"
+      ],
+      "distanceText": "3-Star, Shumalia Side",
+      "distancePrinted": "STAR 550-M",
+      "distanceMeters": 550,
+      "transportText": null
+    },
+    {
+      "city": "madinah",
+      "name": "Rua Al Khair/Burj Muktara",
+      "aliasesPrinted": [
+        "Amjad Al Saleem"
+      ],
+      "distanceText": "Bab Al Salam Side",
+      "distancePrinted": "STAR 300-M",
+      "distanceMeters": 300,
+      "transportText": null
+    },
+    {
+      "city": "madinah",
+      "name": "Any Hotel In Markazia",
+      "aliasesPrinted": [],
+      "distanceText": "Markazia",
+      "distancePrinted": "250-M 300-M",
+      "distanceMeters": null,
+      "transportText": null
+    },
+    {
+      "city": "madinah",
+      "name": "Rua Luxury",
+      "aliasesPrinted": [
+        "Golden Luxury"
+      ],
+      "distanceText": "Markazia",
+      "distancePrinted": "STAR 50-M",
+      "distanceMeters": 50,
+      "transportText": null
+    }
+  ],
+  "extractions": [
+    {
+      "sourceFile": "WMT_RAMADAN_27_OCT_2026.pdf",
+      "page": 1,
+      "supplierName": "Waqar-e-Madina Group (WMT)",
+      "packName": "Ramadan Pack 01",
+      "seasonLabel": "Ramadan",
+      "urduHeading": "پہلا عشرہ، دوسرا عشرہ",
+      "nightFrom": "2027-02-06",
+      "nightTo": "2027-02-26",
+      "effectiveFrom": "2026-10-27",
+      "issueDate": "2026-10-27",
+      "currency": "SAR",
+      "visa": {
+        "directPerPerson": 550,
+        "indirectByGroupSize": {
+          "1": 700,
+          "2": 675,
+          "3": 650,
+          "4": 625
+        },
+        "infant": 460,
+        "notes": "Visa rate 550 SR is for a direct flight, departure from Pakistan, 01 to 49 pax - transport by bus. Indirect flight via another country is priced by group size. Header also states: Hotel Voucher Rates are Not Linked with Visa Issuance Date."
+      },
+      "hotels": [
+        {
+          "city": "makkah",
+          "name": "QASR AL SHARQ TOWER",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Mansoor",
+          "distancePrinted": "SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 1,
+          "row": 1,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 150,
+          "perPerson": {
+            "quint": 30,
+            "quad": 38,
+            "triple": 50,
+            "double": 75
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "HIBA HIJRAH-6",
+          "aliasesPrinted": [],
+          "distanceText": null,
+          "distancePrinted": "(Economy Plus) SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 1,
+          "row": 2,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 150,
+          "perPerson": {
+            "quint": 30,
+            "quad": 38,
+            "triple": 50,
+            "double": 75
+          },
+          "sharedLineNote": "Printed on one line with Qasr Al Sharq Tower in Ramadan Pack 01 and 02, at the same rate. The Shawal sheet lists the two hotels separately at different rates, so they are treated as two hotels. Confirm with the supplier."
+        },
+        {
+          "city": "makkah",
+          "name": "QILA AJIYAD",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ajiad",
+          "distancePrinted": "(Economy Plus) 1100-M",
+          "distanceMeters": 1100,
+          "transportText": null,
+          "page": 1,
+          "row": 3,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 200,
+          "perPerson": {
+            "quint": 40,
+            "quad": 50,
+            "triple": 67,
+            "double": 100
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "DIYAR MATHER",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ibrahim Khalil",
+          "distancePrinted": "(Economy Plus) 1200-M",
+          "distanceMeters": 1200,
+          "transportText": null,
+          "page": 1,
+          "row": 4,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 225,
+          "perPerson": {
+            "quint": 45,
+            "quad": 57,
+            "triple": 75,
+            "double": 113
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "FUNDAQ BILAL",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ibrahim Khalil",
+          "distancePrinted": "SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 1,
+          "row": 5,
+          "confidence": 0.99,
+          "pricingMode": "flat_per_room",
+          "room": 200,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as 200-SR under QUINT BED and under every other column marked ROOM BASIS: one price per room per night, whatever the occupancy. Confirm on first import."
+        },
+        {
+          "city": "makkah",
+          "name": "AFWAJ AL MOMAYAZA /SHAZA WASAM-3/4 WAHDAT AL KHAIR",
+          "aliasesPrinted": [
+            "QASED AL KHAIR"
+          ],
+          "distanceText": "Shahra Ajiad",
+          "distancePrinted": "STAR 650-M",
+          "distanceMeters": 650,
+          "transportText": null,
+          "page": 1,
+          "row": 6,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 300,
+          "perPerson": {
+            "quint": 60,
+            "quad": 75,
+            "triple": 100,
+            "double": 150
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "SHAZA AL WASAM-2",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ajiad",
+          "distancePrinted": "STAR 600-M",
+          "distanceMeters": 600,
+          "transportText": null,
+          "page": 1,
+          "row": 7,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 350,
+          "perPerson": {
+            "quint": 70,
+            "quad": 88,
+            "triple": 117,
+            "double": 175
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "SWAED AL KHAIMA",
+          "aliasesPrinted": [
+            "FAWAD NASSA"
+          ],
+          "distanceText": "Shahra Ibrahim Khalil near Kabotar Chowk",
+          "distancePrinted": "STAR 400-M/500-M",
+          "distanceMeters": null,
+          "transportText": null,
+          "page": 1,
+          "row": 8,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 400,
+          "perPerson": {
+            "quint": 80,
+            "quad": 100,
+            "triple": 134,
+            "double": 200
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "BADAR AL MASA/YASMIN AL MAJD",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ibrahim Khalil",
+          "distancePrinted": "STAR 600-M",
+          "distanceMeters": 600,
+          "transportText": null,
+          "page": 1,
+          "row": 9,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 500,
+          "perPerson": {
+            "quint": 100,
+            "quad": 125,
+            "triple": 167,
+            "double": 250
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "AKABIR HIJRAH/AREEJ WAFA/MATHER ELITE",
+          "aliasesPrinted": [],
+          "distanceText": "Kabotar Chowk",
+          "distancePrinted": "STAR 300-M",
+          "distanceMeters": 300,
+          "transportText": null,
+          "page": 1,
+          "row": 10,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 600,
+          "perPerson": {
+            "quint": null,
+            "quad": 150,
+            "triple": 200,
+            "double": 300
+          },
+          "flatNote": "Every price cell is labelled ROOM BASIS and the quint column has no number. The quad, triple and double figures still equal ceil(room / occupancy), so the row is priced per person from the room rate; the label means the whole room must be booked. Confirm with the supplier."
+        },
+        {
+          "city": "makkah",
+          "name": "AL KISWAH TOWER",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Al-Taysir",
+          "distancePrinted": "4-STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 1,
+          "row": 11,
+          "confidence": 0.99,
+          "pricingMode": "flat_per_room",
+          "room": 300,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as 300-SR under QUINT BED and under every other column marked ROOM BASIS: one price per room per night, whatever the occupancy. Confirm on first import."
+        },
+        {
+          "city": "makkah",
+          "name": "Voco",
+          "aliasesPrinted": [],
+          "distanceText": null,
+          "distancePrinted": "4-Star SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 1,
+          "row": 12,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "NOVOTEL THAKHER",
+          "aliasesPrinted": [],
+          "distanceText": "Ghaza Bus Station",
+          "distancePrinted": "4-STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 1,
+          "row": 13,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "M HOTEL MAKKAH BY MILLENNIUM",
+          "aliasesPrinted": [],
+          "distanceText": null,
+          "distancePrinted": "5-STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 1,
+          "row": 14,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "M MILLENIUM DANA",
+          "aliasesPrinted": [],
+          "distanceText": null,
+          "distancePrinted": "SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 1,
+          "row": 15,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "FOUR POINTS BY SHERATON",
+          "aliasesPrinted": [],
+          "distanceText": "Makkah Al Naseem",
+          "distancePrinted": "5-STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 1,
+          "row": 16,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "madinah",
+          "name": "WAQAR SALMIYA/JOOD MARJAN",
+          "aliasesPrinted": [],
+          "distanceText": "Masjid Bilal Side",
+          "distancePrinted": "STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 1,
+          "row": 17,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 215,
+          "perPerson": {
+            "quint": 43,
+            "quad": 54,
+            "triple": 72,
+            "double": 108
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "WAQAR ROTANA",
+          "aliasesPrinted": [],
+          "distanceText": "Luxury Star",
+          "distancePrinted": "STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 1,
+          "row": 18,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 225,
+          "perPerson": {
+            "quint": 45,
+            "quad": 57,
+            "triple": 75,
+            "double": 113
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "MARINA ZAHBI",
+          "aliasesPrinted": [],
+          "distanceText": "Walking distance",
+          "distancePrinted": "STAR 700-M",
+          "distanceMeters": 700,
+          "transportText": "Walking distance",
+          "page": 1,
+          "row": 19,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 250,
+          "perPerson": {
+            "quint": 50,
+            "quad": 63,
+            "triple": 84,
+            "double": 125
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "WAQAR INTERNATIONAL",
+          "aliasesPrinted": [],
+          "distanceText": "Masjid Bilal Side",
+          "distancePrinted": "STAR 700-M",
+          "distanceMeters": 700,
+          "transportText": null,
+          "page": 1,
+          "row": 20,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 260,
+          "perPerson": {
+            "quint": 52,
+            "quad": 65,
+            "triple": 87,
+            "double": 130
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "AJIYAL -2",
+          "aliasesPrinted": [],
+          "distanceText": "Shumalia Side",
+          "distancePrinted": "STAR 650-M",
+          "distanceMeters": 650,
+          "transportText": null,
+          "page": 1,
+          "row": 21,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 260,
+          "perPerson": {
+            "quint": 52,
+            "quad": 65,
+            "triple": 87,
+            "double": 130
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "NUZUL WAQAR",
+          "aliasesPrinted": [],
+          "distanceText": "Masjid Bilal Side",
+          "distancePrinted": "STAR 550-M",
+          "distanceMeters": 550,
+          "transportText": null,
+          "page": 1,
+          "row": 22,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 275,
+          "perPerson": {
+            "quint": 55,
+            "quad": 69,
+            "triple": 92,
+            "double": 138
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "NIDA TAIBA",
+          "aliasesPrinted": [],
+          "distanceText": "Masjid Bilal Side",
+          "distancePrinted": "STAR 550-M",
+          "distanceMeters": 550,
+          "transportText": null,
+          "page": 1,
+          "row": 23,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 275,
+          "perPerson": {
+            "quint": 55,
+            "quad": 69,
+            "triple": 92,
+            "double": 138
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "SHAMS MADINAH",
+          "aliasesPrinted": [],
+          "distanceText": "100-M after Al Baik Markazia, Awali side",
+          "distancePrinted": "STAR 500-M",
+          "distanceMeters": 500,
+          "transportText": null,
+          "page": 1,
+          "row": 24,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 285,
+          "perPerson": {
+            "quint": 57,
+            "quad": 72,
+            "triple": 95,
+            "double": 143
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "AJIYAL TAIBA",
+          "aliasesPrinted": [],
+          "distanceText": "Luxury Star",
+          "distancePrinted": "STAR 500-M",
+          "distanceMeters": 500,
+          "transportText": null,
+          "page": 1,
+          "row": 25,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 285,
+          "perPerson": {
+            "quint": 57,
+            "quad": 72,
+            "triple": 95,
+            "double": 143
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "ROSE PLATINUM",
+          "aliasesPrinted": [
+            "RETAJ RAWDAH"
+          ],
+          "distanceText": "3-Star, Shumalia Side",
+          "distancePrinted": "STAR 550-M",
+          "distanceMeters": 550,
+          "transportText": null,
+          "page": 1,
+          "row": 26,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 300,
+          "perPerson": {
+            "quint": 60,
+            "quad": 75,
+            "triple": 100,
+            "double": 150
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "RUA AL KHAIR/BURJ MUKTARA",
+          "aliasesPrinted": [
+            "AMJAD AL SALEEM"
+          ],
+          "distanceText": "Bab Al Salam Side",
+          "distancePrinted": "STAR 300-M",
+          "distanceMeters": 300,
+          "transportText": null,
+          "page": 1,
+          "row": 27,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 325,
+          "perPerson": {
+            "quint": 65,
+            "quad": 82,
+            "triple": 109,
+            "double": 163
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "ANY HOTEL IN MARKAZIA",
+          "aliasesPrinted": [],
+          "distanceText": "Markazia",
+          "distancePrinted": "250-M 300-M",
+          "distanceMeters": null,
+          "transportText": null,
+          "page": 1,
+          "row": 28,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 400,
+          "perPerson": {
+            "quint": 80,
+            "quad": 100,
+            "triple": 134,
+            "double": 200
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "RUA LUXURY",
+          "aliasesPrinted": [
+            "GOLDEN LUXURY"
+          ],
+          "distanceText": "Markazia",
+          "distancePrinted": "STAR 50-M",
+          "distanceMeters": 50,
+          "transportText": null,
+          "page": 1,
+          "row": 29,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 500,
+          "perPerson": {
+            "quint": 100,
+            "quad": 125,
+            "triple": 167,
+            "double": 250
+          }
+        }
+      ],
+      "footerNote": "Rates can be changed at any time without prior notice.",
+      "warnings": []
+    },
+    {
+      "sourceFile": "WMT_RAMADAN_27_OCT_2026.pdf",
+      "page": 2,
+      "supplierName": "Waqar-e-Madina Group (WMT)",
+      "packName": "Ramadan Pack 02",
+      "seasonLabel": "Ramadan",
+      "urduHeading": "تیسرا عشرہ",
+      "nightFrom": "2027-02-27",
+      "nightTo": "2027-03-10",
+      "effectiveFrom": "2026-10-27",
+      "issueDate": "2026-10-27",
+      "currency": "SAR",
+      "visa": {
+        "directPerPerson": 550,
+        "indirectByGroupSize": {
+          "1": 700,
+          "2": 675,
+          "3": 650,
+          "4": 625
+        },
+        "infant": 460,
+        "notes": "Visa rate 550 SR is for a direct flight, departure from Pakistan, 01 to 49 pax - transport by bus. Indirect flight via another country is priced by group size. Header also states: Hotel Voucher Rates are Not Linked with Visa Issuance Date."
+      },
+      "hotels": [
+        {
+          "city": "makkah",
+          "name": "QASR AL SHARQ TOWER",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Mansoor",
+          "distancePrinted": "SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 2,
+          "row": 1,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 250,
+          "perPerson": {
+            "quint": 50,
+            "quad": 63,
+            "triple": 84,
+            "double": 125
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "HIBA HIJRAH-6",
+          "aliasesPrinted": [],
+          "distanceText": null,
+          "distancePrinted": "(Economy Plus) SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 2,
+          "row": 2,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 250,
+          "perPerson": {
+            "quint": 50,
+            "quad": 63,
+            "triple": 84,
+            "double": 125
+          },
+          "sharedLineNote": "Printed on one line with Qasr Al Sharq Tower in Ramadan Pack 01 and 02, at the same rate. The Shawal sheet lists the two hotels separately at different rates, so they are treated as two hotels. Confirm with the supplier."
+        },
+        {
+          "city": "makkah",
+          "name": "QILA AJIYAD",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ajiad",
+          "distancePrinted": "(Economy Plus) 1100-M",
+          "distanceMeters": 1100,
+          "transportText": null,
+          "page": 2,
+          "row": 3,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 350,
+          "perPerson": {
+            "quint": 70,
+            "quad": 88,
+            "triple": 117,
+            "double": 175
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "DIYAR MATHER",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ibrahim Khalil",
+          "distancePrinted": "(Economy Plus) 1200-M",
+          "distanceMeters": 1200,
+          "transportText": null,
+          "page": 2,
+          "row": 4,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 375,
+          "perPerson": {
+            "quint": 75,
+            "quad": 94,
+            "triple": 125,
+            "double": 188
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "FUNDAQ BILAL",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ibrahim Khalil",
+          "distancePrinted": "SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 2,
+          "row": 5,
+          "confidence": 0.99,
+          "pricingMode": "flat_per_room",
+          "room": 325,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as 325-SR under QUINT BED and under every other column marked ROOM BASIS: one price per room per night, whatever the occupancy. Confirm on first import."
+        },
+        {
+          "city": "makkah",
+          "name": "AFWAJ AL MOMAYAZA /SHAZA WASAM-3/4 WAHDAT AL KHAIR",
+          "aliasesPrinted": [
+            "QASED AL KHAIR"
+          ],
+          "distanceText": "Shahra Ajiad",
+          "distancePrinted": "STAR 650-M",
+          "distanceMeters": 650,
+          "transportText": null,
+          "page": 2,
+          "row": 6,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 425,
+          "perPerson": {
+            "quint": 85,
+            "quad": 107,
+            "triple": 142,
+            "double": 213
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "SHAZA AL WASAM-2",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ajiad",
+          "distancePrinted": "STAR 600-M",
+          "distanceMeters": 600,
+          "transportText": null,
+          "page": 2,
+          "row": 7,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 475,
+          "perPerson": {
+            "quint": 95,
+            "quad": 119,
+            "triple": 159,
+            "double": 238
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "SWAED AL KHAIMA",
+          "aliasesPrinted": [
+            "FAWAD NASSA"
+          ],
+          "distanceText": "Shahra Ibrahim Khalil near Kabotar Chowk",
+          "distancePrinted": "STAR 400-M/500-M",
+          "distanceMeters": null,
+          "transportText": null,
+          "page": 2,
+          "row": 8,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 650,
+          "perPerson": {
+            "quint": 130,
+            "quad": 163,
+            "triple": 217,
+            "double": 325
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "BADAR AL MASA/YASMIN AL MAJD",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ibrahim Khalil",
+          "distancePrinted": "STAR 600-M",
+          "distanceMeters": 600,
+          "transportText": null,
+          "page": 2,
+          "row": 9,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 800,
+          "perPerson": {
+            "quint": 160,
+            "quad": 200,
+            "triple": 267,
+            "double": 400
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "AKABIR HIJRAH/AREEJ WAFA/MATHER ELITE",
+          "aliasesPrinted": [],
+          "distanceText": "Kabotar Chowk",
+          "distancePrinted": "STAR 300-M",
+          "distanceMeters": 300,
+          "transportText": null,
+          "page": 2,
+          "row": 10,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 1000,
+          "perPerson": {
+            "quint": null,
+            "quad": 250,
+            "triple": 334,
+            "double": 500
+          },
+          "flatNote": "Every price cell is labelled ROOM BASIS and the quint column has no number. The quad, triple and double figures still equal ceil(room / occupancy), so the row is priced per person from the room rate; the label means the whole room must be booked. Confirm with the supplier."
+        },
+        {
+          "city": "makkah",
+          "name": "AL KISWAH TOWER",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Al-Taysir",
+          "distancePrinted": "4-STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 2,
+          "row": 11,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "Voco",
+          "aliasesPrinted": [],
+          "distanceText": null,
+          "distancePrinted": "4-Star SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 2,
+          "row": 12,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "NOVOTEL THAKHER",
+          "aliasesPrinted": [],
+          "distanceText": "Ghaza Bus Station",
+          "distancePrinted": "4-STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 2,
+          "row": 13,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "M HOTEL MAKKAH BY MILLENNIUM",
+          "aliasesPrinted": [],
+          "distanceText": null,
+          "distancePrinted": "5-STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 2,
+          "row": 14,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "M MILLENIUM DANA",
+          "aliasesPrinted": [],
+          "distanceText": null,
+          "distancePrinted": "SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 2,
+          "row": 15,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "FOUR POINTS BY SHERATON",
+          "aliasesPrinted": [],
+          "distanceText": "Makkah Al Naseem",
+          "distancePrinted": "5-STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 2,
+          "row": 16,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "madinah",
+          "name": "WAQAR SALMIYA/JOOD MARJAN",
+          "aliasesPrinted": [],
+          "distanceText": "Masjid Bilal Side",
+          "distancePrinted": "STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 2,
+          "row": 17,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 225,
+          "perPerson": {
+            "quint": 45,
+            "quad": 57,
+            "triple": 75,
+            "double": 113
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "WAQAR ROTANA",
+          "aliasesPrinted": [],
+          "distanceText": "Luxury Star",
+          "distancePrinted": "STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 2,
+          "row": 18,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 250,
+          "perPerson": {
+            "quint": 50,
+            "quad": 63,
+            "triple": 84,
+            "double": 125
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "MARINA ZAHBI",
+          "aliasesPrinted": [],
+          "distanceText": "Walking distance",
+          "distancePrinted": "STAR 700-M",
+          "distanceMeters": 700,
+          "transportText": "Walking distance",
+          "page": 2,
+          "row": 19,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 265,
+          "perPerson": {
+            "quint": 53,
+            "quad": 67,
+            "triple": 89,
+            "double": 133
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "WAQAR INTERNATIONAL",
+          "aliasesPrinted": [],
+          "distanceText": "Masjid Bilal Side",
+          "distancePrinted": "STAR 700-M",
+          "distanceMeters": 700,
+          "transportText": null,
+          "page": 2,
+          "row": 20,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 285,
+          "perPerson": {
+            "quint": 57,
+            "quad": 72,
+            "triple": 95,
+            "double": 143
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "AJIYAL -2",
+          "aliasesPrinted": [],
+          "distanceText": "Shumalia Side",
+          "distancePrinted": "STAR 650-M",
+          "distanceMeters": 650,
+          "transportText": null,
+          "page": 2,
+          "row": 21,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 285,
+          "perPerson": {
+            "quint": 57,
+            "quad": 72,
+            "triple": 95,
+            "double": 143
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "NUZUL WAQAR",
+          "aliasesPrinted": [],
+          "distanceText": "Masjid Bilal Side",
+          "distancePrinted": "STAR 550-M",
+          "distanceMeters": 550,
+          "transportText": null,
+          "page": 2,
+          "row": 22,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 300,
+          "perPerson": {
+            "quint": 60,
+            "quad": 75,
+            "triple": 100,
+            "double": 150
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "NIDA TAIBA",
+          "aliasesPrinted": [],
+          "distanceText": "Masjid Bilal Side",
+          "distancePrinted": "STAR 550-M",
+          "distanceMeters": 550,
+          "transportText": null,
+          "page": 2,
+          "row": 23,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 300,
+          "perPerson": {
+            "quint": 60,
+            "quad": 75,
+            "triple": 100,
+            "double": 150
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "SHAMS MADINAH",
+          "aliasesPrinted": [],
+          "distanceText": "100-M after Al Baik Markazia, Awali side",
+          "distancePrinted": "STAR 500-M",
+          "distanceMeters": 500,
+          "transportText": null,
+          "page": 2,
+          "row": 24,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 325,
+          "perPerson": {
+            "quint": 65,
+            "quad": 82,
+            "triple": 109,
+            "double": 163
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "AJIYAL TAIBA",
+          "aliasesPrinted": [],
+          "distanceText": "Luxury Star",
+          "distancePrinted": "STAR 500-M",
+          "distanceMeters": 500,
+          "transportText": null,
+          "page": 2,
+          "row": 25,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 325,
+          "perPerson": {
+            "quint": 65,
+            "quad": 82,
+            "triple": 109,
+            "double": 163
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "ROSE PLATINUM",
+          "aliasesPrinted": [
+            "RETAJ RAWDAH"
+          ],
+          "distanceText": "3-Star, Shumalia Side",
+          "distancePrinted": "STAR 550-M",
+          "distanceMeters": 550,
+          "transportText": null,
+          "page": 2,
+          "row": 26,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 350,
+          "perPerson": {
+            "quint": 70,
+            "quad": 88,
+            "triple": 117,
+            "double": 175
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "RUA AL KHAIR/BURJ MUKTARA",
+          "aliasesPrinted": [
+            "AMJAD AL SALEEM"
+          ],
+          "distanceText": "Bab Al Salam Side",
+          "distancePrinted": "STAR 300-M",
+          "distanceMeters": 300,
+          "transportText": null,
+          "page": 2,
+          "row": 27,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 375,
+          "perPerson": {
+            "quint": 75,
+            "quad": 94,
+            "triple": 125,
+            "double": 188
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "ANY HOTEL IN MARKAZIA",
+          "aliasesPrinted": [],
+          "distanceText": "Markazia",
+          "distancePrinted": "250-M 300-M",
+          "distanceMeters": null,
+          "transportText": null,
+          "page": 2,
+          "row": 28,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 475,
+          "perPerson": {
+            "quint": 95,
+            "quad": 119,
+            "triple": 159,
+            "double": 238
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "RUA LUXURY",
+          "aliasesPrinted": [
+            "GOLDEN LUXURY"
+          ],
+          "distanceText": "Markazia",
+          "distancePrinted": "STAR 50-M",
+          "distanceMeters": 50,
+          "transportText": null,
+          "page": 2,
+          "row": 29,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 550,
+          "perPerson": {
+            "quint": 110,
+            "quad": 138,
+            "triple": 184,
+            "double": 275
+          }
+        }
+      ],
+      "footerNote": "Rates can be changed at any time without prior notice.",
+      "warnings": []
+    },
+    {
+      "sourceFile": "WMT_RAMADAN_27_OCT_2026.pdf",
+      "page": 3,
+      "supplierName": "Waqar-e-Madina Group (WMT)",
+      "packName": "Shawal",
+      "seasonLabel": "Shawal",
+      "urduHeading": "شوال 1448-H",
+      "nightFrom": "2027-03-11",
+      "nightTo": "2027-04-06",
+      "effectiveFrom": "2026-10-27",
+      "issueDate": "2026-10-27",
+      "currency": "SAR",
+      "visa": {
+        "directPerPerson": 550,
+        "indirectByGroupSize": {
+          "1": 700,
+          "2": 675,
+          "3": 650,
+          "4": 625
+        },
+        "infant": 460,
+        "notes": "Visa rate 550 SR is for a direct flight, departure from Pakistan, 01 to 49 pax - transport by bus. Indirect flight via another country is priced by group size. Header also states: Hotel Voucher Rates are Not Linked with Visa Issuance Date."
+      },
+      "hotels": [
+        {
+          "city": "makkah",
+          "name": "QASR AL SHARQ TOWER",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Mansoor",
+          "distancePrinted": "SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 3,
+          "row": 1,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 30,
+          "perPerson": {
+            "quint": 6,
+            "quad": 8,
+            "triple": 10,
+            "double": 15
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "HIBA HIJRAH-6",
+          "aliasesPrinted": [],
+          "distanceText": null,
+          "distancePrinted": "(Economy Plus) SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 3,
+          "row": 2,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 65,
+          "perPerson": {
+            "quint": 13,
+            "quad": 17,
+            "triple": 22,
+            "double": 33
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "QILA AJIYAD",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ajiad",
+          "distancePrinted": "(Economy Plus) 1100-M",
+          "distanceMeters": 1100,
+          "transportText": null,
+          "page": 3,
+          "row": 3,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 95,
+          "perPerson": {
+            "quint": 19,
+            "quad": 24,
+            "triple": 32,
+            "double": 48
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "DIYAR MATHER",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ibrahim Khalil",
+          "distancePrinted": "(Economy Plus) 1200-M",
+          "distanceMeters": 1200,
+          "transportText": null,
+          "page": 3,
+          "row": 4,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 100,
+          "perPerson": {
+            "quint": 20,
+            "quad": 25,
+            "triple": 34,
+            "double": 50
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "FUNDAQ BILAL",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ibrahim Khalil",
+          "distancePrinted": "SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 3,
+          "row": 5,
+          "confidence": 0.99,
+          "pricingMode": "flat_per_room",
+          "room": 110,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as 110-SR under QUINT BED and under every other column marked ROOM BASIS: one price per room per night, whatever the occupancy. Confirm on first import."
+        },
+        {
+          "city": "makkah",
+          "name": "AFWAJ AL MOMAYAZA /SHAZA WASAM-3/4 WAHDAT AL KHAIR",
+          "aliasesPrinted": [
+            "QASED AL KHAIR"
+          ],
+          "distanceText": "Shahra Ajiad",
+          "distancePrinted": "STAR 650-M",
+          "distanceMeters": 650,
+          "transportText": null,
+          "page": 3,
+          "row": 6,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 130,
+          "perPerson": {
+            "quint": 26,
+            "quad": 33,
+            "triple": 44,
+            "double": 65
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "SHAZA AL WASAM-2",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ajiad",
+          "distancePrinted": "STAR 600-M",
+          "distanceMeters": 600,
+          "transportText": null,
+          "page": 3,
+          "row": 7,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 150,
+          "perPerson": {
+            "quint": 30,
+            "quad": 38,
+            "triple": 50,
+            "double": 75
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "SWAED AL KHAIMA",
+          "aliasesPrinted": [
+            "FAWAD NASSA"
+          ],
+          "distanceText": "Shahra Ibrahim Khalil near Kabotar Chowk",
+          "distancePrinted": "STAR 400-M/500-M",
+          "distanceMeters": null,
+          "transportText": null,
+          "page": 3,
+          "row": 8,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 225,
+          "perPerson": {
+            "quint": 45,
+            "quad": 57,
+            "triple": 75,
+            "double": 113
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "BADAR AL MASA/YASMIN AL MAJD",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ibrahim Khalil",
+          "distancePrinted": "STAR 600-M",
+          "distanceMeters": 600,
+          "transportText": null,
+          "page": 3,
+          "row": 9,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 285,
+          "perPerson": {
+            "quint": 57,
+            "quad": 72,
+            "triple": 95,
+            "double": 143
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "AKABIR HIJRAH/AREEJ WAFA/MATHER ELITE",
+          "aliasesPrinted": [],
+          "distanceText": "Kabotar Chowk",
+          "distancePrinted": "STAR 300-M",
+          "distanceMeters": 300,
+          "transportText": null,
+          "page": 3,
+          "row": 10,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 325,
+          "perPerson": {
+            "quint": null,
+            "quad": 82,
+            "triple": 109,
+            "double": 163
+          },
+          "flatNote": "Every price cell is labelled ROOM BASIS and the quint column has no number. The quad, triple and double figures still equal ceil(room / occupancy), so the row is priced per person from the room rate; the label means the whole room must be booked. Confirm with the supplier."
+        },
+        {
+          "city": "makkah",
+          "name": "AL KISWAH TOWER",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Al-Taysir",
+          "distancePrinted": "4-STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 3,
+          "row": 11,
+          "confidence": 0.99,
+          "pricingMode": "flat_per_room",
+          "room": 100,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as 100-SR under QUINT BED and under every other column marked ROOM BASIS: one price per room per night, whatever the occupancy. Confirm on first import."
+        },
+        {
+          "city": "makkah",
+          "name": "Voco",
+          "aliasesPrinted": [],
+          "distanceText": null,
+          "distancePrinted": "4-Star SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 3,
+          "row": 12,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "NOVOTEL THAKHER",
+          "aliasesPrinted": [],
+          "distanceText": "Ghaza Bus Station",
+          "distancePrinted": "4-STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 3,
+          "row": 13,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "M HOTEL MAKKAH BY MILLENNIUM",
+          "aliasesPrinted": [],
+          "distanceText": null,
+          "distancePrinted": "5-STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 3,
+          "row": 14,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "M MILLENIUM DANA",
+          "aliasesPrinted": [],
+          "distanceText": null,
+          "distancePrinted": "SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 3,
+          "row": 15,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "FOUR POINTS BY SHERATON",
+          "aliasesPrinted": [],
+          "distanceText": "Makkah Al Naseem",
+          "distancePrinted": "5-STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 3,
+          "row": 16,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "madinah",
+          "name": "WAQAR SALMIYA/JOOD MARJAN",
+          "aliasesPrinted": [],
+          "distanceText": "Masjid Bilal Side",
+          "distancePrinted": "STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 3,
+          "row": 17,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 140,
+          "perPerson": {
+            "quint": 28,
+            "quad": 35,
+            "triple": 47,
+            "double": 70
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "WAQAR ROTANA",
+          "aliasesPrinted": [],
+          "distanceText": "Luxury Star",
+          "distancePrinted": "STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 3,
+          "row": 18,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 150,
+          "perPerson": {
+            "quint": 30,
+            "quad": 38,
+            "triple": 50,
+            "double": 75
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "MARINA ZAHBI",
+          "aliasesPrinted": [],
+          "distanceText": "Walking distance",
+          "distancePrinted": "STAR 700-M",
+          "distanceMeters": 700,
+          "transportText": "Walking distance",
+          "page": 3,
+          "row": 19,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 165,
+          "perPerson": {
+            "quint": 33,
+            "quad": 42,
+            "triple": 55,
+            "double": 83
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "WAQAR INTERNATIONAL",
+          "aliasesPrinted": [],
+          "distanceText": "Masjid Bilal Side",
+          "distancePrinted": "STAR 700-M",
+          "distanceMeters": 700,
+          "transportText": null,
+          "page": 3,
+          "row": 20,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 165,
+          "perPerson": {
+            "quint": 33,
+            "quad": 42,
+            "triple": 55,
+            "double": 83
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "AJIYAL -2",
+          "aliasesPrinted": [],
+          "distanceText": "Shumalia Side",
+          "distancePrinted": "STAR 650-M",
+          "distanceMeters": 650,
+          "transportText": null,
+          "page": 3,
+          "row": 21,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 165,
+          "perPerson": {
+            "quint": 33,
+            "quad": 42,
+            "triple": 55,
+            "double": 83
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "NUZUL WAQAR",
+          "aliasesPrinted": [],
+          "distanceText": "Masjid Bilal Side",
+          "distancePrinted": "STAR 550-M",
+          "distanceMeters": 550,
+          "transportText": null,
+          "page": 3,
+          "row": 22,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 195,
+          "perPerson": {
+            "quint": 39,
+            "quad": 49,
+            "triple": 65,
+            "double": 98
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "NIDA TAIBA",
+          "aliasesPrinted": [],
+          "distanceText": "Masjid Bilal Side",
+          "distancePrinted": "STAR 550-M",
+          "distanceMeters": 550,
+          "transportText": null,
+          "page": 3,
+          "row": 23,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 195,
+          "perPerson": {
+            "quint": 39,
+            "quad": 49,
+            "triple": 65,
+            "double": 98
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "SHAMS MADINAH",
+          "aliasesPrinted": [],
+          "distanceText": "100-M after Al Baik Markazia, Awali side",
+          "distancePrinted": "STAR 500-M",
+          "distanceMeters": 500,
+          "transportText": null,
+          "page": 3,
+          "row": 24,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 210,
+          "perPerson": {
+            "quint": 42,
+            "quad": 53,
+            "triple": 70,
+            "double": 105
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "AJIYAL TAIBA",
+          "aliasesPrinted": [],
+          "distanceText": "Luxury Star",
+          "distancePrinted": "STAR 500-M",
+          "distanceMeters": 500,
+          "transportText": null,
+          "page": 3,
+          "row": 25,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 210,
+          "perPerson": {
+            "quint": 42,
+            "quad": 53,
+            "triple": 70,
+            "double": 105
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "ROSE PLATINUM",
+          "aliasesPrinted": [
+            "RETAJ RAWDAH"
+          ],
+          "distanceText": "3-Star, Shumalia Side",
+          "distancePrinted": "STAR 550-M",
+          "distanceMeters": 550,
+          "transportText": null,
+          "page": 3,
+          "row": 26,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 220,
+          "perPerson": {
+            "quint": 44,
+            "quad": 55,
+            "triple": 74,
+            "double": 110
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "RUA AL KHAIR/BURJ MUKTARA",
+          "aliasesPrinted": [
+            "AMJAD AL SALEEM"
+          ],
+          "distanceText": "Bab Al Salam Side",
+          "distancePrinted": "STAR 300-M",
+          "distanceMeters": 300,
+          "transportText": null,
+          "page": 3,
+          "row": 27,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 275,
+          "perPerson": {
+            "quint": 55,
+            "quad": 69,
+            "triple": 92,
+            "double": 138
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "ANY HOTEL IN MARKAZIA",
+          "aliasesPrinted": [],
+          "distanceText": "Markazia",
+          "distancePrinted": "250-M 300-M",
+          "distanceMeters": null,
+          "transportText": null,
+          "page": 3,
+          "row": 28,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 300,
+          "perPerson": {
+            "quint": 60,
+            "quad": 75,
+            "triple": 100,
+            "double": 150
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "RUA LUXURY",
+          "aliasesPrinted": [
+            "GOLDEN LUXURY"
+          ],
+          "distanceText": "Markazia",
+          "distancePrinted": "STAR 50-M",
+          "distanceMeters": 50,
+          "transportText": null,
+          "page": 3,
+          "row": 29,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 350,
+          "perPerson": {
+            "quint": 70,
+            "quad": 88,
+            "triple": 117,
+            "double": 175
+          }
+        }
+      ],
+      "footerNote": "Rates can be changed at any time without prior notice.",
+      "warnings": []
+    },
+    {
+      "sourceFile": "WMT_RAMADAN_2027_2.pdf",
+      "page": 1,
+      "supplierName": "Waqar-e-Madina Group (WMT)",
+      "packName": "Ramadan Pack 01",
+      "seasonLabel": "Ramadan",
+      "urduHeading": "پہلا عشرہ، دوسرا عشرہ",
+      "nightFrom": "2027-02-06",
+      "nightTo": "2027-02-26",
+      "effectiveFrom": "2026-10-27",
+      "issueDate": "2026-10-27",
+      "currency": "SAR",
+      "visa": {
+        "directPerPerson": 550,
+        "indirectByGroupSize": {
+          "1": 700,
+          "2": 675,
+          "3": 650,
+          "4": 625
+        },
+        "infant": 460,
+        "notes": "Visa rate 550 SR is for a direct flight, departure from Pakistan, 01 to 49 pax - transport by bus. Indirect flight via another country is priced by group size. Header also states: Hotel Voucher Rates are Not Linked with Visa Issuance Date."
+      },
+      "hotels": [
+        {
+          "city": "makkah",
+          "name": "QASR AL SHARQ TOWER",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Mansoor",
+          "distancePrinted": "SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 1,
+          "row": 1,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 150,
+          "perPerson": {
+            "quint": 30,
+            "quad": 38,
+            "triple": 50,
+            "double": 75
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "HIBA HIJRAH-6",
+          "aliasesPrinted": [],
+          "distanceText": null,
+          "distancePrinted": "(Economy Plus) SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 1,
+          "row": 2,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 150,
+          "perPerson": {
+            "quint": 30,
+            "quad": 38,
+            "triple": 50,
+            "double": 75
+          },
+          "sharedLineNote": "Printed on one line with Qasr Al Sharq Tower in Ramadan Pack 01 and 02, at the same rate. The Shawal sheet lists the two hotels separately at different rates, so they are treated as two hotels. Confirm with the supplier."
+        },
+        {
+          "city": "makkah",
+          "name": "QILA AJIYAD",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ajiad",
+          "distancePrinted": "(Economy Plus) 1100-M",
+          "distanceMeters": 1100,
+          "transportText": null,
+          "page": 1,
+          "row": 3,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 200,
+          "perPerson": {
+            "quint": 40,
+            "quad": 50,
+            "triple": 67,
+            "double": 100
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "DIYAR MATHER",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ibrahim Khalil",
+          "distancePrinted": "(Economy Plus) 1200-M",
+          "distanceMeters": 1200,
+          "transportText": null,
+          "page": 1,
+          "row": 4,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 225,
+          "perPerson": {
+            "quint": 45,
+            "quad": 57,
+            "triple": 75,
+            "double": 113
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "FUNDAQ BILAL",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ibrahim Khalil",
+          "distancePrinted": "SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 1,
+          "row": 5,
+          "confidence": 0.99,
+          "pricingMode": "flat_per_room",
+          "room": 200,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as 200-SR under QUINT BED and under every other column marked ROOM BASIS: one price per room per night, whatever the occupancy. Confirm on first import."
+        },
+        {
+          "city": "makkah",
+          "name": "AFWAJ AL MOMAYAZA /SHAZA WASAM-3/4 WAHDAT AL KHAIR",
+          "aliasesPrinted": [
+            "QASED AL KHAIR"
+          ],
+          "distanceText": "Shahra Ajiad",
+          "distancePrinted": "STAR 650-M",
+          "distanceMeters": 650,
+          "transportText": null,
+          "page": 1,
+          "row": 6,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 300,
+          "perPerson": {
+            "quint": 60,
+            "quad": 75,
+            "triple": 100,
+            "double": 150
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "SHAZA AL WASAM-2",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ajiad",
+          "distancePrinted": "STAR 600-M",
+          "distanceMeters": 600,
+          "transportText": null,
+          "page": 1,
+          "row": 7,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 350,
+          "perPerson": {
+            "quint": 70,
+            "quad": 88,
+            "triple": 117,
+            "double": 175
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "SWAED AL KHAIMA",
+          "aliasesPrinted": [
+            "FAWAD NASSA"
+          ],
+          "distanceText": "Shahra Ibrahim Khalil near Kabotar Chowk",
+          "distancePrinted": "STAR 400-M/500-M",
+          "distanceMeters": null,
+          "transportText": null,
+          "page": 1,
+          "row": 8,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 400,
+          "perPerson": {
+            "quint": 80,
+            "quad": 100,
+            "triple": 134,
+            "double": 200
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "BADAR AL MASA/YASMIN AL MAJD",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ibrahim Khalil",
+          "distancePrinted": "STAR 600-M",
+          "distanceMeters": 600,
+          "transportText": null,
+          "page": 1,
+          "row": 9,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 500,
+          "perPerson": {
+            "quint": 100,
+            "quad": 125,
+            "triple": 167,
+            "double": 250
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "AKABIR HIJRAH/AREEJ WAFA/MATHER ELITE",
+          "aliasesPrinted": [],
+          "distanceText": "Kabotar Chowk",
+          "distancePrinted": "STAR 300-M",
+          "distanceMeters": 300,
+          "transportText": null,
+          "page": 1,
+          "row": 10,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 600,
+          "perPerson": {
+            "quint": null,
+            "quad": 150,
+            "triple": 200,
+            "double": 300
+          },
+          "flatNote": "Every price cell is labelled ROOM BASIS and the quint column has no number. The quad, triple and double figures still equal ceil(room / occupancy), so the row is priced per person from the room rate; the label means the whole room must be booked. Confirm with the supplier."
+        },
+        {
+          "city": "makkah",
+          "name": "AL KISWAH TOWER",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Al-Taysir",
+          "distancePrinted": "4-STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 1,
+          "row": 11,
+          "confidence": 0.99,
+          "pricingMode": "flat_per_room",
+          "room": 300,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as 300-SR under QUINT BED and under every other column marked ROOM BASIS: one price per room per night, whatever the occupancy. Confirm on first import."
+        },
+        {
+          "city": "makkah",
+          "name": "Voco",
+          "aliasesPrinted": [],
+          "distanceText": null,
+          "distancePrinted": "4-Star SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 1,
+          "row": 12,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "NOVOTEL THAKHER",
+          "aliasesPrinted": [],
+          "distanceText": "Ghaza Bus Station",
+          "distancePrinted": "4-STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 1,
+          "row": 13,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "M HOTEL MAKKAH BY MILLENNIUM",
+          "aliasesPrinted": [],
+          "distanceText": null,
+          "distancePrinted": "5-STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 1,
+          "row": 14,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "M MILLENIUM DANA",
+          "aliasesPrinted": [],
+          "distanceText": null,
+          "distancePrinted": "SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 1,
+          "row": 15,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "FOUR POINTS BY SHERATON",
+          "aliasesPrinted": [],
+          "distanceText": "Makkah Al Naseem",
+          "distancePrinted": "5-STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 1,
+          "row": 16,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "madinah",
+          "name": "WAQAR SALMIYA/JOOD MARJAN",
+          "aliasesPrinted": [],
+          "distanceText": "Masjid Bilal Side",
+          "distancePrinted": "STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 1,
+          "row": 17,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 215,
+          "perPerson": {
+            "quint": 43,
+            "quad": 54,
+            "triple": 72,
+            "double": 108
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "WAQAR ROTANA",
+          "aliasesPrinted": [],
+          "distanceText": "Luxury Star",
+          "distancePrinted": "STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 1,
+          "row": 18,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 225,
+          "perPerson": {
+            "quint": 45,
+            "quad": 57,
+            "triple": 75,
+            "double": 113
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "MARINA ZAHBI",
+          "aliasesPrinted": [],
+          "distanceText": "Walking distance",
+          "distancePrinted": "STAR 700-M",
+          "distanceMeters": 700,
+          "transportText": "Walking distance",
+          "page": 1,
+          "row": 19,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 250,
+          "perPerson": {
+            "quint": 50,
+            "quad": 63,
+            "triple": 84,
+            "double": 125
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "WAQAR INTERNATIONAL",
+          "aliasesPrinted": [],
+          "distanceText": "Masjid Bilal Side",
+          "distancePrinted": "STAR 700-M",
+          "distanceMeters": 700,
+          "transportText": null,
+          "page": 1,
+          "row": 20,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 260,
+          "perPerson": {
+            "quint": 52,
+            "quad": 65,
+            "triple": 87,
+            "double": 130
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "AJIYAL -2",
+          "aliasesPrinted": [],
+          "distanceText": "Shumalia Side",
+          "distancePrinted": "STAR 650-M",
+          "distanceMeters": 650,
+          "transportText": null,
+          "page": 1,
+          "row": 21,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 260,
+          "perPerson": {
+            "quint": 52,
+            "quad": 65,
+            "triple": 87,
+            "double": 130
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "NUZUL WAQAR",
+          "aliasesPrinted": [],
+          "distanceText": "Masjid Bilal Side",
+          "distancePrinted": "STAR 550-M",
+          "distanceMeters": 550,
+          "transportText": null,
+          "page": 1,
+          "row": 22,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 275,
+          "perPerson": {
+            "quint": 55,
+            "quad": 69,
+            "triple": 92,
+            "double": 138
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "NIDA TAIBA",
+          "aliasesPrinted": [],
+          "distanceText": "Masjid Bilal Side",
+          "distancePrinted": "STAR 550-M",
+          "distanceMeters": 550,
+          "transportText": null,
+          "page": 1,
+          "row": 23,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 275,
+          "perPerson": {
+            "quint": 55,
+            "quad": 69,
+            "triple": 92,
+            "double": 138
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "SHAMS MADINAH",
+          "aliasesPrinted": [],
+          "distanceText": "100-M after Al Baik Markazia, Awali side",
+          "distancePrinted": "STAR 500-M",
+          "distanceMeters": 500,
+          "transportText": null,
+          "page": 1,
+          "row": 24,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 285,
+          "perPerson": {
+            "quint": 57,
+            "quad": 72,
+            "triple": 95,
+            "double": 143
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "AJIYAL TAIBA",
+          "aliasesPrinted": [],
+          "distanceText": "Luxury Star",
+          "distancePrinted": "STAR 500-M",
+          "distanceMeters": 500,
+          "transportText": null,
+          "page": 1,
+          "row": 25,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 285,
+          "perPerson": {
+            "quint": 57,
+            "quad": 72,
+            "triple": 95,
+            "double": 143
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "RETAJ RAWDAH",
+          "aliasesPrinted": [],
+          "distanceText": "3-Star, Shumalia Side",
+          "distancePrinted": "STAR 550-M",
+          "distanceMeters": 550,
+          "transportText": null,
+          "page": 1,
+          "row": 26,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 300,
+          "perPerson": {
+            "quint": 60,
+            "quad": 75,
+            "triple": 100,
+            "double": 150
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "RUA AL KHAIR/BURJ MUKTARA",
+          "aliasesPrinted": [
+            "AMJAD AL SALEEM"
+          ],
+          "distanceText": "Bab Al Salam Side",
+          "distancePrinted": "STAR 300-M",
+          "distanceMeters": 300,
+          "transportText": null,
+          "page": 1,
+          "row": 27,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 325,
+          "perPerson": {
+            "quint": 65,
+            "quad": 82,
+            "triple": 109,
+            "double": 163
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "ANY HOTEL IN MARKAZIA",
+          "aliasesPrinted": [],
+          "distanceText": "Markazia",
+          "distancePrinted": "250-M 300-M",
+          "distanceMeters": null,
+          "transportText": null,
+          "page": 1,
+          "row": 28,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 400,
+          "perPerson": {
+            "quint": 80,
+            "quad": 100,
+            "triple": 134,
+            "double": 200
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "RUA LUXURY",
+          "aliasesPrinted": [
+            "GOLDEN LUXURY"
+          ],
+          "distanceText": "Markazia",
+          "distancePrinted": "STAR 50-M",
+          "distanceMeters": 50,
+          "transportText": null,
+          "page": 1,
+          "row": 29,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 500,
+          "perPerson": {
+            "quint": 100,
+            "quad": 125,
+            "triple": 167,
+            "double": 250
+          }
+        }
+      ],
+      "footerNote": "Rates can be changed at any time without prior notice.",
+      "warnings": []
+    },
+    {
+      "sourceFile": "WMT_RAMADAN_2027_2.pdf",
+      "page": 2,
+      "supplierName": "Waqar-e-Madina Group (WMT)",
+      "packName": "Ramadan Pack 02",
+      "seasonLabel": "Ramadan",
+      "urduHeading": "تیسرا عشرہ",
+      "nightFrom": "2027-02-27",
+      "nightTo": "2027-03-10",
+      "effectiveFrom": "2026-10-27",
+      "issueDate": "2026-10-27",
+      "currency": "SAR",
+      "visa": {
+        "directPerPerson": 550,
+        "indirectByGroupSize": {
+          "1": 700,
+          "2": 675,
+          "3": 650,
+          "4": 625
+        },
+        "infant": 460,
+        "notes": "Visa rate 550 SR is for a direct flight, departure from Pakistan, 01 to 49 pax - transport by bus. Indirect flight via another country is priced by group size. Header also states: Hotel Voucher Rates are Not Linked with Visa Issuance Date."
+      },
+      "hotels": [
+        {
+          "city": "makkah",
+          "name": "QASR AL SHARQ TOWER",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Mansoor",
+          "distancePrinted": "SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 2,
+          "row": 1,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 250,
+          "perPerson": {
+            "quint": 50,
+            "quad": 63,
+            "triple": 84,
+            "double": 125
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "HIBA HIJRAH-6",
+          "aliasesPrinted": [],
+          "distanceText": null,
+          "distancePrinted": "(Economy Plus) SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 2,
+          "row": 2,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 250,
+          "perPerson": {
+            "quint": 50,
+            "quad": 63,
+            "triple": 84,
+            "double": 125
+          },
+          "sharedLineNote": "Printed on one line with Qasr Al Sharq Tower in Ramadan Pack 01 and 02, at the same rate. The Shawal sheet lists the two hotels separately at different rates, so they are treated as two hotels. Confirm with the supplier."
+        },
+        {
+          "city": "makkah",
+          "name": "QILA AJIYAD",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ajiad",
+          "distancePrinted": "(Economy Plus) 1100-M",
+          "distanceMeters": 1100,
+          "transportText": null,
+          "page": 2,
+          "row": 3,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 350,
+          "perPerson": {
+            "quint": 70,
+            "quad": 88,
+            "triple": 117,
+            "double": 175
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "DIYAR MATHER",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ibrahim Khalil",
+          "distancePrinted": "(Economy Plus) 1200-M",
+          "distanceMeters": 1200,
+          "transportText": null,
+          "page": 2,
+          "row": 4,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 375,
+          "perPerson": {
+            "quint": 75,
+            "quad": 94,
+            "triple": 125,
+            "double": 188
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "FUNDAQ BILAL",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ibrahim Khalil",
+          "distancePrinted": "SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 2,
+          "row": 5,
+          "confidence": 0.99,
+          "pricingMode": "flat_per_room",
+          "room": 325,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as 325-SR under QUINT BED and under every other column marked ROOM BASIS: one price per room per night, whatever the occupancy. Confirm on first import."
+        },
+        {
+          "city": "makkah",
+          "name": "AFWAJ AL MOMAYAZA /SHAZA WASAM-3/4 WAHDAT AL KHAIR",
+          "aliasesPrinted": [
+            "QASED AL KHAIR"
+          ],
+          "distanceText": "Shahra Ajiad",
+          "distancePrinted": "STAR 650-M",
+          "distanceMeters": 650,
+          "transportText": null,
+          "page": 2,
+          "row": 6,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 425,
+          "perPerson": {
+            "quint": 85,
+            "quad": 107,
+            "triple": 142,
+            "double": 213
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "SHAZA AL WASAM-2",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ajiad",
+          "distancePrinted": "STAR 600-M",
+          "distanceMeters": 600,
+          "transportText": null,
+          "page": 2,
+          "row": 7,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 475,
+          "perPerson": {
+            "quint": 95,
+            "quad": 119,
+            "triple": 159,
+            "double": 238
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "SWAED AL KHAIMA",
+          "aliasesPrinted": [
+            "FAWAD NASSA"
+          ],
+          "distanceText": "Shahra Ibrahim Khalil near Kabotar Chowk",
+          "distancePrinted": "STAR 400-M/500-M",
+          "distanceMeters": null,
+          "transportText": null,
+          "page": 2,
+          "row": 8,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 650,
+          "perPerson": {
+            "quint": 130,
+            "quad": 163,
+            "triple": 217,
+            "double": 325
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "BADAR AL MASA/YASMIN AL MAJD",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ibrahim Khalil",
+          "distancePrinted": "STAR 600-M",
+          "distanceMeters": 600,
+          "transportText": null,
+          "page": 2,
+          "row": 9,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 800,
+          "perPerson": {
+            "quint": 160,
+            "quad": 200,
+            "triple": 267,
+            "double": 400
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "AKABIR HIJRAH/AREEJ WAFA/MATHER ELITE",
+          "aliasesPrinted": [],
+          "distanceText": "Kabotar Chowk",
+          "distancePrinted": "STAR 300-M",
+          "distanceMeters": 300,
+          "transportText": null,
+          "page": 2,
+          "row": 10,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 1000,
+          "perPerson": {
+            "quint": null,
+            "quad": 250,
+            "triple": 334,
+            "double": 500
+          },
+          "flatNote": "Every price cell is labelled ROOM BASIS and the quint column has no number. The quad, triple and double figures still equal ceil(room / occupancy), so the row is priced per person from the room rate; the label means the whole room must be booked. Confirm with the supplier."
+        },
+        {
+          "city": "makkah",
+          "name": "AL KISWAH TOWER",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Al-Taysir",
+          "distancePrinted": "4-STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 2,
+          "row": 11,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "Voco",
+          "aliasesPrinted": [],
+          "distanceText": null,
+          "distancePrinted": "4-Star SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 2,
+          "row": 12,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "NOVOTEL THAKHER",
+          "aliasesPrinted": [],
+          "distanceText": "Ghaza Bus Station",
+          "distancePrinted": "4-STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 2,
+          "row": 13,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "M HOTEL MAKKAH BY MILLENNIUM",
+          "aliasesPrinted": [],
+          "distanceText": null,
+          "distancePrinted": "5-STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 2,
+          "row": 14,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "M MILLENIUM DANA",
+          "aliasesPrinted": [],
+          "distanceText": null,
+          "distancePrinted": "SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 2,
+          "row": 15,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "FOUR POINTS BY SHERATON",
+          "aliasesPrinted": [],
+          "distanceText": "Makkah Al Naseem",
+          "distancePrinted": "5-STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 2,
+          "row": 16,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "madinah",
+          "name": "WAQAR SALMIYA/JOOD MARJAN",
+          "aliasesPrinted": [],
+          "distanceText": "Masjid Bilal Side",
+          "distancePrinted": "STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 2,
+          "row": 17,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 225,
+          "perPerson": {
+            "quint": 45,
+            "quad": 57,
+            "triple": 75,
+            "double": 113
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "WAQAR ROTANA",
+          "aliasesPrinted": [],
+          "distanceText": "Luxury Star",
+          "distancePrinted": "STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 2,
+          "row": 18,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 250,
+          "perPerson": {
+            "quint": 50,
+            "quad": 63,
+            "triple": 84,
+            "double": 125
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "MARINA ZAHBI",
+          "aliasesPrinted": [],
+          "distanceText": "Walking distance",
+          "distancePrinted": "STAR 700-M",
+          "distanceMeters": 700,
+          "transportText": "Walking distance",
+          "page": 2,
+          "row": 19,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 265,
+          "perPerson": {
+            "quint": 53,
+            "quad": 67,
+            "triple": 89,
+            "double": 133
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "WAQAR INTERNATIONAL",
+          "aliasesPrinted": [],
+          "distanceText": "Masjid Bilal Side",
+          "distancePrinted": "STAR 700-M",
+          "distanceMeters": 700,
+          "transportText": null,
+          "page": 2,
+          "row": 20,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 285,
+          "perPerson": {
+            "quint": 57,
+            "quad": 72,
+            "triple": 95,
+            "double": 143
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "AJIYAL -2",
+          "aliasesPrinted": [],
+          "distanceText": "Shumalia Side",
+          "distancePrinted": "STAR 650-M",
+          "distanceMeters": 650,
+          "transportText": null,
+          "page": 2,
+          "row": 21,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 285,
+          "perPerson": {
+            "quint": 57,
+            "quad": 72,
+            "triple": 95,
+            "double": 143
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "NUZUL WAQAR",
+          "aliasesPrinted": [],
+          "distanceText": "Masjid Bilal Side",
+          "distancePrinted": "STAR 550-M",
+          "distanceMeters": 550,
+          "transportText": null,
+          "page": 2,
+          "row": 22,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 300,
+          "perPerson": {
+            "quint": 60,
+            "quad": 75,
+            "triple": 100,
+            "double": 150
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "NIDA TAIBA",
+          "aliasesPrinted": [],
+          "distanceText": "Masjid Bilal Side",
+          "distancePrinted": "STAR 550-M",
+          "distanceMeters": 550,
+          "transportText": null,
+          "page": 2,
+          "row": 23,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 300,
+          "perPerson": {
+            "quint": 60,
+            "quad": 75,
+            "triple": 100,
+            "double": 150
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "SHAMS MADINAH",
+          "aliasesPrinted": [],
+          "distanceText": "100-M after Al Baik Markazia, Awali side",
+          "distancePrinted": "STAR 500-M",
+          "distanceMeters": 500,
+          "transportText": null,
+          "page": 2,
+          "row": 24,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 325,
+          "perPerson": {
+            "quint": 65,
+            "quad": 82,
+            "triple": 109,
+            "double": 163
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "AJIYAL TAIBA",
+          "aliasesPrinted": [],
+          "distanceText": "Luxury Star",
+          "distancePrinted": "STAR 500-M",
+          "distanceMeters": 500,
+          "transportText": null,
+          "page": 2,
+          "row": 25,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 325,
+          "perPerson": {
+            "quint": 65,
+            "quad": 82,
+            "triple": 109,
+            "double": 163
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "RETAJ RAWDAH",
+          "aliasesPrinted": [],
+          "distanceText": "3-Star, Shumalia Side",
+          "distancePrinted": "STAR 550-M",
+          "distanceMeters": 550,
+          "transportText": null,
+          "page": 2,
+          "row": 26,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 350,
+          "perPerson": {
+            "quint": 70,
+            "quad": 88,
+            "triple": 117,
+            "double": 175
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "RUA AL KHAIR/BURJ MUKTARA",
+          "aliasesPrinted": [
+            "AMJAD AL SALEEM"
+          ],
+          "distanceText": "Bab Al Salam Side",
+          "distancePrinted": "STAR 300-M",
+          "distanceMeters": 300,
+          "transportText": null,
+          "page": 2,
+          "row": 27,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 375,
+          "perPerson": {
+            "quint": 75,
+            "quad": 94,
+            "triple": 125,
+            "double": 188
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "ANY HOTEL IN MARKAZIA",
+          "aliasesPrinted": [],
+          "distanceText": "Markazia",
+          "distancePrinted": "250-M 300-M",
+          "distanceMeters": null,
+          "transportText": null,
+          "page": 2,
+          "row": 28,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 475,
+          "perPerson": {
+            "quint": 95,
+            "quad": 119,
+            "triple": 159,
+            "double": 238
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "RUA LUXURY",
+          "aliasesPrinted": [
+            "GOLDEN LUXURY"
+          ],
+          "distanceText": "Markazia",
+          "distancePrinted": "STAR 50-M",
+          "distanceMeters": 50,
+          "transportText": null,
+          "page": 2,
+          "row": 29,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 550,
+          "perPerson": {
+            "quint": 110,
+            "quad": 138,
+            "triple": 184,
+            "double": 275
+          }
+        }
+      ],
+      "footerNote": "Rates can be changed at any time without prior notice.",
+      "warnings": []
+    },
+    {
+      "sourceFile": "WMT_RAMADAN_2027_2.pdf",
+      "page": 3,
+      "supplierName": "Waqar-e-Madina Group (WMT)",
+      "packName": "Shawal",
+      "seasonLabel": "Shawal",
+      "urduHeading": "شوال 1448-H",
+      "nightFrom": "2027-03-11",
+      "nightTo": "2027-04-06",
+      "effectiveFrom": "2026-10-27",
+      "issueDate": "2026-10-17",
+      "currency": "SAR",
+      "visa": {
+        "directPerPerson": 550,
+        "indirectByGroupSize": {
+          "1": 700,
+          "2": 675,
+          "3": 650,
+          "4": 625
+        },
+        "infant": 460,
+        "notes": "Visa rate 550 SR is for a direct flight, departure from Pakistan, 01 to 49 pax - transport by bus. Indirect flight via another country is priced by group size. Header also states: Hotel Voucher Rates are Not Linked with Visa Issuance Date."
+      },
+      "hotels": [
+        {
+          "city": "makkah",
+          "name": "QASR AL SHARQ TOWER",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Mansoor",
+          "distancePrinted": "SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 3,
+          "row": 1,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 30,
+          "perPerson": {
+            "quint": 6,
+            "quad": 8,
+            "triple": 10,
+            "double": 15
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "HIBA HIJRAH-6",
+          "aliasesPrinted": [],
+          "distanceText": null,
+          "distancePrinted": "(Economy Plus) SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 3,
+          "row": 2,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 65,
+          "perPerson": {
+            "quint": 13,
+            "quad": 17,
+            "triple": 22,
+            "double": 33
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "QILA AJIYAD",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ajiad",
+          "distancePrinted": "(Economy Plus) 1100-M",
+          "distanceMeters": 1100,
+          "transportText": null,
+          "page": 3,
+          "row": 3,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 95,
+          "perPerson": {
+            "quint": 19,
+            "quad": 24,
+            "triple": 32,
+            "double": 48
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "DIYAR MATHER",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ibrahim Khalil",
+          "distancePrinted": "(Economy Plus) 1200-M",
+          "distanceMeters": 1200,
+          "transportText": null,
+          "page": 3,
+          "row": 4,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 100,
+          "perPerson": {
+            "quint": 20,
+            "quad": 25,
+            "triple": 34,
+            "double": 50
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "FUNDAQ BILAL",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ibrahim Khalil",
+          "distancePrinted": "SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 3,
+          "row": 5,
+          "confidence": 0.99,
+          "pricingMode": "flat_per_room",
+          "room": 110,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as 110-SR under QUINT BED and under every other column marked ROOM BASIS: one price per room per night, whatever the occupancy. Confirm on first import."
+        },
+        {
+          "city": "makkah",
+          "name": "AFWAJ AL MOMAYAZA /SHAZA WASAM-3/4 WAHDAT AL KHAIR",
+          "aliasesPrinted": [
+            "QASED AL KHAIR"
+          ],
+          "distanceText": "Shahra Ajiad",
+          "distancePrinted": "STAR 650-M",
+          "distanceMeters": 650,
+          "transportText": null,
+          "page": 3,
+          "row": 6,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 130,
+          "perPerson": {
+            "quint": 26,
+            "quad": 33,
+            "triple": 44,
+            "double": 65
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "SHAZA AL WASAM-2",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ajiad",
+          "distancePrinted": "STAR 600-M",
+          "distanceMeters": 600,
+          "transportText": null,
+          "page": 3,
+          "row": 7,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 150,
+          "perPerson": {
+            "quint": 30,
+            "quad": 38,
+            "triple": 50,
+            "double": 75
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "SWAED AL KHAIMA",
+          "aliasesPrinted": [
+            "FAWAD NASSA"
+          ],
+          "distanceText": "Shahra Ibrahim Khalil near Kabotar Chowk",
+          "distancePrinted": "STAR 400-M/500-M",
+          "distanceMeters": null,
+          "transportText": null,
+          "page": 3,
+          "row": 8,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 225,
+          "perPerson": {
+            "quint": 45,
+            "quad": 57,
+            "triple": 75,
+            "double": 113
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "BADAR AL MASA/YASMIN AL MAJD",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Ibrahim Khalil",
+          "distancePrinted": "STAR 600-M",
+          "distanceMeters": 600,
+          "transportText": null,
+          "page": 3,
+          "row": 9,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 285,
+          "perPerson": {
+            "quint": 57,
+            "quad": 72,
+            "triple": 95,
+            "double": 143
+          }
+        },
+        {
+          "city": "makkah",
+          "name": "AKABIR HIJRAH/AREEJ WAFA/MATHER ELITE",
+          "aliasesPrinted": [],
+          "distanceText": "Kabotar Chowk",
+          "distancePrinted": "STAR 300-M",
+          "distanceMeters": 300,
+          "transportText": null,
+          "page": 3,
+          "row": 10,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 325,
+          "perPerson": {
+            "quint": null,
+            "quad": 82,
+            "triple": 109,
+            "double": 163
+          },
+          "flatNote": "Every price cell is labelled ROOM BASIS and the quint column has no number. The quad, triple and double figures still equal ceil(room / occupancy), so the row is priced per person from the room rate; the label means the whole room must be booked. Confirm with the supplier."
+        },
+        {
+          "city": "makkah",
+          "name": "AL KISWAH TOWER",
+          "aliasesPrinted": [],
+          "distanceText": "Shahra Al-Taysir",
+          "distancePrinted": "4-STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 3,
+          "row": 11,
+          "confidence": 0.99,
+          "pricingMode": "flat_per_room",
+          "room": 100,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as 100-SR under QUINT BED and under every other column marked ROOM BASIS: one price per room per night, whatever the occupancy. Confirm on first import."
+        },
+        {
+          "city": "makkah",
+          "name": "Voco",
+          "aliasesPrinted": [],
+          "distanceText": null,
+          "distancePrinted": "4-Star SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 3,
+          "row": 12,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "NOVOTEL THAKHER",
+          "aliasesPrinted": [],
+          "distanceText": "Ghaza Bus Station",
+          "distancePrinted": "4-STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 3,
+          "row": 13,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "M HOTEL MAKKAH BY MILLENNIUM",
+          "aliasesPrinted": [],
+          "distanceText": null,
+          "distancePrinted": "5-STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 3,
+          "row": 14,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "M MILLENIUM DANA",
+          "aliasesPrinted": [],
+          "distanceText": null,
+          "distancePrinted": "SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 3,
+          "row": 15,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "makkah",
+          "name": "FOUR POINTS BY SHERATON",
+          "aliasesPrinted": [],
+          "distanceText": "Makkah Al Naseem",
+          "distancePrinted": "5-STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 3,
+          "row": 16,
+          "confidence": 0.99,
+          "pricingMode": "on_request",
+          "room": null,
+          "perPerson": {
+            "quint": null,
+            "quad": null,
+            "triple": null,
+            "double": null
+          },
+          "flatNote": "Printed as ON BOOKING: no rate on this sheet."
+        },
+        {
+          "city": "madinah",
+          "name": "WAQAR SALMIYA/JOOD MARJAN",
+          "aliasesPrinted": [],
+          "distanceText": "Masjid Bilal Side",
+          "distancePrinted": "STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 3,
+          "row": 17,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 140,
+          "perPerson": {
+            "quint": 28,
+            "quad": 35,
+            "triple": 47,
+            "double": 70
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "WAQAR ROTANA",
+          "aliasesPrinted": [],
+          "distanceText": "Luxury Star",
+          "distancePrinted": "STAR SHUTTLE SERVICE",
+          "distanceMeters": null,
+          "transportText": "Shuttle service",
+          "page": 3,
+          "row": 18,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 150,
+          "perPerson": {
+            "quint": 30,
+            "quad": 38,
+            "triple": 50,
+            "double": 75
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "MARINA ZAHBI",
+          "aliasesPrinted": [],
+          "distanceText": "Walking distance",
+          "distancePrinted": "STAR 700-M",
+          "distanceMeters": 700,
+          "transportText": "Walking distance",
+          "page": 3,
+          "row": 19,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 165,
+          "perPerson": {
+            "quint": 33,
+            "quad": 42,
+            "triple": 55,
+            "double": 83
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "WAQAR INTERNATIONAL",
+          "aliasesPrinted": [],
+          "distanceText": "Masjid Bilal Side",
+          "distancePrinted": "STAR 700-M",
+          "distanceMeters": 700,
+          "transportText": null,
+          "page": 3,
+          "row": 20,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 165,
+          "perPerson": {
+            "quint": 33,
+            "quad": 42,
+            "triple": 55,
+            "double": 83
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "AJIYAL -2",
+          "aliasesPrinted": [],
+          "distanceText": "Shumalia Side",
+          "distancePrinted": "STAR 650-M",
+          "distanceMeters": 650,
+          "transportText": null,
+          "page": 3,
+          "row": 21,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 165,
+          "perPerson": {
+            "quint": 33,
+            "quad": 42,
+            "triple": 55,
+            "double": 83
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "NUZUL WAQAR",
+          "aliasesPrinted": [],
+          "distanceText": "Masjid Bilal Side",
+          "distancePrinted": "STAR 550-M",
+          "distanceMeters": 550,
+          "transportText": null,
+          "page": 3,
+          "row": 22,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 195,
+          "perPerson": {
+            "quint": 39,
+            "quad": 49,
+            "triple": 65,
+            "double": 98
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "NIDA TAIBA",
+          "aliasesPrinted": [],
+          "distanceText": "Masjid Bilal Side",
+          "distancePrinted": "STAR 550-M",
+          "distanceMeters": 550,
+          "transportText": null,
+          "page": 3,
+          "row": 23,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 195,
+          "perPerson": {
+            "quint": 39,
+            "quad": 49,
+            "triple": 65,
+            "double": 98
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "SHAMS MADINAH",
+          "aliasesPrinted": [],
+          "distanceText": "100-M after Al Baik Markazia, Awali side",
+          "distancePrinted": "STAR 500-M",
+          "distanceMeters": 500,
+          "transportText": null,
+          "page": 3,
+          "row": 24,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 210,
+          "perPerson": {
+            "quint": 42,
+            "quad": 53,
+            "triple": 70,
+            "double": 105
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "AJIYAL TAIBA",
+          "aliasesPrinted": [],
+          "distanceText": "Luxury Star",
+          "distancePrinted": "STAR 500-M",
+          "distanceMeters": 500,
+          "transportText": null,
+          "page": 3,
+          "row": 25,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 210,
+          "perPerson": {
+            "quint": 42,
+            "quad": 53,
+            "triple": 70,
+            "double": 105
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "RETAJ RAWDAH",
+          "aliasesPrinted": [],
+          "distanceText": "3-Star, Shumalia Side",
+          "distancePrinted": "STAR 550-M",
+          "distanceMeters": 550,
+          "transportText": null,
+          "page": 3,
+          "row": 26,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 220,
+          "perPerson": {
+            "quint": 44,
+            "quad": 55,
+            "triple": 74,
+            "double": 110
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "RUA AL KHAIR/BURJ MUKTARA",
+          "aliasesPrinted": [
+            "AMJAD AL SALEEM"
+          ],
+          "distanceText": "Bab Al Salam Side",
+          "distancePrinted": "STAR 300-M",
+          "distanceMeters": 300,
+          "transportText": null,
+          "page": 3,
+          "row": 27,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 275,
+          "perPerson": {
+            "quint": 55,
+            "quad": 69,
+            "triple": 92,
+            "double": 138
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "ANY HOTEL IN MARKAZIA",
+          "aliasesPrinted": [],
+          "distanceText": "Markazia",
+          "distancePrinted": "250-M 300-M",
+          "distanceMeters": null,
+          "transportText": null,
+          "page": 3,
+          "row": 28,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 300,
+          "perPerson": {
+            "quint": 60,
+            "quad": 75,
+            "triple": 100,
+            "double": 150
+          }
+        },
+        {
+          "city": "madinah",
+          "name": "RUA LUXURY",
+          "aliasesPrinted": [
+            "GOLDEN LUXURY"
+          ],
+          "distanceText": "Markazia",
+          "distancePrinted": "STAR 50-M",
+          "distanceMeters": 50,
+          "transportText": null,
+          "page": 3,
+          "row": 29,
+          "confidence": 0.99,
+          "pricingMode": "derived_per_person",
+          "room": 350,
+          "perPerson": {
+            "quint": 70,
+            "quad": 88,
+            "triple": 117,
+            "double": 175
+          }
+        }
+      ],
+      "footerNote": "Rates can be changed at any time without prior notice.",
+      "warnings": []
+    }
+  ],
+  "_notes": [
+    "The two PDFs carry the same three packs at the same prices. They differ in two ways, both of which are useful test cases: the Madinah hotel is printed as 'ROSE PLATINUM / OLD NAME: RETAJ RAWDAH' in the first file and as 'RETAJ RAWDAH' alone in the second; and the Shawal page is issued 27-OCT-2026 in the first file and 17-OCT-2026 in the second. The second is the same-pack-different-issue-date conflict in docs/03 section 4 and test case T10.",
+    "Akabir Hijrah/Areej Wafa/Mather Elite is NOT a flat-room row, although docs/03 section 1 describes it as one. Its quad, triple and double figures equal ceil(room / occupancy) in all three packs, so it prices per person from the room rate. Treating it as flat_per_room would charge the full room price for a quad bed.",
+    "Al Kiswah Tower changes row type between packs: 300-SR flat in Ramadan Pack 01, ON BOOKING in Ramadan Pack 02, 100-SR flat in Shawal. Pricing mode must be read per pack, never carried over.",
+    "Qasr Al Sharq Tower and Hiba Hijrah-6 share one printed line at one rate in Ramadan Pack 01 and 02, but are separate rows at different rates in Shawal. They are treated as two hotels here.",
+    "Several names contain more than one hotel separated by a slash, at a single rate: Afwaj Al Momayaza /Shaza Wasam-3/4 Wahdat Al Khair, Badar Al Masa/Yasmin Al Majd, Akabir Hijrah/Areej Wafa/Mather Elite, Waqar Salmiya/Jood Marjan, Rua Al Khair/Burj Muktara. They are kept exactly as printed. Ask the supplier whether these are one property or several before splitting them.",
+    "'Any Hotel In Markazia' is a category the supplier sells, not a named property. It is seeded as printed; delete it in the admin portal if you do not want customers to pick it.",
+    "Distances are the DIST column as printed. Where that column holds two values (Swaed Al Khaima '400-M/500-M', Any Hotel In Markazia '250-M 300-M') distanceMeters is left null and the text is kept in distancePrinted.",
+    "The small print at the foot of each sheet (Urdu terms about visa refunds, over-stay and non-refundable packages) is deliberately not parsed, per CLAUDE.md rule 10. The original files stay the record."
+  ]
+}

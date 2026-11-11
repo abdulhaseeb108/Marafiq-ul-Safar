@@ -38,4 +38,25 @@ The AI builder uses the **default** until you change it. Edit this file when you
 | 27 | Draft rate data with missing values | Pack dates and visa amounts are nullable in the schema so a draft can be saved; publish rules (doc 03 §4) block them in Phase 3 | Phase 3 |
 | 28 | Shapes not specified in doc 02: `calculations.inputs` / `lineItems`, `messages.direction`, `leads.notes[]`, `validation` items, `auditEvents.actorRole` for non-staff | Calculation inputs and line items are loose objects until Phase 4; direction = `inbound|outbound`; notes = `{body, by, at}`; validation items = `{code, message, path?}`; actorRole also allows `public` and `system` | Phase 4 / 6 |
 | 29 | Customer wording for statuses not listed in doc 02 (declined, expired, replaced) and all Urdu wording | English taken from doc 01 §7; Urdu is an AI draft `[URDU REVIEW]` | Public launch |
-| 30 | `docs/seed/` (sample PDFs, `waqar-sample.json`) was not supplied | Folder is empty; T8 uses the numbers printed in doc 03 | Phase 3 |
+| 30, 60 | `docs/seed/` (sample PDFs, `waqar-sample.json`) was not supplied; what happens when `docs/seed/waqar-sample.json` is present or missing? | Folder is empty; T8 uses the numbers printed in doc 03. The seed reads `docs/seed/waqar-sample.json` if present and creates the hotels it lists. If the file is missing, the seed still creates the supplier, settings and FX rate, and says no hotels were added. **No hotel names or cities are invented** (CLAUDE.md rule 8) | Phase 3 |
+
+## Phase 2 decisions made by the builder (review and edit)
+
+| # | Question | Default used in the build | Needed before |
+|---|---|---|---|
+| 47 | Who may edit flight estimates? Doc 01 §6.5 puts them under Settings (admin only); the Phase 2 brief says admin and ops | **admin and ops**, per the brief. Settings and FX stay admin-only | Launch |
+| 48 | Who may read hotels? | Every staff role (sales and finance need them for quotes). Only admin and ops may change them | – |
+| 49 | Scope of "aliases must be unique across hotels" | Unique **within a city**, not globally, so a chain with the same name in Makkah and Madinah is still possible. Rate-sheet rows carry a city, so a name still resolves to one hotel | Phase 3 |
+| 50 | How two names are judged the same | Unicode-normalized, lower-cased, repeated spaces collapsed. Punctuation is **not** ignored, so "Retaj-Rawdah" and "Retaj Rawdah" are different names. Tighten this in Phase 3 if real sheets need it | Phase 3 |
+| 51 | What merge does | The duplicate's name and aliases move to the target; the duplicate is kept, deactivated, and marked `mergedIntoId`. Nothing is deleted. Old names resolve to the surviving hotel | – |
+| 52 | Repointing other records on merge | Only hotel names move today, because nothing else references a hotel yet. **Phase 3 must repoint `hotelRates.hotelId` in the same operation** (there is a comment in `mergeHotels` marking the spot) | Phase 3 |
+| 53 | Merge is two writes, not a transaction | Deliberate, so it works on a standalone MongoDB. The duplicate releases its names first; a failure between the steps leaves both records intact and the merge can be re-run | – |
+| 54 | Merge limits | Only within the same city, never into itself, and never involving a hotel that was already merged away | – |
+| 55 | Deleting master data | No delete route anywhere. Suppliers and hotels deactivate; a flight estimate is retired by setting `validTo` in the past, which keeps the history of what was quoted | – |
+| 56 | FX "more than 30% away" | Exactly 30% is allowed; more than 30% needs `confirmLargeChange`. Compared against the row with the newest effective date, future-dated rows included | Launch |
+| 57 | Future-dated FX rates | Allowed. `getCurrentFx()` ignores a row until its effective date, so you can enter tomorrow's rate today | – |
+| 58 | What `/public/config` returns | languages, current FX rate and date, `markupApplied` (a flag, never the percentage), `showSupplierRates`, `responseTimeText`, and departure cities with a non-expired estimate. `responseTimeText` is not in doc 02's list but the inquiry form in doc 01 §5 needs it | – |
+| 59 | New env variable `SEED_FX_RATE` | Optional, default `75.00`. Only used by `npm run seed` when no rate exists | Phase 2 run |
+| 61 | Transport on seeded hotels | Read from the sheet's free text: "shuttle"/"bus"/"transport" to `shuttle`, "walk" to `walking`, otherwise `unknown`. Staff can correct it | First import |
+| 62 | Money entry in the admin portal | Flight estimates are typed in whole rupees and converted to paisa by the shared money helpers. Nothing stores a float | – |
+| 63 | Settings document | A single document with a fixed key, created with the defaults the first time it is read | – |

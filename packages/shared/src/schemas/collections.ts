@@ -338,3 +338,4 @@ export type QuoteLineItem = z.infer<typeof quoteLineItemSchema>;
 export type Quote = z.infer<typeof QuoteSchema>;
 export type Message = z.infer<typeof MessageSchema>;
 export type AuditEvent = z.infer<typeof AuditEventSchema>;
+export type City = 'makkah' | 'madinah';

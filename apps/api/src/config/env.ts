@@ -17,7 +17,7 @@ const secret = z.preprocess(
 const EnvSchema = z
   .object({
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-    PORT: z.coerce.number().int().min(1).max(65535).default(4002),
+    PORT: z.coerce.number().int().min(1).max(65535).default(4000),
     MONGODB_URI: z.preprocess(blankToUndefined, z.string({ error: 'is required' }).min(1)),
     JWT_SECRET: secret,
     JWT_REFRESH_SECRET: secret,

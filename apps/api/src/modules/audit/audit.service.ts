@@ -3,8 +3,15 @@ import { AuditEventModel } from './audit.model.js';
 
 export type ActorRole = Role | 'public' | 'system';
 
+/** Who performed an action, recorded on every audit event. */
+export interface Actor {
+  id?: string;
+  role: ActorRole;
+  ip?: string;
+}
+
 export interface AuditInput {
-  actor: { id?: string; role: ActorRole };
+  actor: Actor;
   /** Dotted name, e.g. "user.create", "auth.login_failure". */
   action: string;
   entityType: string;

@@ -12,6 +12,12 @@ export default tseslint.config(
     rules: {
       // CLAUDE.md: no `any` without a comment (use an eslint-disable line with a reason).
       '@typescript-eslint/no-explicit-any': 'error',
+      // Dropping fields with `const { id: _id, ...rest } = x` is deliberate,
+      // and `_name` marks an argument a signature requires but the body ignores.
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', ignoreRestSiblings: true },
+      ],
     },
   },
   {
