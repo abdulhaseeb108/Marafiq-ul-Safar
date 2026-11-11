@@ -1,10 +1,10 @@
 import { ApiErrorSchema, HealthResponseSchema } from '@marafiq/shared';
 import request from 'supertest';
 import { describe, expect, it } from 'vitest';
-import { createApp } from '../../app.js';
+import { makeApp } from '../../test/helpers.js';
 
 describe('GET /api/v1/health', () => {
-  const app = createApp();
+  const { app } = makeApp();
 
   it('returns 200 with the shared health contract', async () => {
     const res = await request(app).get('/api/v1/health');

@@ -1,6 +1,7 @@
 {
   "app": {
-    "name": "Marafiq us Safar"
+    "name": "Marafiq us Safar",
+    "staffLogin": "Staff login"
   },
   "hello": {
     "title": "Plan your Umrah",
@@ -9,5 +10,79 @@
   },
   "language": {
     "label": "Language"
+  },
+  "admin": {
+    "common": {
+      "loading": "Loading…"
+    },
+    "roles": {
+      "admin": "Admin",
+      "sales": "Sales",
+      "ops": "Operations",
+      "finance": "Finance"
+    },
+    "login": {
+      "title": "Staff sign in",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in"
+    },
+    "twoFactor": {
+      "title": "Enter your 6-digit code",
+      "setupTitle": "Set up two-factor sign-in",
+      "setupIntro": "Admin accounts need an authenticator app (Google Authenticator, Microsoft Authenticator or similar). Scan this code with the app, then enter the 6-digit code it shows.",
+      "qrAlt": "QR code to scan with your authenticator app",
+      "manualKey": "Cannot scan? Type this key into the app instead:",
+      "code": "6-digit code",
+      "submit": "Verify",
+      "back": "Start again"
+    },
+    "shell": {
+      "title": "Staff",
+      "menu": "Staff menu",
+      "logout": "Sign out"
+    },
+    "menu": {
+      "dashboard": "Dashboard",
+      "users": "Users"
+    },
+    "dashboard": {
+      "title": "Welcome, {{name}}",
+      "body": "Leads, quotes and rate sheets will appear here in later phases."
+    },
+    "users": {
+      "title": "Users",
+      "addTitle": "Add a user",
+      "listTitle": "All users",
+      "name": "Name",
+      "role": "Role",
+      "roleFor": "Role for {{name}}",
+      "tempPassword": "Temporary password",
+      "passwordRule": "Use 12 to 128 characters.",
+      "add": "Add user",
+      "adminNeeds2fa": "Admins must set up two-factor sign-in the first time they sign in.",
+      "you": "you",
+      "active": "Active",
+      "inactive": "Deactivated",
+      "twoFactorOn": "Two-factor on",
+      "twoFactorOff": "Two-factor off",
+      "deactivate": "Deactivate",
+      "reactivate": "Reactivate",
+      "reset2fa": "Reset two-factor"
+    },
+    "errors": {
+      "invalid_credentials": "Email or password is incorrect.",
+      "invalid_code": "That code is not correct. Check the app and try again.",
+      "rate_limited": "Too many attempts. Please wait 15 minutes and try again.",
+      "validation_error": "Please check the highlighted fields.",
+      "email_taken": "A user with this email already exists.",
+      "cannot_modify_self": "You cannot deactivate or demote your own account. Ask another admin.",
+      "already_enrolled": "Two-factor sign-in is already set up. Ask an admin to reset it.",
+      "enrollment_not_started": "Two-factor setup has not started. Please sign in again.",
+      "2fa_required": "Admin accounts must sign in with two-factor authentication.",
+      "unauthenticated": "Your session has ended. Please sign in again.",
+      "forbidden": "You do not have permission to view this page.",
+      "unknown": "Something went wrong. Please try again."
+    }
   }
 }

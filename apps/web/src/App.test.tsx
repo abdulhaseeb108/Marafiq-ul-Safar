@@ -1,8 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { App } from './App';
 import i18n from './i18n';
+import { resolveRouterBasename } from './router-basename';
 import en from './locales/en.json';
 import ur from './locales/ur.json';
 
@@ -13,21 +15,38 @@ function leafKeys(value: unknown, prefix = ''): string[] {
   );
 }
 
+const renderHome = () =>
+  render(
+    <MemoryRouter initialEntries={['/']}>
+      <App />
+    </MemoryRouter>,
+  );
+
 describe('hello page', () => {
   beforeEach(async () => {
     await i18n.changeLanguage('en');
   });
 
+  it('keeps the app rooted at /marafiq when the parsed pathname targets that subdirectory', () => {
+    const pathname = new URL('https://example.com/marafiq').pathname;
+    expect(pathname).toBe('/marafiq');
+    expect(resolveRouterBasename(pathname)).toBe('/marafiq');
+  });
+
   it('renders in English, left to right', () => {
-    render(<App />);
+    renderHome();
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(en.hello.title);
+    expect(screen.getByRole('link', { name: 'Staff login' })).toHaveAttribute(
+      'href',
+      '/admin/login',
+    );
     expect(document.documentElement.dir).toBe('ltr');
     expect(document.documentElement.lang).toBe('en');
   });
 
   it('switches to Urdu with dir="rtl" and back again', async () => {
     const user = userEvent.setup();
-    render(<App />);
+    renderHome();
 
     await user.click(screen.getByRole('button', { name: 'اردو' }));
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(ur.hello.title);

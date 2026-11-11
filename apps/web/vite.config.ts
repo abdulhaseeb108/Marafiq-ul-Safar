@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => ({
   plugins: [react(), tailwindcss()],
   resolve: {
     // Tests run against shared source so they do not need a prior build.
-    alias: mode === 'test' ? { '@marafiq/shared': sharedSource } : {},
+    alias: mode === 'test' ? [{ find: '@marafiq/shared', replacement: sharedSource }] : [],
   },
   server: {
     port: 5175,

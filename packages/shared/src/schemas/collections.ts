@@ -41,7 +41,10 @@ export const UserSchema = z.object({
   name: z.string().min(1),
   passwordHash: z.string().min(1),
   role: roleSchema,
+  /** Active TOTP secret, AES-256-GCM encrypted. */
   totpSecretEnc: z.string().optional(),
+  /** Secret generated during enrollment, not yet proven with a code. */
+  totpPendingSecretEnc: z.string().optional(),
   active: z.boolean(),
   lastLoginAt: timestamp.nullish(),
 });
@@ -310,7 +313,8 @@ export const AuditEventSchema = z.object({
   actorRole: z.enum([...ROLES, 'public', 'system']),
   action: z.string().min(1),
   entityType: z.string().min(1),
-  entityId: objectId,
+  /** Absent when there is no entity, e.g. a failed login for an unknown email. */
+  entityId: objectId.optional(),
   before: z.unknown().optional(),
   after: z.unknown().optional(),
   ip: z.string().optional(),
