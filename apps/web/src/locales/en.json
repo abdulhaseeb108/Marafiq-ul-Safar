@@ -1,11 +1,16 @@
 {
   "app": {
-    "name": "Marafiq us Safar"
+    "name": "Marafiq Us Safar"
   },
   "language": {
     "label": "Language"
   },
   "admin": {
+    "loadFailed": {
+      "title": "The staff area could not be loaded",
+      "body": "Check your internet connection, then reload the page.",
+      "reload": "Reload"
+    },
     "common": {
       "loading": "Loading…",
       "status": "Status",
@@ -347,9 +352,12 @@
     "requestQuote": "Request a quote",
     "ratesNotice": "Rates can change without notice.",
     "legal": {
-      "_source": "docs/05-OPEN-DECISIONS.md #1 (company placeholder) and #2 (exact approved wording). Do not edit without owner approval.",
-      "company": "[COMPANY NAME]",
-      "service": "quote and planning service; services fulfilled by licensed partners",
+      "_source": "docs/05-OPEN-DECISIONS.md #1, #2. Display name and active licence status given by the owner (2026-11-13). Bracketed items are placeholders: do not invent licence details, the legal entity name or the fulfilment wording.",
+      "company": "Marafiq Us Safar",
+      "service": "quote and planning service",
+      "licenceStatus": "Licence status: active",
+      "licenceDetails": "[LICENCE CATEGORY] · Licence no. [LICENCE NUMBER] · Issued by [ISSUING AUTHORITY]",
+      "fulfilment": "[SERVICE FULFILMENT WORDING: CLIENT TO CONFIRM]",
       "translationPending": ""
     },
     "nav": {

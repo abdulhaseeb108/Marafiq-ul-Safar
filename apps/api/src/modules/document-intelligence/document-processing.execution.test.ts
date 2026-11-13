@@ -96,13 +96,19 @@ describe('document processing execution context', () => {
         }
       },
     );
+    // Listen for the rejection before awaiting anything else: on a busy machine the
+    // 10 ms heartbeat can see the replaced token, and the execution can reject,
+    // before this test resumes after its own update below.
+    const executionRejected = expect(execution).rejects.toMatchObject({
+      name: 'ProcessingLeaseLostError',
+    });
     await started;
     await DocumentProcessingJobModel.updateOne(
       { _id: job._id },
       { $set: { 'lease.token': 'replacement-token' } },
     );
 
-    await expect(execution).rejects.toMatchObject({ name: 'ProcessingLeaseLostError' });
+    await executionRejected;
     await expect(lateWrite).resolves.toMatchObject({ name: 'ProcessingLeaseLostError' });
     expect(evidenceWrite).not.toHaveBeenCalled();
   });
@@ -133,9 +139,13 @@ describe('document processing execution context', () => {
         });
       },
     );
+    // Listen before awaiting: the failed heartbeat may reject the execution first.
+    const executionRejected = expect(execution).rejects.toMatchObject({
+      name: 'ProcessingLeaseLostError',
+    });
     await workStarted;
 
-    await expect(execution).rejects.toMatchObject({ name: 'ProcessingLeaseLostError' });
+    await executionRejected;
     expect(updateOne).toHaveBeenCalled();
     updateOne.mockRestore();
   });
@@ -170,10 +180,14 @@ describe('document processing execution context', () => {
         });
       },
     );
+    // Listen before awaiting: the stalled heartbeat may reject the execution first.
+    const executionRejected = expect(execution).rejects.toMatchObject({
+      name: 'ProcessingLeaseLostError',
+    });
     await workStarted;
 
     const beganAt = Date.now();
-    await expect(execution).rejects.toMatchObject({ name: 'ProcessingLeaseLostError' });
+    await executionRejected;
     expect(Date.now() - beganAt).toBeLessThan(500);
     updateOne.mockRestore();
   });
@@ -328,10 +342,6 @@ describe('document processing execution context', () => {
 
   it('aborts a guarded transaction that outlives its lease budget', async () => {
     const job = await claimedJob();
-    let writeStarted!: () => void;
-    const started = new Promise<void>((resolve) => {
-      writeStarted = resolve;
-    });
     let releaseWrite!: () => void;
     const release = new Promise<void>((resolve) => {
       releaseWrite = resolve;
@@ -350,7 +360,6 @@ describe('document processing execution context', () => {
           'pdf:page:2:table:0:row:0',
           async (idempotencyKey, _signal, session) => {
             await new EvidenceWriteTestModel({ idempotencyKey }).save({ session });
-            writeStarted();
             await release;
             return 'written';
           },
@@ -358,8 +367,12 @@ describe('document processing execution context', () => {
         await pendingWrite;
       },
     );
-    await started;
 
+    // The writer holds its transaction open until released, so the guarded
+    // transaction always outlives the 90 ms budget (100 ms lease - 10 ms heartbeat).
+    // Do not wait for the writer to start: on a busy machine the budget can expire
+    // during the in-transaction ownership check, the writer is then (correctly)
+    // never invoked, and waiting for it would hang until the test timeout.
     await expect(execution).rejects.toMatchObject({ name: 'ProcessingLeaseLostError' });
     releaseWrite();
     await expect(pendingWrite).rejects.toMatchObject({ name: 'ProcessingLeaseLostError' });

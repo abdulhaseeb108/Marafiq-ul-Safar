@@ -1,5 +1,6 @@
 import { Suspense, lazy } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { AdminLoadBoundary } from './AdminLoadBoundary';
 import { UmrahPage } from './public/calculator/UmrahPage';
 import {
   ContactPage,
@@ -36,9 +37,11 @@ export function App() {
       <Route
         path="/admin/*"
         element={
-          <Suspense fallback={<p className="p-4">…</p>}>
-            <AdminRoutes />
-          </Suspense>
+          <AdminLoadBoundary>
+            <Suspense fallback={<p className="p-4">…</p>}>
+              <AdminRoutes />
+            </Suspense>
+          </AdminLoadBoundary>
         }
       />
       <Route path="*" element={<Navigate to="/" replace />} />

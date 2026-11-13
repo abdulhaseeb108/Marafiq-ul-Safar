@@ -7,6 +7,11 @@
     "label": "زبان"
   },
   "admin": {
+    "loadFailed": {
+      "title": "اسٹاف کا حصہ لوڈ نہیں ہو سکا",
+      "body": "اپنا انٹرنیٹ کنکشن چیک کریں، پھر صفحہ دوبارہ لوڈ کریں۔",
+      "reload": "دوبارہ لوڈ کریں"
+    },
     "common": {
       "loading": "لوڈ ہو رہا ہے…",
       "status": "حالت",
@@ -348,9 +353,12 @@
     "requestQuote": "کوٹیشن طلب کریں",
     "ratesNotice": "ریٹس بغیر اطلاع کے تبدیل ہو سکتے ہیں۔",
     "legal": {
-      "_source": "Approved wording exists in English only (docs/05 #2). Shown in English until an approved Urdu translation is supplied; do not machine-translate.",
-      "company": "[COMPANY NAME]",
-      "service": "quote and planning service; services fulfilled by licensed partners",
+      "_source": "Legal wording exists in English only (docs/05 #1, #2). Shown in English until an approved Urdu translation is supplied; do not machine-translate.",
+      "company": "Marafiq Us Safar",
+      "service": "quote and planning service",
+      "licenceStatus": "Licence status: active",
+      "licenceDetails": "[LICENCE CATEGORY] · Licence no. [LICENCE NUMBER] · Issued by [ISSUING AUTHORITY]",
+      "fulfilment": "[SERVICE FULFILMENT WORDING: CLIENT TO CONFIRM]",
       "translationPending": "[URDU TRANSLATION NEEDED]"
     },
     "nav": {

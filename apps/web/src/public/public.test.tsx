@@ -469,29 +469,54 @@ describe('public pages', () => {
     expect(screen.getByText(/do not send passport, CNIC or card numbers/)).toBeInTheDocument();
   });
 
-  it('footer shows the company placeholder and the approved partner wording (docs/05 #1, #2)', () => {
+  const FOOTER_NAME = 'Marafiq Us Safar — quote and planning service';
+  const FOOTER_LICENCE =
+    'Licence status: active — [LICENCE CATEGORY] · Licence no. [LICENCE NUMBER] · Issued by [ISSUING AUTHORITY]';
+  const FOOTER_FULFILMENT = '[SERVICE FULFILMENT WORDING: CLIENT TO CONFIRM]';
+
+  it('footer shows the business name, active licence status and placeholders for missing details (docs/05 #1, #2)', () => {
     mockApi(publicRoutes());
     renderAt('/');
     const footer = screen.getByRole('contentinfo');
-    expect(footer).toHaveTextContent(
-      '[COMPANY NAME] — quote and planning service; services fulfilled by licensed partners',
-    );
+    expect(within(footer).getByText(FOOTER_NAME)).toBeInTheDocument();
+    expect(within(footer).getByText(FOOTER_LICENCE)).toBeInTheDocument();
+    expect(within(footer).getByText(FOOTER_FULFILMENT)).toBeInTheDocument();
+    expect(footer).not.toHaveTextContent('[COMPANY NAME]');
     expect(footer).not.toHaveTextContent('[URDU TRANSLATION NEEDED]');
     // No raw i18n key may leak into the page (an empty English value once did).
     expect(footer).not.toHaveTextContent(/site\.legal/);
   });
 
-  it('in Urdu the footer keeps the approved English wording and marks the missing translation', async () => {
+  it('in Urdu the footer keeps the English wording, isolated, and marks the missing translation', async () => {
     mockApi(publicRoutes());
     await i18n.changeLanguage('ur');
     renderAt('/');
     const footer = screen.getByRole('contentinfo');
-    const wording = within(footer).getByText(
-      '[COMPANY NAME] — quote and planning service; services fulfilled by licensed partners',
-    );
-    expect(wording).toHaveAttribute('lang', 'en');
+    for (const line of [FOOTER_NAME, FOOTER_LICENCE, FOOTER_FULFILMENT]) {
+      const element = within(footer).getByText(line);
+      expect(element.tagName).toBe('BDI');
+      expect(element).toHaveAttribute('lang', 'en');
+    }
     expect(within(footer).getByText('[URDU TRANSLATION NEEDED]')).toBeInTheDocument();
     expect(footer).not.toHaveTextContent(/site\.legal/);
+  });
+
+  it('footer makes no unverified legal claims in either language', async () => {
+    for (const language of ['en', 'ur']) {
+      mockApi(publicRoutes());
+      await i18n.changeLanguage(language);
+      const { unmount } = renderAt('/');
+      const text = screen.getByRole('contentinfo').textContent ?? '';
+      for (const claim of [
+        /licensed partners/i,
+        /private limited|pvt\.? ?ltd|\bSMC\b/i,
+        /\bregistered\b/i,
+        /accredit|certif/i,
+      ]) {
+        expect(text).not.toMatch(claim);
+      }
+      unmount();
+    }
   });
 
   it('hotels hold their place while loading, then show the list (no layout jump)', async () => {

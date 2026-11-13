@@ -4,8 +4,8 @@ The AI builder uses the **default** until you change it. Edit this file when you
 
 | # | Question | Safe default used in the build | Needed before |
 |---|---|---|---|
-| 1 | Exact registered SMC name, address, NTN, contact details | Placeholder `[COMPANY NAME]` in footer and terms | Public launch |
-| 2 | Travel agency license / Umrah operator permission, or partner who holds it | Site says "quote and planning service; services fulfilled by licensed partners" | Public launch and any payment |
+| 1 | Exact registered SMC name, address, NTN, contact details | Footer shows the display name **Marafiq Us Safar** (owner, 13 Nov 2026). Registered legal entity name, address and NTN not supplied, so none is shown, and the site does not call the business registered, an SMC or a private limited company. Terms still placeholder | Public launch |
+| 2 | Travel agency license / Umrah operator permission, or partner who holds it | Licence status **active** (owner, 13 Nov 2026). Footer: "quote and planning service" and "Licence status: active" with placeholders `[LICENCE CATEGORY]`, `[LICENCE NUMBER]`, `[ISSUING AUTHORITY]`. The earlier "services fulfilled by licensed partners" is removed until the operating model is confirmed; placeholder `[SERVICE FULFILMENT WORDING: CLIENT TO CONFIRM]` | Public launch and any payment |
 | 3 | Merchant of record when payments start | No payments in v1 | Payments |
 | 4 | Are visa rates per person, and does 550 SR include the bus transport printed beside it? | Assume per person, includes bus for 1–49 pax; shown as "confirm with supplier" | First real quote |
 | 5 | Group size for indirect visa when travelers > 4 | Use the 4-pax rate with a visible assumption | First real quote |

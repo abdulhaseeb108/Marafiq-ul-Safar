@@ -136,12 +136,22 @@ function Footer() {
             </Link>
           </li>
         </ul>
-        {/* docs/05 #1 and #2: placeholder company name and the approved wording, in
-            English until an approved Urdu translation exists (never machine-translated). */}
+        {/* docs/05 #1 and #2: display name and licence status from the owner; bracketed
+            parts are placeholders, never invented. English until an approved Urdu
+            translation exists (never machine-translated). Each line is its own isolate
+            so English stays in order inside the RTL footer. */}
         <p>
           <bdi lang="en">
             {t('site.legal.company')} — {t('site.legal.service')}
           </bdi>
+          <span className="block">
+            <bdi lang="en">
+              {t('site.legal.licenceStatus')} — {t('site.legal.licenceDetails')}
+            </bdi>
+          </span>
+          <span className="block">
+            <bdi lang="en">{t('site.legal.fulfilment')}</bdi>
+          </span>
           {translationPending && (
             // Own line and own isolate: English inside an RTL footer would otherwise
             // mirror the brackets and split around the sentence above.
