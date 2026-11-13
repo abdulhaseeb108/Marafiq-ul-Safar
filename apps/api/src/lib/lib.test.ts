@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { configFromEnv } from '../config/app-config.js';
 import { loadEnv } from '../config/env.js';
 import { decryptSecret, encryptSecret, hashToken, randomToken } from './crypto.js';
 import { FailureLimiter } from './rate-limiter.js';
@@ -75,6 +76,24 @@ describe('loadEnv', () => {
     const env = loadEnv({ ...valid, COOKIE_DOMAIN: '', SEED_ADMIN_EMAIL: '' });
     expect(env.PORT).toBe(4000);
     expect(env.COOKIE_DOMAIN).toBeUndefined();
+    expect(configFromEnv(env).documentParserLimits.maxFileBytes).toBe(20 * 1024 * 1024);
+    expect(configFromEnv(env).maxConcurrentDocumentUploads).toBe(2);
+  });
+
+  it('accepts bounded document resource-limit overrides', () => {
+    const env = loadEnv({
+      ...valid,
+      DOCUMENT_MAX_FILE_BYTES: '1048576',
+      DOCUMENT_MAX_PDF_PAGES: '12',
+      DOCUMENT_MAX_CONCURRENT_UPLOADS: '3',
+    });
+    const config = configFromEnv(env);
+    expect(config.documentParserLimits).toMatchObject({
+      maxFileBytes: 1_048_576,
+      maxPdfPages: 12,
+    });
+    expect(config.maxConcurrentDocumentUploads).toBe(3);
+    expect(() => loadEnv({ ...valid, DOCUMENT_EVIDENCE_CHUNK_BYTES: '70000' })).toThrow();
   });
 
   it('refuses short or identical secrets and a malformed TOTP key', () => {

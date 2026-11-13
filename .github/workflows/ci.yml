@@ -22,3 +22,6 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npm run build
+      # After build: apps resolve @marafiq/shared types from packages/shared/dist.
+      # Also covers test files, which the build's tsconfig.build.json excludes.
+      - run: npm run typecheck --workspaces --if-present

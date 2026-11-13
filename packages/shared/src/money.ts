@@ -59,7 +59,10 @@ export function parseDecimalScaled(value: string, decimals: number): number {
   return toSafeNumber(BigInt(whole + fraction.padEnd(decimals, '0')));
 }
 
-/** Whole SAR / PKR -> halalas / paisa. Supplier sheets print whole SAR. */
+/**
+ * Whole SAR / PKR amounts only -> halalas / paisa.
+ * Use parseMajorToMinor() for decimal amounts.
+ */
 export function majorToMinor(major: number): number {
   assertNonNegativeInt(major, 'major amount');
   return toSafeNumber(BigInt(major) * BigInt(MINOR_PER_MAJOR));

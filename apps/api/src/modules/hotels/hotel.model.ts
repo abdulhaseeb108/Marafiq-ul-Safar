@@ -7,8 +7,8 @@ const hotelSchema = new Schema(
     aliases: { type: [String], required: true, default: [] },
     /**
      * Normalized canonical name and aliases, used to match names on rate
-     * sheets and to keep names unique within a city. Emptied when the hotel
-     * is merged away, so its names belong to the surviving hotel instead.
+     * sheets and to keep names unique within a city. Replaced by a placeholder
+     * when the hotel is merged away, so its names belong to the survivor.
      */
     searchNames: { type: [String], required: true, default: [] },
     distanceMeters: { type: Number },
@@ -29,14 +29,19 @@ const hotelSchema = new Schema(
 );
 
 /**
- * One name per city across all live hotels: multikey, so each (city, name)
- * pair is unique. Merged-away hotels are excluded, because they release their
- * names to the surviving hotel and so all hold an empty name list.
+ * One name per city across all hotels: multikey, so each (city, name) pair is
+ * unique. A plain unique index, with no partial filter, so it behaves the same
+ * on every MongoDB version. A merged-away hotel holds a single placeholder
+ * (see MERGED_NAME_PREFIX) instead of real names.
  */
-hotelSchema.index(
-  { city: 1, searchNames: 1 },
-  { unique: true, partialFilterExpression: { mergedIntoId: null } },
-);
+hotelSchema.index({ city: 1, searchNames: 1 }, { unique: true });
+
+/**
+ * Real search names are always lower case (lib/names.ts), so an upper-case
+ * placeholder can never equal one, and including the hotel id keeps every
+ * placeholder unique.
+ */
+export const MERGED_NAME_PREFIX = 'MERGED:';
 
 export type HotelDoc = HydratedDocument<InferSchemaType<typeof hotelSchema>>;
 export const HotelModel = model('Hotel', hotelSchema);

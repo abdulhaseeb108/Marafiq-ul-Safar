@@ -1,6 +1,8 @@
 import type { ApiError } from '@marafiq/shared';
 import cookieParser from 'cookie-parser';
 import express, { type ErrorRequestHandler, type Express, type RequestHandler } from 'express';
+import { MemoryStorage, type StorageAdapter } from './adapters/storage/storage.js';
+import type { ExtractionAdapter } from './adapters/extraction/extraction.js';
 import type { AppConfig } from './config/app-config.js';
 import type { AdminRoute } from './lib/admin-route.js';
 import { HttpError } from './lib/http-error.js';
@@ -8,31 +10,65 @@ import { FailureLimiter } from './lib/rate-limiter.js';
 import { auditAdminRoutes } from './modules/audit/audit.routes.js';
 import { makeAuthMiddleware } from './modules/auth/auth.middleware.js';
 import { createAuthRouter } from './modules/auth/auth.routes.js';
+import { DEFAULT_DOCUMENT_PARSER_LIMITS } from './modules/document-intelligence/document-parser-limits.js';
+import { documentIntelligenceAdminRoutes } from './modules/document-intelligence/document-intelligence.routes.js';
 import { flightEstimatesAdminRoutes } from './modules/flight-estimates/flight-estimates.routes.js';
 import { fxAdminRoutes } from './modules/fx/fx.routes.js';
 import { healthRouter } from './modules/health/health.routes.js';
 import { hotelsAdminRoutes } from './modules/hotels/hotels.routes.js';
 import { publicRouter } from './modules/public/public.routes.js';
+import { rateSheetAdminRoutes } from './modules/rate-sheets/rate-sheets.routes.js';
 import { settingsAdminRoutes } from './modules/settings/settings.routes.js';
 import { suppliersAdminRoutes } from './modules/suppliers/suppliers.routes.js';
 import { usersAdminRoutes } from './modules/users/users.routes.js';
 
 const ADMIN_PREFIX = '/api/v1/admin';
 
+/** Outside services the API talks to. Tests pass in-memory stand-ins. */
+export interface AppDeps {
+  storage: StorageAdapter;
+  /** Absent when no ANTHROPIC_API_KEY is configured. */
+  extraction?: ExtractionAdapter;
+  /** True in tests: wait for background work before answering. */
+  inlineJobs: boolean;
+}
+
 /** Every /admin route in the API. Add new modules' routes here. */
-const adminRoutes: AdminRoute[] = [
-  ...usersAdminRoutes,
-  ...auditAdminRoutes,
-  ...suppliersAdminRoutes,
-  ...hotelsAdminRoutes,
-  ...settingsAdminRoutes,
-  ...fxAdminRoutes,
-  ...flightEstimatesAdminRoutes,
-];
+function buildAdminRoutes(
+  config: Pick<
+    AppConfig,
+    'maxUploadBytes' | 'documentParserLimits' | 'maxConcurrentDocumentUploads'
+  >,
+  deps: AppDeps,
+): AdminRoute[] {
+  return [
+    ...documentIntelligenceAdminRoutes({
+      storage: deps.storage,
+      limits: config.documentParserLimits,
+      maxConcurrentUploads: config.maxConcurrentDocumentUploads,
+    }),
+    ...usersAdminRoutes,
+    ...auditAdminRoutes,
+    ...suppliersAdminRoutes,
+    ...hotelsAdminRoutes,
+    ...settingsAdminRoutes,
+    ...fxAdminRoutes,
+    ...flightEstimatesAdminRoutes,
+    ...rateSheetAdminRoutes({ ...deps, maxUploadBytes: config.maxUploadBytes }),
+  ];
+}
 
 /** "METHOD /path" for each admin route; the permission test checks this list. */
 export function listAdminRoutes(): string[] {
-  return adminRoutes.map((r) => `${r.method.toUpperCase()} ${ADMIN_PREFIX}${r.path}`);
+  const routes = buildAdminRoutes(
+    {
+      maxUploadBytes: 1,
+      documentParserLimits: DEFAULT_DOCUMENT_PARSER_LIMITS,
+      maxConcurrentDocumentUploads: 2,
+    },
+    { storage: new MemoryStorage(), inlineJobs: true },
+  );
+  return routes.map((r) => `${r.method.toUpperCase()} ${ADMIN_PREFIX}${r.path}`);
 }
 
 const notFoundHandler: RequestHandler = (_req, res) => {
@@ -53,6 +89,17 @@ function makeErrorHandler(config: AppConfig): ErrorRequestHandler {
         },
       };
       res.status(err.status).json(body);
+      return;
+    }
+    // Errors raised by the upload parser.
+    if (err instanceof Error && err.name === 'MulterError') {
+      const tooLarge = (err as { code?: string }).code === 'LIMIT_FILE_SIZE';
+      const body: ApiError = {
+        error: tooLarge
+          ? { code: 'file_too_large', message: 'The file is larger than 20 MB.' }
+          : { code: 'invalid_upload', message: 'The upload could not be read.' },
+      };
+      res.status(tooLarge ? 413 : 400).json(body);
       return;
     }
     // Errors raised by express.json() for bad or oversized bodies.
@@ -78,8 +125,14 @@ function makeErrorHandler(config: AppConfig): ErrorRequestHandler {
 }
 
 /** Builds the Express app without listening, so tests can use it directly. */
-export function createApp(options: { config: AppConfig }): Express {
+export function createApp(options: { config: AppConfig; deps?: Partial<AppDeps> }): Express {
   const { config } = options;
+  const deps: AppDeps = {
+    storage: options.deps?.storage ?? new MemoryStorage(),
+    extraction: options.deps?.extraction,
+    inlineJobs: options.deps?.inlineJobs ?? false,
+  };
+  const adminRoutes = buildAdminRoutes(config, deps);
   const limiter = new FailureLimiter(config.loginLimit);
   const { requireAuth, requireRole } = makeAuthMiddleware(config);
 
@@ -100,6 +153,7 @@ export function createApp(options: { config: AppConfig }): Express {
       `${ADMIN_PREFIX}${route.path}`,
       requireAuth,
       requireRole(...route.roles),
+      ...(route.before ?? []),
       route.handler,
     );
   }

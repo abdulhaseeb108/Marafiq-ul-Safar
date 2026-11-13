@@ -12,4 +12,6 @@ export interface AdminRoute {
   path: string;
   roles: readonly [Role, ...Role[]];
   handler: RequestHandler;
+  /** Runs after sign-in and the role check, before the handler (e.g. file upload). */
+  before?: RequestHandler[];
 }

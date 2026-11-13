@@ -1,7 +1,16 @@
-import { LANGUAGES, type PublicConfig } from '@marafiq/shared';
+import {
+  CalculateInputSchema,
+  LANGUAGES,
+  PublicHotelsQuerySchema,
+  type CalculationResult,
+  type PublicConfig,
+  type PublicHotel,
+} from '@marafiq/shared';
 import type { Request, Response } from 'express';
 import { activeDepartureCities } from '../flight-estimates/flight-estimates.service.js';
 import { getCurrentFx } from '../fx/fx.service.js';
+import { parseOrThrow } from '../../lib/validate.js';
+import { calculateNow, listPublicHotels } from '../pricing/pricing.service.js';
 import { getSettings } from '../settings/settings.service.js';
 
 /**
@@ -25,4 +34,19 @@ export async function getConfig(_req: Request, res: Response<PublicConfig>): Pro
     responseTimeText: settings.responseTimeText,
     departureCities,
   });
+}
+
+/** POST /public/calculate: a calculation for these inputs. Not saved. */
+export async function postCalculate(req: Request, res: Response<CalculationResult>): Promise<void> {
+  const input = parseOrThrow(CalculateInputSchema, req.body);
+  res.json(await calculateNow(input));
+}
+
+/** GET /public/hotels?city= : hotels the calculator can offer, with "from" prices. */
+export async function getHotels(
+  req: Request,
+  res: Response<{ items: PublicHotel[] }>,
+): Promise<void> {
+  const { city } = parseOrThrow(PublicHotelsQuerySchema, req.query);
+  res.json({ items: await listPublicHotels(city) });
 }

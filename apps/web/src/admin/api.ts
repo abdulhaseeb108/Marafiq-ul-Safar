@@ -18,18 +18,22 @@ export class ApiRequestError extends Error {
 const BASE = '/api/v1';
 
 interface Options {
-  method?: 'GET' | 'POST' | 'PATCH' | 'PUT';
+  method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
+  /** A file upload. Sent as multipart; do not set `body` as well. */
+  form?: FormData;
   body?: unknown;
   /** Set false for the auth endpoints themselves. */
   retryOn401?: boolean;
 }
 
 async function send(path: string, options: Options): Promise<Response> {
+  const json = options.body !== undefined;
   return fetch(`${BASE}${path}`, {
     method: options.method ?? 'GET',
     credentials: 'same-origin',
-    headers: options.body === undefined ? undefined : { 'Content-Type': 'application/json' },
-    body: options.body === undefined ? undefined : JSON.stringify(options.body),
+    // For a form the browser sets the multipart header and boundary itself.
+    headers: json ? { 'Content-Type': 'application/json' } : undefined,
+    body: options.form ?? (json ? JSON.stringify(options.body) : undefined),
   });
 }
 
