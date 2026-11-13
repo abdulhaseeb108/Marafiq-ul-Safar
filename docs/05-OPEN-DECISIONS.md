@@ -132,6 +132,26 @@ The AI builder uses the **default** until you change it. Edit this file when you
 | 102 | Calculation hash | SHA-256 over engine version, inputs, rate versions used, FX rate, markup, child/infant settings and the flight estimate used. Not the time, so the same inputs and versions give the same hash | Phase 6 |
 | 103 | Rate limits on public routes | Not yet; Phase 7 adds them (doc 02 §4: 60/min per IP) | Phase 7 |
 
-## Open item carried over
+## Phase 5 decisions made by the builder (review and edit)
 
-- **Duplicate rate-sheet upload** (reported after Phase 3): still seen on the owner's machine after the fix package. Parked at the owner's request. To check later: the browser Network tab response for the second upload (409 or 201?), the API startup log ("Index could not be synced"), and whether the integrated `documents.service.ts` matches the delivered one.
+| # | Question | Default used in the build | Needed before |
+|---|---|---|---|
+| 104 | "Request a quote" before the inquiry form exists (Phase 6) | Every "Request a quote" button opens Contact. From the calculator, Contact also shows a plain-text trip summary (English, for staff) that the customer can copy into WhatsApp or email. It is kept only in the browser tab (sessionStorage); nothing is sent or stored on the server | Phase 6 |
+| 105 | Business phone, WhatsApp, email, address, office hours | Not supplied, so Contact shows a visible "[CLIENT TO PROVIDE]" marker for each. Fill them in `apps/web/src/public/site.ts` | Launch |
+| 106 | Visa document checklist | A short, general list marked "[CLIENT TO CONFIRM]" on the page. The page says visa decisions rest with the issuing authority and that we cannot guarantee a visa, and asks customers not to send passport, CNIC or card numbers through the site | Launch |
+| 107 | Privacy, terms, quote terms | Placeholder text marked "[LEGAL REVIEW NEEDED]" | Launch |
+| 108 | PKR / SAR switch | Only changes which currency comes first; the other is always beside it. Flight estimates stay PKR only (they are entered in PKR). The choice is remembered in the browser | Phase 6 |
+| 109 | Urdu font | Noto Nastaliq Urdu, self-hosted from the `@fontsource` package (no Google Fonts request). Downloaded only when a page is shown in Urdu | Launch |
+| 110 | English and numbers inside Urdu sentences | Wrapped in Unicode isolates so "1 SAR = PKR 75.00", amounts and supplier names keep their order in right-to-left text | Urdu review |
+| 111 | Digits in Urdu | Western digits (0–9) for amounts and dates, as on the supplier sheets and in Pakistani price lists | Urdu review |
+| 112 | Calculator starting values | 5 nights Makkah, 4 nights Madinah, Makkah first, 2 adults, one double room, "lowest-priced option" for both hotels, direct-flight visa, flight estimate on. No arrival date until the customer picks one | Launch |
+| 113 | Hotel names in Urdu pages | Shown as printed on the supplier sheet (English letters); not transliterated | Urdu review |
+| 114 | Customer button wording | "Request a quote" (owner's decision for v1; doc 01 §4 still says "Request a confirmed quote"). Customer text never uses "booked", "confirmed", "best price", "guaranteed" or "halal certified"; a unit test checks this | — |
+| 115 | Staff screens and page speed | The admin area loads only when someone opens /admin, so customers never download it. Measured with Lighthouse (mobile, 360 px, simulated 4G) on the built site: home 99, calculator 99; accessibility 100 on both | Launch |
+| 116 | Browser tests | Playwright runs against the built site with the API mocked (T1 example). It covers calculator → result at 360 px in English and Urdu, no sideways scrolling on every public page in Urdu, and keyboard use (skip link, menu, form errors). CI installs Chromium and runs them | — |
+| 117 | Quote view `/q/:token` | Not built; Phase 6 adds it with the quote tokens | Phase 6 |
+
+## Open items carried over
+
+- **Duplicate rate-sheet upload** (reported after Phase 3): still seen on the owner's machine after the fix package. Parked at the owner's request (still parked after Phase 5). To check later: the browser Network tab response for the second upload (409 or 201?), the API startup log ("Index could not be synced"), and whether the integrated `documents.service.ts` matches the delivered one.
+- **Urdu text** is an AI draft; a native speaker must approve `apps/web/src/locales/ur.json` before launch (decision 15).

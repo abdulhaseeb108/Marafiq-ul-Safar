@@ -2,11 +2,6 @@
   "app": {
     "name": "Marafiq us Safar"
   },
-  "hello": {
-    "title": "Plan your Umrah",
-    "body": "This is the Phase 0 hello page. The Umrah calculator and quote request will appear here.",
-    "notice": "No prices are shown yet. Rates can change without notice."
-  },
   "language": {
     "label": "Language"
   },
@@ -340,6 +335,318 @@
         "superseded": "Replaced",
         "rejected": "Rejected"
       }
+    }
+  },
+  "site": {
+    "skip": "Skip to main content",
+    "menu": "Menu",
+    "mainNav": "Main",
+    "currency": "Currency",
+    "loading": "Loading…",
+    "loadError": "Something went wrong. Please try again, or contact us.",
+    "requestQuote": "Request a quote",
+    "ratesNotice": "Rates can change without notice.",
+    "legal": {
+      "_source": "docs/05-OPEN-DECISIONS.md #1 (company placeholder) and #2 (exact approved wording). Do not edit without owner approval.",
+      "company": "[COMPANY NAME]",
+      "service": "quote and planning service; services fulfilled by licensed partners",
+      "translationPending": ""
+    },
+    "nav": {
+      "home": "Home",
+      "umrah": "Umrah",
+      "hotels": "Hotels",
+      "flights": "Flights",
+      "visa": "Visa consultation",
+      "transport": "Transport",
+      "faq": "FAQ",
+      "contact": "Contact"
+    },
+    "policies": {
+      "privacy": "Privacy policy",
+      "terms": "Terms of use",
+      "quoteTerms": "Quote terms"
+    }
+  },
+  "home": {
+    "title": "Plan your Umrah with a clear, itemised estimate",
+    "intro": "Choose your dates, travelers, rooms and hotels. We price every night from supplier rate sheets we have published, show you where each price comes from, and mark anything we cannot price yet as \"Request a quote\".",
+    "cta": "Start the Umrah calculator",
+    "howTitle": "How it works",
+    "step1": "Enter your trip: dates, nights in Makkah and Madinah, travelers and rooms.",
+    "step2": "See an estimate with each hotel night and visa listed, in PKR with SAR beside it.",
+    "step3": "Request a quote. Our team checks availability with the supplier and replies.",
+    "servicesTitle": "What we help with",
+    "service": {
+      "umrah": "Estimate hotels and visa for your Umrah trip.",
+      "hotels": "Hotels in Makkah and Madinah with published rates.",
+      "flights": "Flight estimates from your city, then a quote.",
+      "visa": "A checklist and help with your Umrah visa.",
+      "transport": "Transport between cities and to the airport."
+    },
+    "honestTitle": "What our estimates mean",
+    "honest1": "Every price shows the supplier, the rate sheet and its issue date.",
+    "honest2": "An estimate is not a booking. Supplier availability is checked when you request a quote.",
+    "honest3": "If a price, hotel or date is missing, we say \"Request a quote\" instead of guessing."
+  },
+  "hotels": {
+    "title": "Hotels",
+    "intro": "Hotels in Makkah and Madinah with rates on our published supplier sheets. Prices are per night and depend on dates and room type; use the calculator for your exact trip.",
+    "none": "No hotel rates are published right now. Please request a quote.",
+    "distance": "about {{meters}} m from the Haram",
+    "distanceUnknown": "distance not stated",
+    "transport": {
+      "walking": "walking",
+      "shuttle": "shuttle",
+      "unknown": "transport not stated"
+    },
+    "from": "From {{price}} {{unit}}",
+    "perPersonNight": "per person per night",
+    "perRoomNight": "per room per night",
+    "source": "{{supplier}} · {{pack}} · sheet dated {{date}}",
+    "ratesFor": "Rates published for {{from}} to {{to}}"
+  },
+  "flights": {
+    "title": "Flights",
+    "intro": "Tell us your departure city and dates and we will send you a quote.",
+    "estimates": "Our calculator includes a flight estimate (a price range in PKR) for these departure cities:",
+    "noEstimates": "No flight estimates are available right now.",
+    "notAFare": "An estimate is a guide from recent prices, not a fare quote. Fares change until tickets are issued."
+  },
+  "visa": {
+    "title": "Visa consultation",
+    "intro": "We help you prepare for your Umrah visa application and explain the steps.",
+    "checklistTitle": "Documents usually asked for",
+    "items": {
+      "passport": "Passport valid for at least 6 months after your travel date",
+      "photo": "Recent passport-size photograph with a white background",
+      "cnic": "CNIC or B-form (seen by our team; not uploaded on this website)",
+      "tickets": "Return flight booking",
+      "hotel": "Hotel booking for your stay",
+      "vaccination": "Any vaccination certificates required at the time of travel"
+    },
+    "noUpload": "Please do not send passport, CNIC or card numbers through this website. Our team will tell you how to share documents safely.",
+    "authority": "Visa decisions rest with the issuing authority. We cannot guarantee a visa."
+  },
+  "transport": {
+    "title": "Transport",
+    "intro": "Transport between Jeddah, Makkah and Madinah and to the airport.",
+    "visaBus": "Visa rates on our supplier sheets include shared bus transport as printed on the sheet. For private transfers, please request a quote."
+  },
+  "faq": {
+    "title": "Frequently asked questions",
+    "items": {
+      "estimate": {
+        "q": "Is the calculator price final?",
+        "a": "No. It is an estimate from the supplier rate sheets we have published. The final price is in the quote our team sends after checking with the supplier."
+      },
+      "requestQuote": {
+        "q": "Why does part of my estimate say \"Request a quote\"?",
+        "a": "We only show prices we have from a published rate sheet. If a hotel has no rate for your dates, a hotel is priced \"on booking\", or a service has no rate sheet yet, we leave it out of the total and ask you to request a quote."
+      },
+      "expiry": {
+        "q": "How long is an estimate valid?",
+        "a": "The estimate shows its expiry time: 72 hours, or the end of the supplier rate sheet if that comes first."
+      },
+      "change": {
+        "q": "Can prices change?",
+        "a": "Yes. Rates can change without notice until the supplier confirms your booking."
+      },
+      "currency": {
+        "q": "Which currency are prices in?",
+        "a": "Suppliers price in Saudi riyals (SAR). We show Pakistani rupees (PKR) with SAR beside each amount, using the exchange rate shown on your estimate."
+      },
+      "documents": {
+        "q": "Do you collect passport or CNIC numbers online?",
+        "a": "No. This website never asks for passport numbers, CNIC numbers or card details."
+      },
+      "booking": {
+        "q": "Does requesting a quote book my trip?",
+        "a": "No. A quote request asks our team to check availability and prices. Nothing is reserved until you agree and the supplier confirms."
+      }
+    }
+  },
+  "policy": {
+    "privacy": "This page will explain what personal data we collect (name, phone or WhatsApp, email, trip details), why, how long we keep it, and how to ask us to delete it.",
+    "terms": "This page will set out the terms for using this website.",
+    "quoteTerms": "This page will set out how estimates and quotes work: estimates are not bookings, rates can change without notice, and supplier confirmation is required.",
+    "placeholder": "Placeholder text. The final wording must be written and approved by a legal reviewer before launch."
+  },
+  "contact": {
+    "title": "Contact us",
+    "intro": "Contact our team for a quote or any question about your trip.",
+    "topic": "About: {{topic}}",
+    "tripTitle": "Your trip",
+    "tripHelp": "Copy this summary into your message so our team can see your estimate.",
+    "copy": "Copy summary",
+    "copied": "Copied",
+    "phone": "Phone",
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "address": "Address",
+    "hours": "Office hours",
+    "formSoon": "An online quote request form is coming soon."
+  },
+  "calc": {
+    "title": "Umrah calculator",
+    "intro": "Enter your trip to get an estimate for hotels and visa, with a flight estimate where we have one.",
+    "notice": "Fields can be changed at any time. Prices come from published supplier rate sheets. Rates can change without notice.",
+    "stepTrip": "Your trip",
+    "stepTravelers": "Travelers and rooms",
+    "stepHotels": "Hotels",
+    "stepVisaFlight": "Visa, flights and extras",
+    "departureCity": "Departure city",
+    "chooseCity": "Choose a city",
+    "otherCity": "Other city",
+    "otherCityName": "Your city",
+    "otherCityHint": "We have no flight estimate for other cities; the flight will be \"Request a quote\".",
+    "arrivalDate": "Arrival date in Saudi Arabia",
+    "flexibility": "Flexible by ± days (optional)",
+    "flexibilityHint": "For our team only; it does not change the estimate.",
+    "nightsMakkah": "Nights in Makkah",
+    "nightsMadinah": "Nights in Madinah",
+    "order": "Which city first?",
+    "makkahFirst": "Makkah first",
+    "madinahFirst": "Madinah first",
+    "leaveOn": "You would leave on {{date}}.",
+    "adults": "Adults",
+    "children": "Children",
+    "childrenHint": "Ages 2–11",
+    "infants": "Infants",
+    "infantsHint": "Under 2; share a bed",
+    "rooms": "Rooms",
+    "placed": "People placed in rooms: {{placed}} of {{needed}} (adults and children)",
+    "roomN": "Room {{n}}",
+    "roomType": "Room type",
+    "inRoom": "People in this room",
+    "addRoom": "Add a room",
+    "removeRoom": "Remove",
+    "removeRoomN": "Remove room {{n}}",
+    "occupancyOption": {
+      "double": "Double sharing (2 beds)",
+      "triple": "Triple sharing (3 beds)",
+      "quad": "Quad sharing (4 beds)",
+      "quint": "Quint sharing (5 beds)",
+      "whole_room": "Whole room"
+    },
+    "occupancy": {
+      "double": "double sharing",
+      "triple": "triple sharing",
+      "quad": "quad sharing",
+      "quint": "quint sharing",
+      "whole_room": "whole room"
+    },
+    "city": {
+      "makkah": "Makkah",
+      "madinah": "Madinah"
+    },
+    "hotelIn": "Hotel in {{city}}",
+    "cheapest": "Show me the lowest-priced option",
+    "nearest": "Show me the nearest option",
+    "pickHint": "We choose from hotels with published rates for every night of your stay.",
+    "noHotels": "No hotel rates are published for this city right now. The hotel will be \"Request a quote\".",
+    "hotelFromPerson": "from {{price}} per person per night",
+    "hotelFromRoom": "from {{price}} per room per night",
+    "visa": "Visa type",
+    "visaDirect": "Direct flight from Pakistan",
+    "visaIndirect": "Indirect flight via another country",
+    "flight": "Flight",
+    "flightEstimate": "Include a flight estimate",
+    "flightEstimateHint": "A price range in PKR when we have one for your city.",
+    "flightSelf": "I will arrange flights",
+    "extrasTitle": "Extras",
+    "extrasHint": "We price these in your quote.",
+    "extras": {
+      "ziyarah": "Ziyarah",
+      "guide": "Guide",
+      "mobility": "Mobility support",
+      "transfers": "Transfers"
+    },
+    "calculate": "See my estimate",
+    "calculating": "Calculating…",
+    "unavailable": "Prices are not available right now. Please request a quote and our team will reply.",
+    "errors": {
+      "summary": "Please check these fields:",
+      "dateRequired": "Choose your arrival date",
+      "datePast": "Choose today or a later date",
+      "nightsRange": "Enter 0 to 30 nights",
+      "nightsNone": "Add at least one night",
+      "adults": "At least 1 adult",
+      "count": "Enter 0 or more",
+      "tooMany": "We price groups of up to 49 travelers here; please request a quote for larger groups",
+      "roomBeds": "More people than beds in this room",
+      "roomsMatch": "Every adult and child needs a place in a room (infants share a bed)",
+      "tooManyRooms": "Up to 20 rooms"
+    },
+    "resultTitle": "Your estimate",
+    "partialLabel": "Estimate for priced items only",
+    "total": "Group total",
+    "totalPartial": "Total for priced items",
+    "perPerson": "Per person ({{count}} paying travelers)",
+    "withFlight": "With the flight estimate",
+    "withFlightPerPerson": "{{low}} – {{high}} per person",
+    "expires": "Valid until {{at}} (Pakistan time).",
+    "fxUsed": "Exchange rate {{rate}} · calculated {{at}}",
+    "lineItems": "What is included",
+    "nightsOn_one": "{{count}} night: {{dates}}",
+    "nightsOn_other": "{{count}} nights: {{dates}}",
+    "dateRange": "{{from}} to {{to}}",
+    "perPersonLine": "{{occupancy}} · {{persons}} per room · {{rooms}} room(s) · {{unit}} per person per night",
+    "perRoomLine": "{{rooms}} room(s) · {{unit}} per room per night",
+    "source": "{{supplier}} · {{pack}} · sheet dated {{date}}",
+    "visaLine": {
+      "direct": "Umrah visa (direct flight)",
+      "indirect": "Umrah visa (indirect flight)",
+      "infant": "Umrah visa (infant)"
+    },
+    "visaUnits": "{{persons}} × {{unit}}",
+    "flightLine": "Flight estimate: {{city}} → {{airport}}",
+    "flightUnits": "{{adults}} adult(s) × {{low}} – {{high}}",
+    "flightSource": "Staff estimate, not a fare quote · valid to {{date}}",
+    "missingTitle": "Not priced yet",
+    "requestQuote": "Request a quote",
+    "assumptions": "Assumptions",
+    "exclusions": "Not included",
+    "requestHelp": "Our team will check availability and prices with the supplier and send you a quote.",
+    "howTitle": "How this estimate is made",
+    "how1": "Each night is priced from the supplier rate sheet published for that date.",
+    "how2": "Hotel and visa prices are in SAR and converted to PKR at the exchange rate shown.",
+    "how3": "Anything we cannot price is listed as \"Request a quote\" and left out of the total.",
+    "how4": "Calculating an estimate does not book anything.",
+    "notes": {
+      "hotel_no_rate": "No published rate for {{hotel}} on {{dates}}",
+      "hotel_unknown": "{{city}}: the chosen hotel has no published rates",
+      "hotel_on_request": "{{hotel}} ({{dates}}): price on request",
+      "hotel_no_occupancy_rate": "{{hotel}} ({{dates}}): no {{occupancy}} rate on the published sheet",
+      "hotel_none_available": "No hotel in {{city}} has published rates for all your nights",
+      "visa_no_rate": "Visa: no published rate for your dates or visa type",
+      "visa_infant_no_rate": "Infant visa: no published rate",
+      "visa_children": "Visa for children",
+      "flight_no_estimate": "Flight",
+      "flight_children": "Flight for children and infants",
+      "extra_ziyarah": "Ziyarah",
+      "extra_guide": "Guide",
+      "extra_mobility": "Mobility support",
+      "extra_transfers": "Transfers",
+      "shared_room_beds": "{{hotel}}: {{occupancy}} is priced per bed. Other beds in the room may be given to other travelers — please confirm with us.",
+      "room_basis": "{{hotel}} is priced per room per night as printed on the supplier sheet. The supplier is to confirm how many people the room holds.",
+      "hotel_picked_cheapest": "{{hotel}} chosen as the lowest-priced {{city}} hotel on our published rates for your nights.",
+      "hotel_picked_nearest": "{{hotel}} chosen as the nearest {{city}} hotel with published rates for your nights.",
+      "infant_no_hotel_charge": "Infants (under 2) share a bed and are not charged for hotel nights — supplier to confirm.",
+      "child_as_adult": "Children (2–11) are priced as adults for hotel and visa — supplier to confirm.",
+      "child_bed_priced": "Children take a bed in the room and are priced per bed — supplier to confirm.",
+      "visa_group_5_plus": "Groups of 5 or more are priced at the 4-person visa rate — supplier to confirm.",
+      "visa_per_person_bus": "Visa rates are per person and include bus transport for 1–49 people as printed on the supplier sheet — supplier to confirm.",
+      "markup_applied": "Prices include our service charge.",
+      "rates_can_change": "Rates can change without notice.",
+      "flights_self": "Flights: you will arrange them yourself",
+      "flights_missing": "Flights (not priced in this estimate)",
+      "hotel_taxes": "Hotel taxes not stated on the supplier sheet",
+      "meals": "Meals",
+      "transfers": "Transfers other than the visa bus",
+      "ziyarah": "Ziyarah",
+      "personal": "Personal expenses",
+      "request_a_quote": "Anything marked \"Request a quote\""
     }
   }
 }

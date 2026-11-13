@@ -1,0 +1,7 @@
+# Marafiq us Safar - public pages may be indexed.
+# The staff area and the API are not for search engines. This file is not
+# access control: /admin is protected by sign-in and role checks.
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
