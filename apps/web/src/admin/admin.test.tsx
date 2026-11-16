@@ -5,6 +5,8 @@ import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from '../App';
 import i18n from '../i18n';
+import en from '../locales/en.json';
+import ur from '../locales/ur.json';
 import { menuFor } from './menu';
 
 const user = (role: Role): PublicUser => ({
@@ -49,6 +51,7 @@ describe('role-aware menu', () => {
   it('gives each role exactly the pages it may use (docs/02 section 3)', () => {
     expect(menuFor('admin').map((i) => i.to)).toEqual([
       '/admin',
+      '/admin/leads',
       '/admin/rate-sheets',
       '/admin/hotels',
       '/admin/suppliers',
@@ -59,6 +62,7 @@ describe('role-aware menu', () => {
     ]);
     expect(menuFor('ops').map((i) => i.to)).toEqual([
       '/admin',
+      '/admin/leads',
       '/admin/rate-sheets',
       '/admin/hotels',
       '/admin/suppliers',
@@ -66,7 +70,7 @@ describe('role-aware menu', () => {
     ]);
     // Sales and finance read hotels for quotes but change no master data.
     for (const role of ['sales', 'finance'] as const) {
-      expect(menuFor(role).map((i) => i.to)).toEqual(['/admin', '/admin/hotels']);
+      expect(menuFor(role).map((i) => i.to)).toEqual(['/admin', '/admin/leads', '/admin/hotels']);
     }
   });
 
@@ -529,5 +533,298 @@ describe('duplicate rate-sheet upload', () => {
       'href',
       `/admin/rate-sheets/${PACK_ID}`,
     );
+  });
+});
+
+describe('leads and quotes (Phase 6)', () => {
+  const LEAD = '64b7f0c2a1b2c3d4e5f6a001';
+  const QUOTE = '64b7f0c2a1b2c3d4e5f6b001';
+  const leadSummary = {
+    id: LEAD,
+    reference: 'MSF-2026-000001',
+    status: 'new',
+    source: 'umrah',
+    travelerName: 'Aisha Khan',
+    phone: '0300 1234567',
+    assignedTo: null,
+    createdAt: '2026-11-13T05:00:00.000Z',
+    latestQuote: null,
+  };
+  const leadDetail = (extra: object = {}) => ({
+    ...leadSummary,
+    traveler: { name: 'Aisha Khan', phone: '0300 1234567', email: null, language: 'ur' },
+    notesText: 'Prefer a lower floor',
+    consent: { textVersion: '2026-11-v1', acceptedAt: '2026-11-13T05:00:00.000Z' },
+    tripInputs: null,
+    calculation: null,
+    notes: [],
+    messages: [
+      {
+        id: 'm1',
+        direction: 'inbound',
+        channel: 'site',
+        body: 'Can we have a higher floor?',
+        byName: null,
+        createdAt: '2026-11-13T06:00:00.000Z',
+      },
+    ],
+    quotes: [],
+    nextStatuses: ['contacted', 'lost'],
+    ...extra,
+  });
+  const draft = {
+    id: QUOTE,
+    leadId: LEAD,
+    reference: 'MSF-2026-000001',
+    version: 1,
+    status: 'draft',
+    lineItems: [
+      {
+        description: 'Qila Ajiyad (Makkah), quad, 3 nights',
+        supplier: 'WMT',
+        quantity: 12,
+        unitAmountMinor: 5_000,
+        currency: 'SAR',
+        notes: '',
+        amountMinor: 60_000,
+        amountMinorSAR: 60_000,
+        amountMinorPKR: 4_500_000,
+      },
+    ],
+    exclusions: ['Meals'],
+    terms: 'Terms',
+    fx: { rate: '75.00', effectiveAt: '2026-11-01T00:00:00.000Z' },
+    totals: { totalMinorPKR: 4_500_000, totalMinorSAR: 60_000 },
+    expiresAt: '2026-11-16T18:59:59.999Z',
+    sentAt: null,
+    acceptedAt: null,
+    previousId: null,
+    replacedById: null,
+    history: [],
+    missingFromCalculation: ['Flight: request a quote'],
+  };
+
+  it('lists leads with staff status words', async () => {
+    mockApi({
+      'GET /auth/me': () => json(200, user('ops')),
+      'GET /admin/leads?page=1&limit=25': () =>
+        json(200, { items: [leadSummary], page: 1, limit: 25, total: 1 }),
+    });
+    renderAt('/admin/leads');
+    const link = await screen.findByRole('link', { name: 'MSF-2026-000001' });
+    expect(link).toHaveAttribute('href', `/admin/leads/${LEAD}`);
+    const row = link.closest('tr') as HTMLElement;
+    expect(row).toHaveTextContent('Aisha Khan');
+    expect(row).toHaveTextContent('New');
+  });
+
+  it('ops reads a lead but gets no pipeline, notes or quote buttons', async () => {
+    mockApi({
+      'GET /auth/me': () => json(200, user('ops')),
+      [`GET /admin/leads/${LEAD}`]: () => json(200, { ...leadDetail(), quotes: undefined }),
+    });
+    renderAt(`/admin/leads/${LEAD}`);
+    expect(await screen.findByText('Can we have a higher floor?')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Move to/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Create quote' })).not.toBeInTheDocument();
+  });
+
+  it('sales moves a lead, then creates a quote and lands in the builder', async () => {
+    const fetchMock = mockApi({
+      'GET /auth/me': () => json(200, user('sales')),
+      [`GET /admin/leads/${LEAD}`]: () => json(200, leadDetail()),
+      'GET /admin/leads/assignees': () =>
+        json(200, { items: [{ id: 'u1', name: 'Bilal', role: 'sales' }] }),
+      [`PATCH /admin/leads/${LEAD}`]: () =>
+        json(200, leadDetail({ status: 'contacted', nextStatuses: ['quote_in_progress', 'lost'] })),
+      [`POST /admin/leads/${LEAD}/quotes`]: () => json(201, draft),
+      [`GET /admin/quotes/${QUOTE}`]: () => json(200, draft),
+    });
+    const ui = userEvent.setup();
+    renderAt(`/admin/leads/${LEAD}`);
+    await ui.click(await screen.findByRole('button', { name: 'Move to: Contacted' }));
+    expect(
+      await screen.findByRole('heading', { name: 'MSF-2026-000001 · Contacted' }),
+    ).toBeInTheDocument();
+    const patch = fetchMock.mock.calls.find(([, init]) => init?.method === 'PATCH');
+    expect(JSON.parse(String(patch?.[1]?.body))).toEqual({ status: 'contacted' });
+
+    await ui.click(screen.getByRole('button', { name: 'Create quote' }));
+    expect(await screen.findByRole('heading', { name: /quote version 1/ })).toBeInTheDocument();
+    expect(screen.getByText('Flight: request a quote')).toBeInTheDocument();
+  });
+
+  it('the builder saves prices as minor units, then sends and shows the link once', async () => {
+    const saved = {
+      ...draft,
+      lineItems: [
+        {
+          ...draft.lineItems[0],
+          unitAmountMinor: 5_550,
+          amountMinor: 66_600,
+          amountMinorSAR: 66_600,
+          amountMinorPKR: 4_995_000,
+        },
+      ],
+      totals: { totalMinorPKR: 4_995_000, totalMinorSAR: 66_600 },
+    };
+    const fetchMock = mockApi({
+      'GET /auth/me': () => json(200, user('sales')),
+      [`GET /admin/quotes/${QUOTE}`]: () => json(200, draft),
+      [`PUT /admin/quotes/${QUOTE}`]: () => json(200, saved),
+      [`POST /admin/quotes/${QUOTE}/send`]: () =>
+        json(200, {
+          link: `https://site.test/q/${'x'.repeat(43)}`,
+          emailed: false,
+          quote: { ...saved, status: 'sent', sentAt: '2026-11-13T07:00:00.000Z' },
+        }),
+    });
+    const ui = userEvent.setup();
+    renderAt(`/admin/quotes/${QUOTE}`);
+    const unit = await screen.findByLabelText('Unit price');
+    await ui.clear(unit);
+    await ui.type(unit, '55.50');
+    expect(screen.getByRole('button', { name: 'Send to customer' })).toBeDisabled();
+    await ui.click(screen.getByRole('button', { name: 'Save draft' }));
+
+    const put = fetchMock.mock.calls.find(([, init]) => init?.method === 'PUT');
+    expect(JSON.parse(String(put?.[1]?.body)).lineItems[0]).toMatchObject({
+      quantity: 12,
+      unitAmountMinor: 5_550,
+      currency: 'SAR',
+    });
+    expect(await screen.findByText('PKR 49,950 · SAR 666')).toBeInTheDocument();
+
+    await ui.click(screen.getByRole('button', { name: 'Send to customer' }));
+    expect(await screen.findByLabelText('Private link')).toHaveValue(
+      `https://site.test/q/${'x'.repeat(43)}`,
+    );
+    expect(screen.getByText('No email on file: send this link on WhatsApp.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Make a new version' })).toBeInTheDocument();
+  });
+
+  // Phase 6 review: the API refuses these with a code; staff must be told why,
+  // in their language, not "Something went wrong".
+  describe('quote conflicts are explained to staff', () => {
+    const OTHER = '64b7f0c2a1b2c3d4e5f6b002';
+    const WORDS = { en, ur };
+    const MESSAGES = {
+      other_quote_sent: {
+        en: 'The customer already has another quote for this lead. Make a new version of that quote instead.',
+        ur: 'کسٹمر کے پاس اس لیڈ کی ایک اور کوٹیشن پہلے سے موجود ہے۔ اسی کوٹیشن کا نیا ورژن بنائیں۔',
+      },
+      conflict: {
+        en: 'Someone else changed this at the same time. Reload the page and try again.',
+        ur: 'اسی وقت کسی اور نے اسے تبدیل کیا ہے۔ صفحہ دوبارہ لوڈ کریں اور پھر کوشش کریں۔',
+      },
+    };
+    const refused = (code: string, fields?: Record<string, string>) =>
+      json(409, { error: { code, message: 'x', ...(fields ? { fields } : {}) } });
+    const sent = { ...draft, status: 'sent', sentAt: '2026-11-13T07:00:00.000Z' };
+
+    it.each(['en', 'ur'] as const)(
+      'sending while the customer has another quote says so (%s)',
+      async (language) => {
+        const words = WORDS[language].admin;
+        mockApi({
+          'GET /auth/me': () => json(200, user('sales')),
+          [`GET /admin/quotes/${QUOTE}`]: () => json(200, draft),
+          [`POST /admin/quotes/${QUOTE}/send`]: () =>
+            refused('other_quote_sent', { existingId: OTHER }),
+        });
+        await i18n.changeLanguage(language);
+        const ui = userEvent.setup();
+        renderAt(`/admin/quotes/${QUOTE}`);
+        await ui.click(await screen.findByRole('button', { name: words.quotes.send }));
+        const alert = await screen.findByRole('alert');
+        expect(alert).toHaveTextContent(MESSAGES.other_quote_sent[language]);
+        expect(alert).not.toHaveTextContent(words.errors.unknown);
+        // Nothing was sent: still the draft, and no link is shown.
+        expect(screen.getByRole('button', { name: words.quotes.send })).toBeInTheDocument();
+        expect(screen.queryByRole('status')).not.toBeInTheDocument();
+      },
+    );
+
+    it.each(['en', 'ur'] as const)(
+      'creating a quote at the same moment as someone else says to reload (%s)',
+      async (language) => {
+        const words = WORDS[language].admin;
+        mockApi({
+          'GET /auth/me': () => json(200, user('sales')),
+          [`GET /admin/leads/${LEAD}`]: () => json(200, leadDetail()),
+          'GET /admin/leads/assignees': () => json(200, { items: [] }),
+          [`POST /admin/leads/${LEAD}/quotes`]: () => refused('conflict'),
+        });
+        await i18n.changeLanguage(language);
+        const ui = userEvent.setup();
+        renderAt(`/admin/leads/${LEAD}`);
+        await ui.click(await screen.findByRole('button', { name: words.quotes.create }));
+        const alert = await screen.findByRole('alert');
+        expect(alert).toHaveTextContent(MESSAGES.conflict[language]);
+        expect(alert).not.toHaveTextContent(words.errors.unknown);
+        // Still on the lead, with the button to try again.
+        expect(screen.getByRole('button', { name: words.quotes.create })).toBeInTheDocument();
+      },
+    );
+
+    it('a new version refused as a conflict says to reload', async () => {
+      mockApi({
+        'GET /auth/me': () => json(200, user('sales')),
+        [`GET /admin/quotes/${QUOTE}`]: () => json(200, sent),
+        [`POST /admin/quotes/${QUOTE}/new-version`]: () => refused('conflict'),
+      });
+      const ui = userEvent.setup();
+      renderAt(`/admin/quotes/${QUOTE}`);
+      await ui.click(await screen.findByRole('button', { name: 'Make a new version' }));
+      expect(await screen.findByRole('alert')).toHaveTextContent(MESSAGES.conflict.en);
+    });
+
+    it('a second draft made at the same moment still opens the draft that won', async () => {
+      const winner = { ...draft, id: OTHER, version: 2, previousId: QUOTE };
+      mockApi({
+        'GET /auth/me': () => json(200, user('sales')),
+        [`GET /admin/quotes/${QUOTE}`]: () => json(200, sent),
+        [`POST /admin/quotes/${QUOTE}/new-version`]: () =>
+          refused('draft_exists', { existingId: OTHER }),
+        [`GET /admin/quotes/${OTHER}`]: () => json(200, winner),
+      });
+      const ui = userEvent.setup();
+      renderAt(`/admin/quotes/${QUOTE}`);
+      await ui.click(await screen.findByRole('button', { name: 'Make a new version' }));
+      expect(await screen.findByRole('heading', { name: /quote version 2/ })).toBeInTheDocument();
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
+
+    it('every quote and lead error code the API sends to staff has wording in both languages', () => {
+      // The codes raised by the leads and quotes services and by the duplicate-key fallback.
+      const codes = [
+        'draft_exists',
+        'open_quote_exists',
+        'other_quote_sent',
+        'conflict',
+        'quote_not_draft',
+        'quote_not_sent',
+        'quote_empty',
+        'quote_unsaved',
+        'previous_accepted',
+        'prices_unavailable',
+        'lead_closed',
+        'lead_changed',
+        'invalid_transition',
+        'validation_error',
+        'not_found',
+      ];
+      for (const language of ['en', 'ur'] as const) {
+        const errors: Record<string, string> = WORDS[language].admin.errors;
+        for (const code of codes) {
+          expect(errors[code], `${language}: ${code}`).toEqual(expect.any(String));
+          expect(errors[code], `${language}: ${code}`).not.toBe(errors.unknown);
+        }
+      }
+      expect(en.admin.errors.other_quote_sent).toBe(MESSAGES.other_quote_sent.en);
+      expect(ur.admin.errors.other_quote_sent).toBe(MESSAGES.other_quote_sent.ur);
+      expect(en.admin.errors.conflict).toBe(MESSAGES.conflict.en);
+      expect(ur.admin.errors.conflict).toBe(MESSAGES.conflict.ur);
+    });
   });
 });

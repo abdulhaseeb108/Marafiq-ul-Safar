@@ -1,19 +1,10 @@
 /** The public content pages (docs/01 section 3). The calculator lives in calculator/. */
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import { useCurrency } from './CurrencyContext';
 import { formatDay, ltr, money } from './format';
-import { CONTACT, PENDING_QUOTE_KEY } from './site';
-import {
-  Card,
-  PageTitle,
-  RequestQuoteLink,
-  ReviewMarker,
-  buttonPrimary,
-  buttonSecondary,
-  focusRing,
-} from './ui';
+import { CONTACT } from './site';
+import { Card, PageTitle, RequestQuoteLink, ReviewMarker, buttonSecondary, focusRing } from './ui';
 import { usePublicConfig, usePublicHotels } from './usePublic';
 import type { PublicFromPrice, PublicHotel } from '@marafiq/shared';
 
@@ -351,57 +342,9 @@ function ContactLine({
 export function ContactPage() {
   const { t } = useTranslation();
   const config = usePublicConfig();
-  const [params] = useSearchParams();
-  const topic = params.get('topic');
-  const [summary, setSummary] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    if (topic !== 'umrah') return;
-    try {
-      setSummary(window.sessionStorage.getItem(PENDING_QUOTE_KEY));
-    } catch {
-      setSummary(null);
-    }
-  }, [topic]);
-
-  async function copy() {
-    if (!summary) return;
-    try {
-      await navigator.clipboard.writeText(summary);
-      setCopied(true);
-    } catch {
-      setCopied(false);
-    }
-  }
-
   return (
     <div className="space-y-6">
       <PageTitle title={t('contact.title')} intro={t('contact.intro')} />
-      {topic && (
-        <p className="rounded-md border border-emerald-200 bg-emerald-50 p-3">
-          {t('contact.topic', {
-            topic: t(
-              `site.nav.${['umrah', 'hotels', 'flights', 'visa', 'transport'].includes(topic) ? topic : 'contact'}`,
-            ),
-          })}
-        </p>
-      )}
-      {summary && (
-        <Card title={t('contact.tripTitle')}>
-          <p className="mb-2 text-sm text-slate-700">{t('contact.tripHelp')}</p>
-          <pre
-            lang="en"
-            dir="ltr"
-            className="overflow-x-auto whitespace-pre-wrap rounded-md bg-slate-100 p-3 text-sm"
-          >
-            {summary}
-          </pre>
-          <button type="button" onClick={() => void copy()} className={`mt-3 ${buttonSecondary}`}>
-            {copied ? t('contact.copied') : t('contact.copy')}
-          </button>
-        </Card>
-      )}
       <Card>
         <dl className="space-y-2">
           <ContactLine
@@ -428,10 +371,12 @@ export function ContactPage() {
           <p className="mt-4 text-sm text-slate-700">{config.data.responseTimeText}</p>
         )}
       </Card>
-      <p className="text-sm text-slate-700">{t('contact.formSoon')}</p>
-      <Link to="/umrah" className={buttonPrimary}>
-        {t('home.cta')}
-      </Link>
+      <div className="flex flex-wrap gap-3">
+        <RequestQuoteLink topic="contact" />
+        <Link to="/umrah" className={buttonSecondary}>
+          {t('home.cta')}
+        </Link>
+      </div>
     </div>
   );
 }

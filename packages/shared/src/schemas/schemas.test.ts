@@ -236,6 +236,31 @@ describe('collection schemas', () => {
     ).toBe(false);
   });
 
+  it('a lead keeps the contact details given with its own inquiry', () => {
+    const contact = { name: 'Aisha Khan', email: 'aisha@example.com', language: 'ur' };
+    const parsed = schemas.LeadSchema.parse({
+      ...valid.LeadSchema,
+      contact: { ...contact, passportNumber: 'AB1234567' },
+    });
+    expect(parsed.contact).toEqual(contact);
+    // No email given with the inquiry: stored as null, and the quote is not emailed.
+    expect(
+      schemas.LeadSchema.parse({ ...valid.LeadSchema, contact: { ...contact, email: null } })
+        .contact?.email,
+    ).toBeNull();
+    // Leads stored before the snapshot existed have none.
+    expect(schemas.LeadSchema.parse(valid.LeadSchema).contact).toBeUndefined();
+    for (const bad of [
+      { ...contact, email: 'not-an-email' },
+      { ...contact, language: 'fr' },
+      { ...contact, name: '' },
+    ]) {
+      expect(schemas.LeadSchema.safeParse({ ...valid.LeadSchema, contact: bad }).success).toBe(
+        false,
+      );
+    }
+  });
+
   it('rejects a flight estimate whose high is below its low', () => {
     const bad = { ...valid.FlightEstimateSchema, highMinor: 1 };
     expect(schemas.FlightEstimateSchema.safeParse(bad).success).toBe(false);

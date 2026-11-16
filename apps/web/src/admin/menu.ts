@@ -15,6 +15,7 @@ export interface MenuItem {
  */
 export const ADMIN_MENU: readonly MenuItem[] = [
   { to: '/admin', labelKey: 'admin.menu.dashboard' },
+  { to: '/admin/leads', labelKey: 'admin.menu.leads' },
   { to: '/admin/rate-sheets', labelKey: 'admin.menu.rateSheets', roles: ['admin', 'ops'] },
   { to: '/admin/hotels', labelKey: 'admin.menu.hotels' },
   { to: '/admin/suppliers', labelKey: 'admin.menu.suppliers', roles: ['admin', 'ops'] },

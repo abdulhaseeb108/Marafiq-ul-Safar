@@ -373,7 +373,7 @@ describe('Umrah calculator', () => {
     expect(screen.queryByRole('heading', { name: 'Your estimate' })).not.toBeInTheDocument();
   });
 
-  it('"Request a quote" carries a trip summary to the Contact page', async () => {
+  it('"Request a quote" opens the request form with the trip attached', async () => {
     mockApi(publicRoutes({ 'POST /public/calculate': () => json(200, t1Result()) }));
     const ui = userEvent.setup();
     renderAt('/umrah');
@@ -383,13 +383,13 @@ describe('Umrah calculator', () => {
     await ui.click(screen.getByRole('button', { name: 'Request a quote' }));
 
     expect(
-      await screen.findByRole('heading', { name: 'Contact us', level: 1 }),
+      await screen.findByRole('heading', { name: 'Request a quote', level: 1 }),
     ).toBeInTheDocument();
-    expect(screen.getByText('About: Umrah')).toBeInTheDocument();
-    expect(
-      screen.getByText(/Qila Ajiyad, 3 nights × 4 persons × SAR 50: SAR 600 \/ PKR 45000/),
-    ).toBeInTheDocument();
-    expect(screen.getByText(/Request a quote: Flight: request a quote/)).toBeInTheDocument();
+    const trip = screen
+      .getByRole('heading', { name: 'Your trip' })
+      .closest('section') as HTMLElement;
+    expect(trip).toHaveTextContent('Makkah 3 nights · Madinah 2 nights');
+    expect(trip).toHaveTextContent('PKR 242,400 (SAR 3,232)');
   });
 
   it('keeps rooms the right size when the room type changes', async () => {
@@ -455,11 +455,16 @@ describe('public pages', () => {
     expect(screen.getByText('[LEGAL REVIEW NEEDED]')).toBeInTheDocument();
   });
 
-  it('contact shows a marker for each detail the client has not given yet', async () => {
+  it('contact shows a marker for each detail the client has not given yet, and links to the form', async () => {
     mockApi(publicRoutes());
     renderAt('/contact');
     expect(screen.getAllByText('[CLIENT TO PROVIDE]')).toHaveLength(5);
     expect(await screen.findByText('We usually reply within 24 hours.')).toBeInTheDocument();
+    // The link to the inquiry form, which says the request came from Contact.
+    const links = screen
+      .getAllByRole('link', { name: 'Request a quote' })
+      .map((link) => link.getAttribute('href'));
+    expect(links).toContain('/request-quote?topic=contact');
   });
 
   it('the visa page says decisions rest with the issuing authority and asks for no documents', () => {

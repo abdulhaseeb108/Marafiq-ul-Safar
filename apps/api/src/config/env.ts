@@ -37,6 +37,16 @@ const EnvSchema = z
     /** Rate sheet reading. Without a key, sheets are entered by hand. */
     ANTHROPIC_API_KEY: optionalString,
     EXTRACTION_MODEL: z.preprocess(blankToUndefined, z.string().default('claude-sonnet-5-5')),
+    /** Email. Without a key, emails are only logged (never in production). */
+    RESEND_API_KEY: optionalString,
+    MAIL_FROM: optionalString,
+    /** Where staff are told about new inquiries, accepted quotes and questions. Optional. */
+    STAFF_NOTIFY_EMAIL: z.preprocess(blankToUndefined, z.email().optional()),
+    /**
+     * Base of the links in quote emails, e.g. https://example.com. Required in
+     * production (https only, checked below); defaults to the dev site otherwise.
+     */
+    PUBLIC_SITE_URL: optionalString,
     SEED_ADMIN_EMAIL: optionalString,
     SEED_ADMIN_PASSWORD: optionalString,
     DOCUMENT_MAX_FILE_BYTES: positiveInteger(20 * 1024 * 1024, 100 * 1024 * 1024),
@@ -77,7 +87,43 @@ const EnvSchema = z
         path: ['DOCUMENT_EVIDENCE_CHUNK_BYTES'],
       });
     }
+    if (env.RESEND_API_KEY && !env.MAIL_FROM) {
+      context.addIssue({
+        code: 'custom',
+        message: 'is required when RESEND_API_KEY is set',
+        path: ['MAIL_FROM'],
+      });
+    }
+    const siteUrlProblem = publicSiteUrlProblem(env.PUBLIC_SITE_URL, env.NODE_ENV);
+    if (siteUrlProblem) {
+      context.addIssue({ code: 'custom', message: siteUrlProblem, path: ['PUBLIC_SITE_URL'] });
+    }
   });
+
+const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]', '0.0.0.0']);
+
+/**
+ * Customer quote links are built from PUBLIC_SITE_URL, so in production it must
+ * be a real https address customers can open. Returns the problem, or null.
+ */
+function publicSiteUrlProblem(value: string | undefined, nodeEnv: string): string | null {
+  if (value === undefined) return nodeEnv === 'production' ? 'is required in production' : null;
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    return 'must be a valid URL';
+  }
+  if (url.protocol !== 'https:' && url.protocol !== 'http:') return 'must be an http(s) URL';
+  if (url.username || url.password || url.search || url.hash) {
+    return 'must not contain credentials, a query or a fragment';
+  }
+  if (nodeEnv === 'production') {
+    if (url.protocol !== 'https:') return 'must use https in production';
+    if (LOCAL_HOSTS.has(url.hostname)) return 'must not be a local address in production';
+  }
+  return null;
+}
 
 export type Env = z.infer<typeof EnvSchema>;
 

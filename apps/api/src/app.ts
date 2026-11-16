@@ -1,11 +1,12 @@
 import type { ApiError } from '@marafiq/shared';
 import cookieParser from 'cookie-parser';
 import express, { type ErrorRequestHandler, type Express, type RequestHandler } from 'express';
+import { LogEmail, type EmailAdapter } from './adapters/email/email.js';
 import { MemoryStorage, type StorageAdapter } from './adapters/storage/storage.js';
 import type { ExtractionAdapter } from './adapters/extraction/extraction.js';
 import type { AppConfig } from './config/app-config.js';
 import type { AdminRoute } from './lib/admin-route.js';
-import { HttpError } from './lib/http-error.js';
+import { HttpError, conflict, isDuplicateKeyError } from './lib/http-error.js';
 import { FailureLimiter } from './lib/rate-limiter.js';
 import { auditAdminRoutes } from './modules/audit/audit.routes.js';
 import { makeAuthMiddleware } from './modules/auth/auth.middleware.js';
@@ -16,7 +17,8 @@ import { flightEstimatesAdminRoutes } from './modules/flight-estimates/flight-es
 import { fxAdminRoutes } from './modules/fx/fx.routes.js';
 import { healthRouter } from './modules/health/health.routes.js';
 import { hotelsAdminRoutes } from './modules/hotels/hotels.routes.js';
-import { publicRouter } from './modules/public/public.routes.js';
+import { leadsAdminRoutes } from './modules/leads/leads.routes.js';
+import { createPublicRouter } from './modules/public/public.routes.js';
 import { rateSheetAdminRoutes } from './modules/rate-sheets/rate-sheets.routes.js';
 import { settingsAdminRoutes } from './modules/settings/settings.routes.js';
 import { suppliersAdminRoutes } from './modules/suppliers/suppliers.routes.js';
@@ -31,13 +33,18 @@ export interface AppDeps {
   extraction?: ExtractionAdapter;
   /** True in tests: wait for background work before answering. */
   inlineJobs: boolean;
+  email: EmailAdapter;
 }
 
 /** Every /admin route in the API. Add new modules' routes here. */
 function buildAdminRoutes(
   config: Pick<
     AppConfig,
-    'maxUploadBytes' | 'documentParserLimits' | 'maxConcurrentDocumentUploads'
+    | 'maxUploadBytes'
+    | 'documentParserLimits'
+    | 'maxConcurrentDocumentUploads'
+    | 'publicSiteUrl'
+    | 'staffNotifyEmail'
   >,
   deps: AppDeps,
 ): AdminRoute[] {
@@ -55,6 +62,7 @@ function buildAdminRoutes(
     ...fxAdminRoutes,
     ...flightEstimatesAdminRoutes,
     ...rateSheetAdminRoutes({ ...deps, maxUploadBytes: config.maxUploadBytes }),
+    ...leadsAdminRoutes({ email: deps.email, config }),
   ];
 }
 
@@ -65,8 +73,9 @@ export function listAdminRoutes(): string[] {
       maxUploadBytes: 1,
       documentParserLimits: DEFAULT_DOCUMENT_PARSER_LIMITS,
       maxConcurrentDocumentUploads: 2,
+      publicSiteUrl: 'http://localhost',
     },
-    { storage: new MemoryStorage(), inlineJobs: true },
+    { storage: new MemoryStorage(), inlineJobs: true, email: new LogEmail() },
   );
   return routes.map((r) => `${r.method.toUpperCase()} ${ADMIN_PREFIX}${r.path}`);
 }
@@ -115,6 +124,15 @@ function makeErrorHandler(config: AppConfig): ErrorRequestHandler {
       res.status(tooLarge ? 413 : 400).json(body);
       return;
     }
+    // A unique index refused a write that a service did not expect to collide:
+    // two requests at the same moment. A conflict to retry, not a server fault.
+    // (The driver's message names the duplicated value, so it is never sent on.)
+    if (isDuplicateKeyError(err)) {
+      const { status, code, message } = conflict();
+      const body: ApiError = { error: { code, message } };
+      res.status(status).json(body);
+      return;
+    }
     // Log the error name only: no request bodies or personal data in logs.
     if (config.nodeEnv !== 'test') {
       console.error('Unhandled error:', err instanceof Error ? err.name : 'unknown');
@@ -131,6 +149,7 @@ export function createApp(options: { config: AppConfig; deps?: Partial<AppDeps> 
     storage: options.deps?.storage ?? new MemoryStorage(),
     extraction: options.deps?.extraction,
     inlineJobs: options.deps?.inlineJobs ?? false,
+    email: options.deps?.email ?? new LogEmail(),
   };
   const adminRoutes = buildAdminRoutes(config, deps);
   const limiter = new FailureLimiter(config.loginLimit);
@@ -144,7 +163,7 @@ export function createApp(options: { config: AppConfig; deps?: Partial<AppDeps> 
 
   // Public
   app.use('/api/v1/health', healthRouter);
-  app.use('/api/v1/public', publicRouter);
+  app.use('/api/v1/public', createPublicRouter({ email: deps.email, config }));
   app.use('/api/v1/auth', createAuthRouter({ config, limiter }, requireAuth));
 
   // Staff only: each route is mounted behind sign-in and its role check.

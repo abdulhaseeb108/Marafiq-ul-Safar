@@ -1,6 +1,7 @@
 import type { Server } from 'node:http';
 import { fileURLToPath } from 'node:url';
 import dotenv from 'dotenv';
+import { LogEmail, ResendEmail, type EmailAdapter } from './adapters/email/email.js';
 import { AnthropicExtraction } from './adapters/extraction/anthropic.js';
 import { LocalDiskStorage } from './adapters/storage/local-disk.js';
 import { R2Storage } from './adapters/storage/r2.js';
@@ -42,6 +43,16 @@ function chooseStorage(env: Env): StorageAdapter {
   return new LocalDiskStorage(`${repoRoot}.local-storage`);
 }
 
+function chooseEmail(env: Env): EmailAdapter {
+  if (env.RESEND_API_KEY && env.MAIL_FROM)
+    return new ResendEmail(env.RESEND_API_KEY, env.MAIL_FROM);
+  if (env.NODE_ENV === 'production') {
+    // Customers must get their quote links; a log-only adapter would drop them silently.
+    throw new Error('RESEND_API_KEY and MAIL_FROM are required in production');
+  }
+  return new LogEmail();
+}
+
 async function main(): Promise<void> {
   const env = loadEnv();
   await connectDb(env.MONGODB_URI);
@@ -64,11 +75,14 @@ async function main(): Promise<void> {
     `Rate sheets: files in ${storage.name}; reading ${extraction ? `with ${extraction.model}` : 'by hand only (no ANTHROPIC_API_KEY)'}.`,
   );
 
+  const email = chooseEmail(env);
+  console.log(`Email: ${email.name}.`);
+
   const host = env.NODE_ENV === 'development' ? '127.0.0.1' : undefined;
   const config = configFromEnv(env);
   const server = createApp({
     config,
-    deps: { storage, extraction, inlineJobs: false },
+    deps: { storage, extraction, inlineJobs: false, email },
   });
   apiServer = host ? server.listen(env.PORT, host) : server.listen(env.PORT);
   await new Promise<void>((resolve, reject) => {

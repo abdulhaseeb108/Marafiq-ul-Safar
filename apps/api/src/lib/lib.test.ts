@@ -102,4 +102,45 @@ describe('loadEnv', () => {
     expect(() => loadEnv({ ...valid, TOTP_ENC_KEY: 'zz' })).toThrow();
     expect(() => loadEnv({ ...valid, MONGODB_URI: '' })).toThrow();
   });
+
+  it('needs MAIL_FROM whenever a Resend key is set', () => {
+    expect(() => loadEnv({ ...valid, RESEND_API_KEY: 're_test' })).toThrow(/MAIL_FROM/);
+    expect(loadEnv({ ...valid, RESEND_API_KEY: 're_test', MAIL_FROM: 'a@b.test' }).MAIL_FROM).toBe(
+      'a@b.test',
+    );
+  });
+
+  it('uses the dev site for quote links outside production, without a trailing slash', () => {
+    expect(configFromEnv(loadEnv(valid)).publicSiteUrl).toBe('http://localhost:5175');
+    const env = loadEnv({ ...valid, PUBLIC_SITE_URL: 'http://localhost:4179/' });
+    expect(configFromEnv(env).publicSiteUrl).toBe('http://localhost:4179');
+  });
+
+  it('requires a real https PUBLIC_SITE_URL in production', () => {
+    const production = { ...valid, NODE_ENV: 'production' };
+    const problem = (value?: string) => {
+      try {
+        loadEnv({ ...production, PUBLIC_SITE_URL: value });
+        return null;
+      } catch (error) {
+        return (error as Error).message;
+      }
+    };
+    expect(problem(undefined)).toMatch(/PUBLIC_SITE_URL: is required in production/);
+    expect(problem('')).toMatch(/PUBLIC_SITE_URL: is required in production/);
+    expect(problem('not a url')).toMatch(/PUBLIC_SITE_URL: must be a valid URL/);
+    expect(problem('http://example.com')).toMatch(/PUBLIC_SITE_URL: must use https/);
+    expect(problem('ftp://example.com')).toMatch(/PUBLIC_SITE_URL: must be an http\(s\) URL/);
+    expect(problem('https://localhost')).toMatch(/PUBLIC_SITE_URL: must not be a local address/);
+    expect(problem('https://127.0.0.1:8443')).toMatch(/must not be a local address/);
+    expect(problem('https://user:pw@example.com')).toMatch(/must not contain credentials/);
+    expect(problem('https://example.com/?a=1')).toMatch(/must not contain credentials/);
+    expect(problem('https://example.com')).toBeNull();
+    const env = loadEnv({ ...production, PUBLIC_SITE_URL: 'https://example.com/' });
+    expect(configFromEnv(env).publicSiteUrl).toBe('https://example.com');
+  });
+
+  it('rejects a malformed PUBLIC_SITE_URL in development too', () => {
+    expect(() => loadEnv({ ...valid, PUBLIC_SITE_URL: 'example.com' })).toThrow(/PUBLIC_SITE_URL/);
+  });
 });

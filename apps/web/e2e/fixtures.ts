@@ -1,5 +1,10 @@
 /** API answers for the browser tests: the T1 example from docs/03 section 7. */
-import type { CalculationResult, PublicConfig, PublicHotel } from '@marafiq/shared';
+import type {
+  CalculationResult,
+  PublicConfig,
+  PublicHotel,
+  PublicQuoteView,
+} from '@marafiq/shared';
 
 const addDays = (date: string, days: number) => {
   const at = new Date(`${date}T00:00:00Z`);
@@ -156,3 +161,46 @@ export function t1Result(): CalculationResult {
     engineVersion: '1.0.0',
   };
 }
+
+/** A sent staff quote with a long hotel line and a PKR flight line. */
+export const sampleQuote: PublicQuoteView = {
+  reference: 'MSF-2026-000001',
+  version: 2,
+  status: 'sent',
+  travelerName: 'Aisha Khan',
+  lineItems: [
+    {
+      description:
+        'Waqar Salmiya/Jood Marjan (Madinah), quad sharing, 2027-02-11 to 2027-02-12, 2 night(s)',
+      supplier: 'Waqar-e-Madina Group (WMT)',
+      quantity: 8,
+      unitAmountMinor: 5_400,
+      currency: 'SAR',
+      notes: 'Ramadan Pack 01, sheet dated 2026-10-27',
+      amountMinor: 43_200,
+      amountMinorSAR: 43_200,
+      amountMinorPKR: 3_240_000,
+    },
+    {
+      description: 'Flights ISB-JED return',
+      supplier: 'Airline via agent',
+      quantity: 4,
+      unitAmountMinor: 18_000_000,
+      currency: 'PKR',
+      notes: '',
+      amountMinor: 72_000_000,
+      amountMinorSAR: 960_000,
+      amountMinorPKR: 72_000_000,
+    },
+  ],
+  exclusions: ['Meals', 'Hotel taxes not stated on the supplier sheet'],
+  terms: 'Rates can change without notice until each supplier confirms.',
+  fx: { rate: '75.00', effectiveAt: '2026-11-01T00:00:00.000Z' },
+  totals: { totalMinorPKR: 75_240_000, totalMinorSAR: 1_003_200 },
+  sentAt: new Date().toISOString(),
+  expiresAt: new Date(Date.now() + 72 * 3_600_000).toISOString(),
+  acceptedAt: null,
+  canAccept: true,
+  viaOlderLink: false,
+  hasNewerVersion: false,
+};

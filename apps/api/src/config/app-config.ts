@@ -2,6 +2,9 @@ import { RATE_SHEET_MAX_BYTES } from '@marafiq/shared';
 import type { Env } from './env.js';
 import type { DocumentParserLimits } from '../modules/document-intelligence/document-parser-limits.js';
 
+/** The Vite dev server (apps/web/vite.config.ts: port 5175). */
+const DEV_SITE_URL = 'http://localhost:5175';
+
 /** Runtime settings passed into the app, so tests can build one without env vars. */
 export interface AppConfig {
   nodeEnv: 'development' | 'test' | 'production';
@@ -24,6 +27,10 @@ export interface AppConfig {
   maxUploadBytes: number;
   documentParserLimits: DocumentParserLimits;
   maxConcurrentDocumentUploads: number;
+  /** Base URL for customer links, without a trailing slash. */
+  publicSiteUrl: string;
+  /** Staff inbox for notifications; none = no staff emails. */
+  staffNotifyEmail?: string;
 }
 
 export function configFromEnv(env: Env): AppConfig {
@@ -67,5 +74,8 @@ export function configFromEnv(env: Env): AppConfig {
       evidenceChunkBytes: env.DOCUMENT_EVIDENCE_CHUNK_BYTES,
     },
     maxConcurrentDocumentUploads: env.DOCUMENT_MAX_CONCURRENT_UPLOADS,
+    // env.ts requires an https value in production; elsewhere default to the dev site.
+    publicSiteUrl: (env.PUBLIC_SITE_URL ?? DEV_SITE_URL).replace(/\/+$/, ''),
+    staffNotifyEmail: env.STAFF_NOTIFY_EMAIL,
   };
 }

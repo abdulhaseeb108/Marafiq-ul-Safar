@@ -27,11 +27,11 @@ export function Card({ title, children }: { title?: string; children: ReactNode 
   );
 }
 
-/** Until the online inquiry form ships (Phase 6), quotes are requested via Contact. */
+/** Opens the quote request form for a topic (umrah, hotels, flights, visa, transport). */
 export function RequestQuoteLink({ topic }: { topic: string }) {
   const { t } = useTranslation();
   return (
-    <Link to={`/contact?topic=${encodeURIComponent(topic)}`} className={buttonPrimary}>
+    <Link to={`/request-quote?topic=${encodeURIComponent(topic)}`} className={buttonPrimary}>
       {t('site.requestQuote')}
     </Link>
   );

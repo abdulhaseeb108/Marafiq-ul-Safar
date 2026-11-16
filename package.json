@@ -17,7 +17,8 @@
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
     "seed": "npm run build -w @marafiq/shared && npm run seed -w @marafiq/api",
-    "e2e": "npm run build -w @marafiq/shared && npm run e2e -w @marafiq/web"
+    "e2e": "npm run build -w @marafiq/shared && npm run e2e -w @marafiq/web",
+    "e2e:flow": "npm run build -w @marafiq/shared && npm run e2e:flow -w @marafiq/web"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

@@ -228,10 +228,24 @@ export const LeadSchema = z.object({
   ...baseDoc,
   reference: z.string().regex(/^MSF-\d{4}-\d{6}$/, 'Expected MSF-YYYY-NNNNNN'),
   travelerId: objectId,
+  /**
+   * The name, email and language given with THIS inquiry (decision 120).
+   * Everything sent or shown for the lead uses these, never the traveler's
+   * latest details. Absent only on leads stored before the snapshot existed.
+   */
+  contact: z
+    .object({
+      name: z.string().min(1),
+      email: z.email().nullable().optional(),
+      language: languageSchema,
+    })
+    .optional(),
   calculationId: objectId.optional(),
   source: z.string().min(1),
   status: z.enum(LEAD_STATUSES),
   assignedTo: objectId.optional(),
+  /** Bumped by every change to the lead's quotes; see lead.models.ts. */
+  quoteRevision: z.number().int().nonnegative().optional(),
   notes: z.array(z.object({ body: z.string().min(1), by: objectId, at: timestamp })),
   consent: z.object({
     textVersion: z.string().min(1),
@@ -239,6 +253,10 @@ export const LeadSchema = z.object({
     ip: z.string().optional(),
   }),
   dedupeKey: z.string().min(1),
+  /** What the customer wrote in the inquiry form. */
+  notesText: z.string().optional(),
+  /** The calculator inputs, kept even if pricing them failed. */
+  tripInputs: z.unknown().optional(),
 });
 
 // quotes
@@ -261,8 +279,10 @@ export const QuoteSchema = z.object({
   terms: z.string(),
   fx: fxSnapshot,
   totals: z.object({ totalMinorPKR: minor, totalMinorSAR: minor }),
-  /** Hash only. The raw token exists only in the link sent to the customer. */
-  publicTokenHash: z.string().min(1),
+  /** Hash only, set when sent. The raw token exists only in the link sent to the customer. */
+  publicTokenHash: z.string().min(1).optional(),
+  /** The sent version this one replaces (a "new version" of it). */
+  previousId: objectId.optional(),
   expiresAt: timestamp,
   sentAt: timestamp.optional(),
   acceptedAt: timestamp.optional(),

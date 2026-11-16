@@ -36,7 +36,7 @@ All ids are Mongo ObjectIds. All timestamps UTC. Money fields end in `Minor` and
 
 **auditEvents** — `actorId?`, `actorRole`, `action`, `entityType`, `entityId`, `before?`, `after?`, `ip?`, `at`.
 
-**Indexes:** `leads.reference` unique; `leads.dedupeKey`; `quotes.publicTokenHash` unique; `sourceDocuments {supplierId, sha256}` unique; `ratePackages {supplierId, nightFrom, nightTo, status}`; `hotelRates {packageId, hotelId}` unique; `auditEvents {entityType, entityId, at}`.
+**Indexes:** `leads.reference` unique; `leads.dedupeKey`; `quotes.publicTokenHash` unique; `quotes {leadId, version}` unique; `quotes {leadId, status}` unique for `draft`, `sent` and `accepted` only (one live quote of each per lead); `sourceDocuments {supplierId, sha256}` unique; `ratePackages {supplierId, nightFrom, nightTo, status}`; `hotelRates {packageId, hotelId}` unique; `auditEvents {entityType, entityId, at}`.
 
 ## 2. Status enums (in `packages/shared/src/status.ts`)
 - Rate package: `draft → needs_review → published → superseded`; `draft|needs_review → rejected`.

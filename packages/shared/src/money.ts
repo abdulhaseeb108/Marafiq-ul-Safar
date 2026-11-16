@@ -142,6 +142,16 @@ export function convertSarToPkrWholeRupeesMinor(sarMinor: number, rateScaled: nu
   return toSafeNumber(rupees * BigInt(MINOR_PER_MAJOR));
 }
 
+/**
+ * PKR amount -> SAR, rounded half up to the halala. Used only for the SAR
+ * total of a staff quote that has PKR lines (docs/01 section 7).
+ */
+export function convertPkrToSarMinor(pkrMinor: number, rateScaled: number): number {
+  assertNonNegativeInt(pkrMinor, 'pkrMinor');
+  assertPositiveInt(rateScaled, 'rateScaled');
+  return toSafeNumber(halfUpDivBig(BigInt(pkrMinor) * BigInt(FX_SCALE), BigInt(rateScaled)));
+}
+
 /** Settings store markup as a percent (e.g. 2.5); convert to basis points. */
 export function markupPercentToBps(percent: number | string): number {
   if (typeof percent === 'number' && !(percent >= 0)) {
