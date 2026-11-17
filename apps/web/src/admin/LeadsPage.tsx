@@ -1,16 +1,22 @@
 import { LEAD_STATUSES, type LeadStatus, type LeadSummary, type Paged } from '@marafiq/shared';
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { api } from './api';
 import { Alert, Button, Field, Note, Select, Table, errorText } from './ui';
 
 const PAGE_SIZE = 25;
 
+/** A status from the address (e.g. the dashboard's "?status=new" link); anything else is ignored. */
+function statusFrom(value: string | null): LeadStatus | '' {
+  return (LEAD_STATUSES as readonly string[]).includes(value ?? '') ? (value as LeadStatus) : '';
+}
+
 /** Staff lead list (docs/01 section 6.6): filters, search, newest first. */
 export function LeadsPage() {
   const { t, i18n } = useTranslation();
-  const [status, setStatus] = useState<LeadStatus | ''>('');
+  const [params] = useSearchParams();
+  const [status, setStatus] = useState<LeadStatus | ''>(() => statusFrom(params.get('status')));
   const [assigned, setAssigned] = useState<'' | 'me' | 'unassigned'>('');
   const [search, setSearch] = useState('');
   const [q, setQ] = useState('');

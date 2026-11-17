@@ -1,7 +1,8 @@
 /** The staff area, loaded on demand from App. Staff auth state lives only here. */
 import { Outlet, Route, Routes } from 'react-router-dom';
-import { AdminShell, DashboardPage } from './AdminShell';
+import { AdminShell } from './AdminShell';
 import { AuthProvider } from './AuthContext';
+import { DashboardPage } from './DashboardPage';
 import { FlightEstimatesPage } from './FlightEstimatesPage';
 import { FxPage } from './FxPage';
 import { HotelsPage } from './HotelsPage';

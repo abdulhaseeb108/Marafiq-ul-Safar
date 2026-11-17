@@ -57,8 +57,9 @@ const UploadFieldsSchema = z.object({
 });
 const BlankPackageBodySchema = z.object({ packName: z.string().trim().min(1).max(120) });
 
-/** Upload, review and publish: admin and ops (docs/02 section 3). */
-const ROLES = ['admin', 'ops'] as const;
+/** Upload, review and publish: admin and ops (docs/02 section 3). The dashboard uses it too. */
+export const RATE_SHEET_ROLES = ['admin', 'ops'] as const;
+const ROLES = RATE_SHEET_ROLES;
 
 export function rateSheetAdminRoutes(deps: RateSheetDeps): AdminRoute[] {
   // Held in memory: the file is hashed and checked before it is stored anywhere.

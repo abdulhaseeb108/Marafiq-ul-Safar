@@ -58,17 +58,3 @@ export function AdminShell() {
     </div>
   );
 }
-
-export function DashboardPage() {
-  const { t } = useTranslation();
-  const { state } = useAuth();
-  if (state.status !== 'authenticated') return null;
-  return (
-    <>
-      <h1 className="text-2xl font-bold">
-        {t('admin.dashboard.title', { name: state.user.name })}
-      </h1>
-      <p className="mt-3">{t('admin.dashboard.body')}</p>
-    </>
-  );
-}

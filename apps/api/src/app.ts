@@ -11,6 +11,7 @@ import { FailureLimiter } from './lib/rate-limiter.js';
 import { auditAdminRoutes } from './modules/audit/audit.routes.js';
 import { makeAuthMiddleware } from './modules/auth/auth.middleware.js';
 import { createAuthRouter } from './modules/auth/auth.routes.js';
+import { dashboardAdminRoutes } from './modules/dashboard/dashboard.routes.js';
 import { DEFAULT_DOCUMENT_PARSER_LIMITS } from './modules/document-intelligence/document-parser-limits.js';
 import { documentIntelligenceAdminRoutes } from './modules/document-intelligence/document-intelligence.routes.js';
 import { flightEstimatesAdminRoutes } from './modules/flight-estimates/flight-estimates.routes.js';
@@ -63,6 +64,7 @@ function buildAdminRoutes(
     ...flightEstimatesAdminRoutes,
     ...rateSheetAdminRoutes({ ...deps, maxUploadBytes: config.maxUploadBytes }),
     ...leadsAdminRoutes({ email: deps.email, config }),
+    ...dashboardAdminRoutes,
   ];
 }
 

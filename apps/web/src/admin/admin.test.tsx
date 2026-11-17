@@ -1,4 +1,4 @@
-import type { PublicUser, Role } from '@marafiq/shared';
+import type { DashboardSummary, PublicUser, Role } from '@marafiq/shared';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
@@ -826,5 +826,223 @@ describe('leads and quotes (Phase 6)', () => {
       expect(en.admin.errors.conflict).toBe(MESSAGES.conflict.en);
       expect(ur.admin.errors.conflict).toBe(MESSAGES.conflict.ur);
     });
+  });
+});
+
+describe('staff dashboard (FEAT-01)', () => {
+  const QUOTE = '64b7f0c2a1b2c3d4e5f6c001';
+  const PACK = '64b7f0c2a1b2c3d4e5f6d001';
+  const LATEST = '64b7f0c2a1b2c3d4e5f6d002';
+
+  const full = (overrides: Partial<DashboardSummary> = {}): DashboardSummary => ({
+    generatedAt: '2026-11-17T10:00:00.000Z',
+    leads: { newCount: 4 },
+    quotes: {
+      windowHours: 48,
+      expiringCount: 12,
+      expiring: [
+        {
+          quoteId: QUOTE,
+          leadId: '64b7f0c2a1b2c3d4e5f6e001',
+          leadReference: 'MSF-2026-000123',
+          version: 2,
+          expiresAt: '2026-11-18T18:59:59.999Z',
+        },
+      ],
+    },
+    rates: {
+      windowDays: 14,
+      expiringCount: 1,
+      expiring: [
+        {
+          packageId: PACK,
+          packName: 'Shawal Pack',
+          supplierName: 'Waqar-e-Madina',
+          version: 3,
+          nightTo: '2026-11-25',
+        },
+      ],
+      lastPublished: {
+        packageId: LATEST,
+        packName: 'Ramadan Pack 01',
+        supplierName: 'Waqar-e-Madina',
+        version: 5,
+        status: 'published',
+        publishedAt: '2026-11-16T07:30:00.000Z',
+      },
+    },
+    ...overrides,
+  });
+
+  const card = (name: RegExp | string) =>
+    screen.findByRole('region', { name }).then((region) => within(region));
+
+  it('shows the four figures from the API, each linking to its page', async () => {
+    const fetchMock = mockApi({
+      'GET /auth/me': () => json(200, user('admin')),
+      'GET /admin/dashboard': () => json(200, full()),
+    });
+    renderAt('/admin');
+
+    const leads = await card('New leads');
+    expect(leads.getByText('4')).toBeInTheDocument();
+    expect(leads.getByRole('link', { name: 'Open new inquiries' })).toHaveAttribute(
+      'href',
+      '/admin/leads?status=new',
+    );
+    // Browser tests find the menu with getByRole('link', { name: 'Leads' }), which also
+    // matches any link whose name merely contains "leads": keep it the only one.
+    expect(screen.getAllByRole('link', { name: /leads/i })).toHaveLength(1);
+
+    const quotes = await card('Quotes expiring within 48 hours');
+    expect(quotes.getByText('12')).toBeInTheDocument();
+    expect(quotes.getByRole('link', { name: 'MSF-2026-000123 · quote version 2' })).toHaveAttribute(
+      'href',
+      `/admin/quotes/${QUOTE}`,
+    );
+    // Pakistan time: 18:59 UTC is 23:59 in Karachi.
+    expect(quotes.getByText(/Link stops working 18 Nov 2026, 23:59/)).toBeInTheDocument();
+    expect(quotes.getByText('and 11 more')).toBeInTheDocument();
+    expect(quotes.getByRole('link', { name: 'Open sent quotes' })).toHaveAttribute(
+      'href',
+      '/admin/leads?status=quote_sent',
+    );
+
+    const packs = await card('Rate packs ending within 14 days');
+    expect(packs.getByText('1')).toBeInTheDocument();
+    expect(packs.getByRole('link', { name: 'Shawal Pack · Waqar-e-Madina' })).toHaveAttribute(
+      'href',
+      `/admin/rate-sheets/${PACK}`,
+    );
+    expect(packs.getByText('Last night 25 Nov 2026 · version 3')).toBeInTheDocument();
+    expect(packs.getByRole('link', { name: 'Open rate sheets list' })).toHaveAttribute(
+      'href',
+      '/admin/rate-sheets',
+    );
+
+    const published = await card('Last published rate version');
+    expect(
+      published.getByRole('link', { name: 'Ramadan Pack 01 · Waqar-e-Madina' }),
+    ).toHaveAttribute('href', `/admin/rate-sheets/${LATEST}`);
+    expect(published.getByText(/Version 5 · published 16 Nov 2026, 12:30/)).toBeInTheDocument();
+
+    expect(fetchMock).toHaveBeenCalledWith('/api/v1/admin/dashboard', expect.anything());
+  });
+
+  it('shows a loading message until the figures arrive', async () => {
+    let answer: (response: Response) => void = () => undefined;
+    const pending = new Promise<Response>((resolve) => (answer = resolve));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo | URL) => {
+        const path = String(input);
+        if (path.endsWith('/auth/me')) return json(200, user('sales'));
+        if (path.endsWith('/admin/dashboard')) return pending;
+        return unauthenticated();
+      }),
+    );
+    renderAt('/admin');
+    // The shell is signed in (its heading is up) while the figures are still on the way.
+    await screen.findByRole('heading', { name: 'Welcome, Test sales' });
+    expect(screen.getByText('Loading…')).toBeInTheDocument();
+    answer(json(200, full({ rates: null })));
+    expect(await screen.findByRole('region', { name: 'New leads' })).toBeInTheDocument();
+    expect(screen.queryByText('Loading…')).not.toBeInTheDocument();
+  });
+
+  it('says so plainly when there is nothing to show', async () => {
+    mockApi({
+      'GET /auth/me': () => json(200, user('admin')),
+      'GET /admin/dashboard': () =>
+        json(200, {
+          generatedAt: '2026-11-17T10:00:00.000Z',
+          leads: { newCount: 0 },
+          quotes: { windowHours: 48, expiringCount: 0, expiring: [] },
+          rates: { windowDays: 14, expiringCount: 0, expiring: [], lastPublished: null },
+        } satisfies DashboardSummary),
+    });
+    renderAt('/admin');
+    expect(await screen.findByText('No sent quote expires in the next 48 hours.')).toBeVisible();
+    expect(screen.getByText('No published rate pack ends in the next 14 days.')).toBeVisible();
+    expect(screen.getByText('No rate sheet has been published yet.')).toBeVisible();
+    expect((await card('New leads')).getByText('0')).toBeInTheDocument();
+  });
+
+  it('shows only the cards a role may see', async () => {
+    // Sales and finance: no rate packs. Ops: no quotes (decision 133).
+    mockApi({
+      'GET /auth/me': () => json(200, user('sales')),
+      'GET /admin/dashboard': () => json(200, full({ rates: null })),
+    });
+    const { unmount } = renderAt('/admin');
+    expect(await screen.findByRole('region', { name: /Quotes expiring/ })).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: /Rate packs/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: /Last published/ })).not.toBeInTheDocument();
+    unmount();
+    vi.unstubAllGlobals();
+
+    mockApi({
+      'GET /auth/me': () => json(200, user('ops')),
+      'GET /admin/dashboard': () => json(200, full({ quotes: null })),
+    });
+    renderAt('/admin');
+    expect(await screen.findByRole('region', { name: /Rate packs/ })).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: /Quotes expiring/ })).not.toBeInTheDocument();
+  });
+
+  it('reports a failed load and recovers with Try again', async () => {
+    let fail = true;
+    mockApi({
+      'GET /auth/me': () => json(200, user('admin')),
+      'GET /admin/dashboard': () =>
+        fail
+          ? json(500, { error: { code: 'internal_error', message: 'Something went wrong' } })
+          : json(200, full()),
+    });
+    renderAt('/admin');
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'The dashboard could not be loaded.',
+    );
+    fail = false;
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Try again' }));
+    expect(await screen.findByRole('region', { name: 'New leads' })).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('renders in Urdu, right to left', async () => {
+    await i18n.changeLanguage('ur');
+    mockApi({
+      'GET /auth/me': () => json(200, user('admin')),
+      'GET /admin/dashboard': () => json(200, full()),
+    });
+    renderAt('/admin');
+    expect(
+      await screen.findByRole('region', { name: ur.admin.dashboard.newLeads.title }),
+    ).toBeVisible();
+    expect(document.documentElement).toHaveAttribute('dir', 'rtl');
+  });
+
+  it('opens the lead list already filtered from the dashboard link', async () => {
+    const fetchMock = mockApi({
+      'GET /auth/me': () => json(200, user('sales')),
+      'GET /admin/leads?page=1&limit=25&status=new': () =>
+        json(200, { items: [], page: 1, limit: 25, total: 0 }),
+    });
+    renderAt('/admin/leads?status=new');
+    expect(await screen.findByLabelText('Status')).toHaveValue('new');
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/v1/admin/leads?page=1&limit=25&status=new',
+      expect.anything(),
+    );
+  });
+
+  it('ignores an unknown status in the address', async () => {
+    mockApi({
+      'GET /auth/me': () => json(200, user('sales')),
+      'GET /admin/leads?page=1&limit=25': () =>
+        json(200, { items: [], page: 1, limit: 25, total: 0 }),
+    });
+    renderAt('/admin/leads?status=booked');
+    expect(await screen.findByLabelText('Status')).toHaveValue('');
   });
 });
