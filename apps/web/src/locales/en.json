@@ -62,7 +62,38 @@
     },
     "dashboard": {
       "title": "Welcome, {{name}}",
-      "body": "New inquiries are under Leads. Rate sheets, hotels and settings are in the menu."
+      "loadFailed": "The dashboard could not be loaded. {{reason}}",
+      "retry": "Try again",
+      "refresh": "Refresh figures",
+      "asOf": "Figures as of {{at}}",
+      "more_one": "and {{count}} more",
+      "more_other": "and {{count}} more",
+      "newLeads": {
+        "title": "New leads",
+        "hint": "Inquiries nobody has contacted yet.",
+        "link": "Open new inquiries"
+      },
+      "quotes": {
+        "title": "Quotes expiring within {{hours}} hours",
+        "empty": "No sent quote expires in the next {{hours}} hours.",
+        "item": "{{reference}} · quote version {{version}}",
+        "expires": "Link stops working {{at}}",
+        "link": "Open sent quotes"
+      },
+      "packs": {
+        "title": "Rate packs ending within {{days}} days",
+        "empty": "No published rate pack ends in the next {{days}} days.",
+        "item": "{{pack}} · {{supplier}}",
+        "lastNight": "Last night {{date}} · version {{version}}",
+        "link": "Open rate sheets list"
+      },
+      "published": {
+        "title": "Last published rate version",
+        "item": "{{pack}} · {{supplier}}",
+        "detail": "Version {{version}} · published {{at}}",
+        "replaced": "A newer pack has since replaced it.",
+        "empty": "No rate sheet has been published yet."
+      }
     },
     "users": {
       "title": "Users",

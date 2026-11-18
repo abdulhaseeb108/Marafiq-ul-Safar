@@ -87,6 +87,9 @@ const PROTECTED_ROUTES: ProtectedRoute[] = [
   { method: 'post', pattern: '/api/v1/admin/users/:id/reset-2fa', allowed: ADMIN_ONLY },
   { method: 'get', pattern: '/api/v1/admin/audit', allowed: ADMIN_ONLY },
 
+  // dashboard: every staff role; the sections inside follow the matrix (dashboard.test.ts)
+  { method: 'get', pattern: '/api/v1/admin/dashboard', allowed: ANY_STAFF },
+
   // suppliers
   { method: 'get', pattern: '/api/v1/admin/suppliers', allowed: ADMIN_OPS },
   {

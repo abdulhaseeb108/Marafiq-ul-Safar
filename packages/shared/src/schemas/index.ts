@@ -6,3 +6,4 @@ export * from './ingestion.js';
 
 export * from './pricing.js';
 export * from './leads.js';
+export * from './dashboard.js';
