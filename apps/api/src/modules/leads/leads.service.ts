@@ -26,7 +26,7 @@ import {
 import mongoose, { type Types } from 'mongoose';
 import type { EmailAdapter } from '../../adapters/email/email.js';
 import type { AppConfig } from '../../config/app-config.js';
-import { HttpError, notFound } from '../../lib/http-error.js';
+import { HttpError, conflict, isDuplicateKeyError, notFound } from '../../lib/http-error.js';
 import { log } from '../../lib/logger.js';
 import { inTransaction } from '../../lib/transaction.js';
 import { recordAudit, type Actor } from '../audit/audit.service.js';
@@ -42,6 +42,7 @@ import { UserModel } from '../users/user.model.js';
 import { inquiryAck, sendQuietly, staffNotice } from './emails.js';
 import {
   CounterModel,
+  InquiryClaimModel,
   LeadModel,
   MessageModel,
   QuoteModel,
@@ -182,6 +183,24 @@ function decoyReference(now: Date): string {
   return `MSF-${year}-${number}`;
 }
 
+/** Another request is storing the same inquiry right now (see createInquiry). */
+class DuplicateInquiryError extends Error {
+  override name = 'DuplicateInquiryError';
+}
+
+/**
+ * The first request's lead. Inside a transaction it is already committed when
+ * the second claim fails; a standalone MongoDB may need a moment.
+ */
+async function waitFor<T>(find: () => Promise<T | null>, tries = 10): Promise<T | null> {
+  for (let attempt = 0; attempt < tries; attempt += 1) {
+    const found = await find();
+    if (found) return found;
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  return null;
+}
+
 /** POST /public/inquiries (docs/01 section 5, steps 1-2). */
 export async function createInquiry(
   body: InquiryData,
@@ -217,16 +236,63 @@ export async function createInquiry(
       : `none:${body.source}`;
   const dedupeKey = sha256(`${body.traveler.phone}|${trip}`);
 
-  const recent = await LeadModel.findOne({
-    dedupeKey,
-    createdAt: { $gte: new Date(now.getTime() - DAY_MS) },
-  })
-    .sort({ createdAt: -1 })
-    .select('reference')
-    .lean();
+  const findRecent = () =>
+    LeadModel.findOne({
+      dedupeKey,
+      createdAt: { $gte: new Date(now.getTime() - DAY_MS) },
+    })
+      .sort({ createdAt: -1 })
+      .select('reference')
+      .lean();
+  const recent = await findRecent();
   if (recent) return { reference: recent.reference, duplicate: true, responseTimeText };
 
-  const { lead } = await inTransaction(async () => {
+  // Two identical inquiries sent at the same moment both get past the check
+  // above. The claim below lets only one of them store a lead; the other
+  // answers with the first one's reference, as a duplicate.
+  const claimExpiresAt = new Date(now.getTime() + DAY_MS);
+  let created: { lead: LeadDoc } | undefined;
+  for (let attempt = 1; !created; attempt += 1) {
+    let claimed = false;
+    try {
+      created = await inTransaction(async () => {
+        try {
+          // Takes the key if it is free or its window has passed; a live
+          // claim makes this an insert of an existing _id, which fails.
+          await InquiryClaimModel.updateOne(
+            { _id: dedupeKey, expiresAt: { $lte: now } },
+            { $set: { expiresAt: claimExpiresAt } },
+            { upsert: true },
+          );
+        } catch (error) {
+          if (isDuplicateKeyError(error)) throw new DuplicateInquiryError();
+          throw error;
+        }
+        claimed = true;
+        return storeInquiry();
+      });
+    } catch (error) {
+      if (!(error instanceof DuplicateInquiryError)) {
+        // A standalone MongoDB (development) cannot roll the claim back: free
+        // it so the traveler can send again. In a transaction nothing is left.
+        if (claimed) {
+          await InquiryClaimModel.deleteOne({ _id: dedupeKey, expiresAt: claimExpiresAt }).catch(
+            () => undefined,
+          );
+        }
+        throw error;
+      }
+      const winner = await waitFor(findRecent);
+      if (winner) return { reference: winner.reference, duplicate: true, responseTimeText };
+      // A claim with no lead behind it (left by a crash on a server without
+      // transactions) must not block the traveler: remove it and try once more.
+      if (attempt >= 2) throw conflict();
+      await InquiryClaimModel.deleteOne({ _id: dedupeKey });
+    }
+  }
+  const { lead } = created;
+
+  async function storeInquiry(): Promise<{ lead: LeadDoc }> {
     const traveler = await TravelerModel.findOneAndUpdate(
       { phone: body.traveler.phone },
       {
@@ -265,8 +331,8 @@ export async function createInquiry(
       entityId: lead.id as string,
       after: { reference, source: body.source, calculated: calculation !== null },
     });
-    return { lead, traveler };
-  });
+    return { lead };
+  }
 
   if (body.traveler.email) {
     await sendQuietly(

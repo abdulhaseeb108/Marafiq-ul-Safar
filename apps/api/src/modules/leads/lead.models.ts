@@ -90,6 +90,23 @@ const counterSchema = new Schema(
   { collection: 'counters', versionKey: false },
 );
 
+/**
+ * One row per inquiry de-duplication key (sha256 of phone + trip, never the
+ * phone itself) while its 24-hour window is open. The unique _id is what stops
+ * two identical inquiries sent at the same moment from both being stored:
+ * the second claim fails, and that request answers with the first one's
+ * reference (leads.service.ts, createInquiry). MongoDB removes rows after
+ * expiresAt; an expired row that is still present is simply claimed again.
+ */
+const inquiryClaimSchema = new Schema(
+  {
+    _id: { type: String, required: true },
+    expiresAt: { type: Date, required: true },
+  },
+  { collection: 'inquiryClaims', versionKey: false },
+);
+inquiryClaimSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+
 const messageSchema = new Schema(
   {
     leadId: { type: ObjectId, ref: 'Lead', required: true, index: true },
@@ -195,5 +212,6 @@ export function leadContact(
 export const TravelerModel = model('Traveler', travelerSchema);
 export const LeadModel = model('Lead', leadSchema);
 export const CounterModel = model('Counter', counterSchema);
+export const InquiryClaimModel = model('InquiryClaim', inquiryClaimSchema);
 export const MessageModel = model('Message', messageSchema);
 export const QuoteModel = model('Quote', quoteSchema);

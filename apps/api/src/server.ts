@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import dotenv from 'dotenv';
 import { LogEmail, ResendEmail, type EmailAdapter } from './adapters/email/email.js';
 import { AnthropicExtraction } from './adapters/extraction/anthropic.js';
+import { ClamAvScanner } from './adapters/malware-scanning/clamav.js';
 import { LocalDiskStorage } from './adapters/storage/local-disk.js';
 import { R2Storage } from './adapters/storage/r2.js';
 import type { StorageAdapter } from './adapters/storage/storage.js';
@@ -11,11 +12,13 @@ import { configFromEnv } from './config/app-config.js';
 import { loadEnv, type Env } from './config/env.js';
 import { connectDb, disconnectDb, syncIndexes } from './db/connect.js';
 import { configureLogger, errorName, log } from './lib/logger.js';
-import { closeMonitoring, initMonitoring } from './lib/monitoring.js';
+import { SYSTEM_ACTOR } from './lib/actor.js';
+import { closeMonitoring, initMonitoring, reportError } from './lib/monitoring.js';
 import {
   startDocumentProcessingWorker,
   type DocumentProcessingWorker,
 } from './modules/document-intelligence/document-processing.worker.js';
+import { recoverStaleExtractions } from './modules/rate-sheets/documents.service.js';
 import { seedFirstAdmin } from './modules/users/users.seed.js';
 
 // One .env at the repo root (same relative path from src/ and dist/).
@@ -24,7 +27,21 @@ dotenv.config({ path: fileURLToPath(new URL('../../../.env', import.meta.url)), 
 const repoRoot = fileURLToPath(new URL('../../../', import.meta.url));
 let apiServer: Server | undefined;
 let documentWorker: DocumentProcessingWorker | undefined;
+let extractionSweep: NodeJS.Timeout | undefined;
 let shuttingDown = false;
+
+/** How often readings interrupted by a restart are looked for (documents.service.ts). */
+const EXTRACTION_SWEEP_MS = 60 * 1000;
+
+async function sweepStaleExtractions(): Promise<void> {
+  try {
+    const marked = await recoverStaleExtractions(SYSTEM_ACTOR);
+    if (marked > 0) log.warn('interrupted rate-sheet readings marked failed', { count: marked });
+  } catch (error) {
+    log.error('extraction sweep failed', { error: errorName(error) });
+    reportError(error, { area: 'extraction-sweep' });
+  }
+}
 
 function chooseStorage(env: Env): StorageAdapter {
   const { R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET } = env;
@@ -67,6 +84,9 @@ async function main(): Promise<void> {
   ) {
     log.info('Error reporting: Sentry on.');
   }
+  // Checked before connecting: a misconfigured production start never touches the database.
+  const storage = chooseStorage(env);
+  const email = chooseEmail(env);
   await connectDb(env.MONGODB_URI);
   // Production never drops an index on restart (db/connect.ts).
   for (const problem of await syncIndexes({ drop: env.NODE_ENV !== 'production' })) {
@@ -80,7 +100,6 @@ async function main(): Promise<void> {
     );
   }
 
-  const storage = chooseStorage(env);
   const extraction = env.ANTHROPIC_API_KEY
     ? new AnthropicExtraction(env.ANTHROPIC_API_KEY, env.EXTRACTION_MODEL)
     : undefined;
@@ -88,7 +107,6 @@ async function main(): Promise<void> {
     `Rate sheets: files in ${storage.name}; reading ${extraction ? `with ${extraction.model}` : 'by hand only (no ANTHROPIC_API_KEY)'}.`,
   );
 
-  const email = chooseEmail(env);
   log.info(`Email: ${email.name}.`);
 
   const host = env.NODE_ENV === 'development' ? '127.0.0.1' : undefined;
@@ -118,13 +136,28 @@ async function main(): Promise<void> {
   });
   process.once('SIGINT', () => void shutdown('SIGINT'));
   process.once('SIGTERM', () => void shutdown('SIGTERM'));
+  const scanner = env.CLAMAV_HOST
+    ? new ClamAvScanner({ host: env.CLAMAV_HOST, port: env.CLAMAV_PORT })
+    : undefined;
   documentWorker = startDocumentProcessingWorker({
     storage,
     limits: config.documentParserLimits,
+    scanner,
   });
-  log.warn(
-    'Document intelligence: malware scanner is not configured; files will remain unparsed until scanning is available.',
-  );
+  if (!scanner) {
+    log.warn(
+      'Document intelligence: malware scanner is not configured (CLAMAV_HOST); files will remain unparsed until scanning is available.',
+    );
+  } else if (await scanner.ping()) {
+    log.info(`Document intelligence: files are scanned by ${scanner.name}.`);
+  } else {
+    // Not fatal: every scan fails closed, so files simply wait unparsed.
+    log.warn(`Document intelligence: ${scanner.name} is not answering; files wait unparsed.`);
+  }
+
+  await sweepStaleExtractions();
+  extractionSweep = setInterval(() => void sweepStaleExtractions(), EXTRACTION_SWEEP_MS);
+  extractionSweep.unref();
   log.info(`API listening on port ${env.PORT} (${env.NODE_ENV})`);
 }
 
@@ -132,6 +165,7 @@ async function shutdown(reason: string): Promise<void> {
   if (shuttingDown) return;
   shuttingDown = true;
   log.info(`API shutting down (${reason}).`);
+  if (extractionSweep) clearInterval(extractionSweep);
 
   const server = apiServer;
   if (server?.listening) {
