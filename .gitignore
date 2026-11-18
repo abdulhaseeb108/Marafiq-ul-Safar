@@ -21,3 +21,6 @@ test-results/
 .vscode/*
 !.vscode/extensions.json
 npm-debug.log*
+
+# Local database backups (npm run backup without R2)
+.local-backups/

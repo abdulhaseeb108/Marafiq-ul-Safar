@@ -146,6 +146,17 @@ describe('quote request form', () => {
     expect(window.sessionStorage.getItem(PENDING_TRIP_KEY)).toBeNull();
   });
 
+  it('keeps the spam honeypot away from people and assistive technology', async () => {
+    mockApi({ 'GET /public/config': configRoute });
+    const { container } = renderAt('/request-quote?topic=visa');
+    await screen.findByLabelText('Your name');
+    const honeypot = container.querySelector<HTMLInputElement>('input[name="website"]');
+    expect(honeypot).not.toBeNull();
+    expect(honeypot?.tabIndex).toBe(-1);
+    expect(honeypot?.closest('[aria-hidden="true"]')).not.toBeNull();
+    expect(screen.queryByRole('textbox', { name: /website/i })).toBeNull();
+  });
+
   it('checks the phone and consent before sending', async () => {
     const fetchMock = mockApi({ 'GET /public/config': configRoute });
     const ui = userEvent.setup();

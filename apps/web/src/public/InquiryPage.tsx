@@ -89,6 +89,8 @@ export function InquiryPage() {
   const [failure, setFailure] = useState<string | null>(null);
   const [done, setDone] = useState<InquiryResponse | null>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
+  /** Honeypot: hidden from people; a bot that fills it is ignored by the API. */
+  const honeypotRef = useRef<HTMLInputElement>(null);
   const doneRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
@@ -127,6 +129,7 @@ export function InquiryPage() {
       notes: form.notes,
       consent: { accepted: true, textVersion: CONSENT_TEXT_VERSION },
       ...(trip ? { inputs: trip.inputs } : {}),
+      ...(honeypotRef.current?.value ? { website: honeypotRef.current.value } : {}),
     };
     setBusy(true);
     try {
@@ -202,6 +205,10 @@ export function InquiryPage() {
       {trip && <TripCard trip={trip} />}
 
       <form noValidate onSubmit={(e) => void submit(e)} className="space-y-4">
+        {/* Honeypot: off-screen, out of the tab order and hidden from screen readers. */}
+        <div aria-hidden="true" className="absolute -start-[10000px] h-px w-px overflow-hidden">
+          <input ref={honeypotRef} type="text" name="website" tabIndex={-1} autoComplete="off" />
+        </div>
         {errorList.length > 0 && (
           <div
             ref={summaryRef}

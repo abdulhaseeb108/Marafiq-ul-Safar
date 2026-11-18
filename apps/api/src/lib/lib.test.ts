@@ -55,6 +55,16 @@ describe('FailureLimiter', () => {
     expect(limiter.retryAfterSeconds('k')).toBe(0);
   });
 
+  it('take() counts allowed attempts and refuses, without counting, at the limit', () => {
+    let now = 0;
+    const limiter = new FailureLimiter({ maxFailures: 2, windowMs: 1000 }, () => now);
+    expect(limiter.take('k')).toBe(0);
+    expect(limiter.take('k')).toBe(0);
+    expect(limiter.take('k')).toBe(1);
+    now = 1001;
+    expect(limiter.take('k')).toBe(0);
+  });
+
   it('reset clears a key', () => {
     const limiter = new FailureLimiter({ maxFailures: 1, windowMs: 1000 });
     limiter.recordFailure('k');
@@ -142,5 +152,82 @@ describe('loadEnv', () => {
 
   it('rejects a malformed PUBLIC_SITE_URL in development too', () => {
     expect(() => loadEnv({ ...valid, PUBLIC_SITE_URL: 'example.com' })).toThrow(/PUBLIC_SITE_URL/);
+  });
+
+  it('validates WEB_ORIGIN as bare origins, https in production', () => {
+    expect(configFromEnv(loadEnv(valid)).webOrigins).toEqual([]);
+    const two = loadEnv({ ...valid, WEB_ORIGIN: 'http://localhost:5175, https://example.com' });
+    expect(configFromEnv(two).webOrigins).toEqual(['http://localhost:5175', 'https://example.com']);
+    expect(() => loadEnv({ ...valid, WEB_ORIGIN: 'https://example.com/' })).toThrow(
+      /WEB_ORIGIN: "https:\/\/example.com\/" must be an origin only/,
+    );
+    expect(() => loadEnv({ ...valid, WEB_ORIGIN: 'nope' })).toThrow(/WEB_ORIGIN/);
+    const production = { ...valid, NODE_ENV: 'production', PUBLIC_SITE_URL: 'https://example.com' };
+    expect(() => loadEnv({ ...production, WEB_ORIGIN: 'http://example.com' })).toThrow(
+      /WEB_ORIGIN: must use https in production/,
+    );
+  });
+
+  it('refuses the origin lock together with a CORS allow-list', () => {
+    const secret = 'x'.repeat(40);
+    expect(() =>
+      loadEnv({ ...valid, ORIGIN_PROXY_SECRET: secret, WEB_ORIGIN: 'http://localhost:5175' }),
+    ).toThrow(/ORIGIN_PROXY_SECRET: cannot be used with WEB_ORIGIN/);
+    // Either one alone is fine.
+    expect(() => loadEnv({ ...valid, ORIGIN_PROXY_SECRET: secret })).not.toThrow();
+    expect(() => loadEnv({ ...valid, WEB_ORIGIN: 'http://localhost:5175' })).not.toThrow();
+  });
+
+  it('refuses to start in production without the services customers depend on', () => {
+    const production = { ...valid, NODE_ENV: 'production', PUBLIC_SITE_URL: 'https://example.com' };
+    expect(() => loadEnv({ ...production, PUBLIC_SITE_URL: '' })).toThrow(
+      /PUBLIC_SITE_URL: is required in production/,
+    );
+    expect(() => loadEnv({ ...production, PUBLIC_SITE_URL: 'http://example.com' })).toThrow(
+      /PUBLIC_SITE_URL: must use https in production/,
+    );
+    expect(() => loadEnv({ ...production, PUBLIC_SITE_URL: 'https://localhost' })).toThrow(
+      /PUBLIC_SITE_URL: must not be a local address in production/,
+    );
+    expect(() => loadEnv({ ...production, SENTRY_DSN: 'not a url' })).toThrow(/SENTRY_DSN/);
+  });
+
+  it('never prints a rejected value in the startup error', () => {
+    const leaked = 'super-secret-value-that-is-too-short';
+    try {
+      loadEnv({ ...valid, ORIGIN_PROXY_SECRET: 'tiny', JWT_SECRET: leaked.slice(0, 10) });
+      expect.unreachable('loadEnv should have thrown');
+    } catch (error) {
+      const message = (error as Error).message;
+      expect(message).toMatch(/JWT_SECRET/);
+      expect(message).not.toContain(leaked.slice(0, 10));
+      expect(message).not.toContain('tiny');
+    }
+  });
+
+  it('sets proxy trust, rate limits and the origin lock from the environment', () => {
+    const dev = configFromEnv(loadEnv(valid));
+    expect(dev.trustProxy).toBe(false);
+    expect(dev.publicRateLimits?.general).toEqual({ max: 60, windowMs: 60_000 });
+    expect(dev.publicRateLimits?.inquiries).toEqual({ max: 5, windowMs: 3_600_000 });
+    expect(dev.originProxySecret).toBeUndefined();
+
+    const production = { ...valid, NODE_ENV: 'production', PUBLIC_SITE_URL: 'https://example.com' };
+    expect(configFromEnv(loadEnv(production)).trustProxy).toBe(1);
+    expect(configFromEnv(loadEnv({ ...production, TRUST_PROXY_HOPS: '2' })).trustProxy).toBe(2);
+    expect(() => loadEnv({ ...production, TRUST_PROXY_HOPS: '9' })).toThrow(/TRUST_PROXY_HOPS/);
+
+    expect(() => loadEnv({ ...valid, ORIGIN_PROXY_SECRET: 'short' })).toThrow(
+      /ORIGIN_PROXY_SECRET/,
+    );
+    const locked = loadEnv({ ...valid, ORIGIN_PROXY_SECRET: 'x'.repeat(40) });
+    expect(configFromEnv(locked).originProxySecret).toBe('x'.repeat(40));
+  });
+
+  it('accepts an optional SENTRY_DSN URL', () => {
+    expect(loadEnv({ ...valid, SENTRY_DSN: '' }).SENTRY_DSN).toBeUndefined();
+    expect(() => loadEnv({ ...valid, SENTRY_DSN: 'not a url' })).toThrow(/SENTRY_DSN/);
+    const dsn = 'https://key@o1.ingest.sentry.io/1';
+    expect(loadEnv({ ...valid, SENTRY_DSN: dsn }).SENTRY_DSN).toBe(dsn);
   });
 });

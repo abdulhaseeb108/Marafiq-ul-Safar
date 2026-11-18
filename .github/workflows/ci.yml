@@ -19,6 +19,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # Phase 7: fail on any high or critical advisory, in runtime or dev dependencies.
+      - run: npm audit --audit-level=high
       - run: npm run lint
       - run: npm test
       - run: npm run build

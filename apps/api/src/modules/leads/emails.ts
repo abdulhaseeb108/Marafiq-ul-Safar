@@ -5,6 +5,8 @@
  */
 import type { Language } from '@marafiq/shared';
 import type { EmailAdapter, EmailMessage } from '../../adapters/email/email.js';
+import { errorName, log } from '../../lib/logger.js';
+import { reportError } from '../../lib/monitoring.js';
 
 const KARACHI = { timeZone: 'Asia/Karachi', dateStyle: 'medium', timeStyle: 'short' } as const;
 
@@ -120,12 +122,9 @@ export async function sendQuietly(email: EmailAdapter, message: EmailMessage): P
     await email.send(message);
     return true;
   } catch (error) {
-    if (process.env.NODE_ENV !== 'test') {
-      console.error(
-        `Email ${message.kind} failed:`,
-        error instanceof Error ? error.message : 'unknown',
-      );
-    }
+    // Kind and error class only: a provider's message can quote the address.
+    log.error('email failed', { kind: message.kind, error: errorName(error) });
+    reportError(error, { area: 'email', kind: message.kind });
     return false;
   }
 }

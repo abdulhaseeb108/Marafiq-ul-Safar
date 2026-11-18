@@ -1,3 +1,5 @@
+import { log } from '../../lib/logger.js';
+
 /**
  * Outgoing email (docs/02 section 5). The app only depends on this interface:
  * Resend in production, a log-only stand-in in development, memory in tests.
@@ -19,7 +21,10 @@ export interface EmailAdapter {
 export class LogEmail implements EmailAdapter {
   readonly name = 'log only (no RESEND_API_KEY)';
   async send(message: EmailMessage): Promise<void> {
-    console.log(`[email] ${message.kind}: "${message.subject}" (not sent: log-only adapter)`);
+    log.info('email not sent (log-only adapter)', {
+      kind: message.kind,
+      subject: message.subject,
+    });
   }
 }
 

@@ -57,8 +57,8 @@ The AI builder uses the **default** until you change it. Edit this file when you
 | 41 | Effect of deactivation, password change, 2FA reset | All of that user's sessions end immediately | – |
 | 42 | Failed-login audit for an unknown email | Recorded without the typed email (people paste passwords into that box) | – |
 | 43 | Cookies in development | `Secure` flag is off only when `NODE_ENV=development` so http://localhost works in every browser; on in test and production. `SameSite=Strict` everywhere | – |
-| 44 | Client IP behind a proxy | One proxy hop is trusted in production only. Confirm this matches the host (Railway/VPS + Cloudflare) in Phase 7 | Phase 7 |
-| 45 | CORS | Not enabled: the web app reaches the API on the same origin (Vite proxy in dev). The allow-list comes in Phase 7 | Phase 7 |
+| 44 | Client IP behind a proxy | Production trusts `TRUST_PROXY_HOPS` proxies (default 1). The Pages Function sets `X-Forwarded-For` to Cloudflare's `CF-Connecting-IP`, and `ORIGIN_PROXY_SECRET` makes the API refuse requests that skip it. The hop count must be confirmed on staging (docs/DEPLOY.md §9 step 4) | Phase 7 (done; confirm on staging) |
+| 45 | CORS | The site and API stay on one origin: Cloudflare Pages serves the web app and forwards `/api/*` to the API host through a Pages Function. An allow-list (`WEB_ORIGIN`) exists for a split deployment and is blank by default | Phase 7 (done) |
 | 46 | TOTP code reuse inside its 30-second window | Allowed (standard behaviour). Can be tightened in Phase 7 | Phase 7 |
 
 ## Phase 2 decisions made by the builder (review and edit)
@@ -130,7 +130,7 @@ The AI builder uses the **default** until you change it. Edit this file when you
 | 100 | `GET /public/hotels` | Active hotels with a row in a published pack that has not ended. "From" prices: the lowest per-person sharing price and the lowest per-room price over those packs, with supplier, pack and issue date. When `showSupplierRates` is off, the SAR figure is hidden and only PKR is shown | Phase 5 |
 | 101 | Saving calculations | Saved results are immutable: every update path is refused by the model. No public route saves yet; inquiries will save the server-side recalculation in Phase 6 | Phase 6 |
 | 102 | Calculation hash | SHA-256 over engine version, inputs, rate versions used, FX rate, markup, child/infant settings and the flight estimate used. Not the time, so the same inputs and versions give the same hash | Phase 6 |
-| 103 | Rate limits on public routes | Not yet; Phase 7 adds them (doc 02 §4: 60/min per IP) | Phase 7 |
+| 103 | Rate limits on public routes | Per client IP, in memory (one API process): 60 requests/min on all `/public` routes; 5 accepted inquiries/hour; 20 not-found quote links per 15 min. Over the limit = HTTP 429 with `Retry-After` | Phase 7 (done) |
 
 ## Phase 5 decisions made by the builder (review and edit)
 
@@ -171,9 +171,17 @@ The AI builder uses the **default** until you change it. Edit this file when you
 | 136 | Quotes at the same moment (Phase 6 review) | A lead has at most one draft, one sent and one accepted quote. Two staff creating a quote or a new version at once: one succeeds, the other gets 409 `draft_exists` with the winning draft's id. A draft cannot be sent while the customer holds another sent quote for the lead that it does not replace (409 `other_quote_sent`). A lead accepted through one quote cannot be accepted through another (409 `quote_other_accepted`). Kept by re-checking inside the transaction (each change first writes the lead, so two changes conflict and one is retried) and, as the last line, by the unique index `one_live_quote_per_status` on quotes `{leadId, status}` for those three statuses, which also holds on a single server without transactions. It needs MongoDB 6.0 or newer (`$in` in a partial index) | Launch |
 | 137 | Renewing a link at the same moment as an acceptance | Whichever is stored first wins. Accepted first: the renewal is refused (409 `quote_not_sent`) and the customer's link keeps working. Renewed first: the old link gets the usual 404 and accepts nothing; the new link can be accepted | — |
 | 138 | A write refused by a unique index that no service expected | Answered as 409 `conflict` ("changed by someone else at the same time"), never 500, and never with the database's message (it names the duplicated value) | — |
+| 139 | Security headers (Phase 7) | API: helmet with no content security policy (it returns JSON and supplier files), `X-Frame-Options: SAMEORIGIN` so staff can preview PDFs in a same-site frame, `Cross-Origin-Resource-Policy: same-site`. Web: strict same-origin policy in `apps/web/public/_headers` (no third-party scripts, styles, fonts or connections) | Phase 7 |
+| 140 | Spam check on inquiries (Phase 7) | Honeypot field `website` (off-screen, out of tab order, hidden from screen readers) or more than two links in the notes: the API answers 201 with a decoy reference and stores and sends nothing | Phase 7 |
+| 141 | Logs (Phase 7) | One line per request: request id, method, route **pattern** (never the URL, which can hold a quote token), status, duration. JSON in production. No names, phones, emails, IPs, bodies or raw driver messages. Successful health checks are not logged | Phase 7 |
+| 142 | Sentry (Phase 7) | API only, on when `SENTRY_DSN` is set. No automatic request capture; every event loses its request, user, breadcrumbs and messages before sending. The web app does not report to Sentry yet | Phase 7 |
+| 143 | Indexes in production (Phase 7) | Start-up creates missing indexes but never drops one; undeclared indexes are logged. `npm run db:indexes -w @marafiq/api -- --yes` drops them on purpose | Phase 7 |
+| 144 | Backups (Phase 7) | `mongodump --archive --gzip` to a separate private R2 bucket with a SHA-256, 30-day retention keeping at least the newest 7. Restore always names its target, checks the checksum, and refuses the live database without `--allow-live-database`. Schedule still to choose (docs/DEPLOY.md §10) | Phase 7 |
+| 145 | Origin lock or CORS, not both (Phase 7) | `ORIGIN_PROXY_SECRET` and `WEB_ORIGIN` together are refused at startup: in a split deployment browsers call the API directly and cannot send the proxy secret, so every request would get 403 | Phase 7 |
+| 146 | Zod in the browser (Phase 7) | The web app sets Zod's `jitless` mode before any schema is created (`apps/web/src/zod-csp.ts`, first import in `main.tsx`), so validation never uses `new Function` and the site's CSP needs no `'unsafe-eval'`. Same results, no generated code. The API keeps Zod's default | Phase 7 |
 
 ## Open items carried over
 
 - **Duplicate rate-sheet upload** (reported after Phase 3): still seen on the owner's machine after the fix package. Parked at the owner's request (still parked after Phase 5). To check later: the browser Network tab response for the second upload (409 or 201?), the API startup log ("Index could not be synced"), and whether the integrated `documents.service.ts` matches the delivered one.
-- **Rate limits** on public routes (inquiries 5/hour per IP, 60/min overall): Phase 7.
+- **Rate limits** on public routes (inquiries 5/hour per IP, 60/min overall): done in Phase 7 (decision 103).
 - **Urdu text** is an AI draft; a native speaker must approve `apps/web/src/locales/ur.json` and the Urdu emails in `apps/api/src/modules/leads/emails.ts` before launch (decision 15).

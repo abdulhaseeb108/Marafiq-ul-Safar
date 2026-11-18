@@ -1,13 +1,19 @@
 import type { ApiError } from '@marafiq/shared';
 import cookieParser from 'cookie-parser';
 import express, { type ErrorRequestHandler, type Express, type RequestHandler } from 'express';
+import helmet from 'helmet';
 import { LogEmail, type EmailAdapter } from './adapters/email/email.js';
 import { MemoryStorage, type StorageAdapter } from './adapters/storage/storage.js';
 import type { ExtractionAdapter } from './adapters/extraction/extraction.js';
 import type { AppConfig } from './config/app-config.js';
 import type { AdminRoute } from './lib/admin-route.js';
 import { HttpError, conflict, isDuplicateKeyError } from './lib/http-error.js';
+import { corsAllowList } from './lib/cors.js';
+import { errorName, log } from './lib/logger.js';
+import { reportError } from './lib/monitoring.js';
+import { requireOriginSecret } from './lib/origin-lock.js';
 import { FailureLimiter } from './lib/rate-limiter.js';
+import { rememberBase, requestLog, routeLabel } from './lib/request-log.js';
 import { auditAdminRoutes } from './modules/audit/audit.routes.js';
 import { makeAuthMiddleware } from './modules/auth/auth.middleware.js';
 import { createAuthRouter } from './modules/auth/auth.routes.js';
@@ -89,7 +95,7 @@ const notFoundHandler: RequestHandler = (_req, res) => {
 
 function makeErrorHandler(config: AppConfig): ErrorRequestHandler {
   // Express identifies error handlers by their four arguments.
-  return (err: unknown, _req, res, _next) => {
+  return (err: unknown, req, res, _next) => {
     if (err instanceof HttpError) {
       if (err.headers) res.set(err.headers);
       const body: ApiError = {
@@ -135,10 +141,13 @@ function makeErrorHandler(config: AppConfig): ErrorRequestHandler {
       res.status(status).json(body);
       return;
     }
-    // Log the error name only: no request bodies or personal data in logs.
+    // Error name, route pattern and request id only: no bodies, URLs or personal data.
+    const route = routeLabel(req);
+    const requestId = req.requestId ?? 'none';
     if (config.nodeEnv !== 'test') {
-      console.error('Unhandled error:', err instanceof Error ? err.name : 'unknown');
+      log.error('unhandled error', { error: errorName(err), route, requestId });
     }
+    reportError(err, { route, requestId });
     const body: ApiError = { error: { code: 'internal_error', message: 'Something went wrong' } };
     res.status(500).json(body);
   };
@@ -159,14 +168,31 @@ export function createApp(options: { config: AppConfig; deps?: Partial<AppDeps> 
 
   const app = express();
   app.disable('x-powered-by');
-  app.set('trust proxy', config.trustProxy ? 1 : false);
+  app.set('trust proxy', config.trustProxy === true ? 1 : config.trustProxy);
+  app.use(requestLog);
+  app.use(
+    helmet({
+      // The API returns JSON and supplier files, never pages: the web app's
+      // policy lives in apps/web/public/_headers. Staff view PDF originals in
+      // a frame on the same site, so framing is limited to that origin.
+      contentSecurityPolicy: false,
+      frameguard: { action: 'sameorigin' },
+      crossOriginResourcePolicy: { policy: 'same-site' },
+    }),
+  );
+  app.use(requireOriginSecret(config.originProxySecret));
+  app.use(corsAllowList(config.webOrigins));
   app.use(express.json({ limit: '100kb' }));
   app.use(cookieParser());
 
   // Public
-  app.use('/api/v1/health', healthRouter);
-  app.use('/api/v1/public', createPublicRouter({ email: deps.email, config }));
-  app.use('/api/v1/auth', createAuthRouter({ config, limiter }, requireAuth));
+  app.use('/api/v1/health', rememberBase, healthRouter);
+  app.use(
+    '/api/v1/public',
+    rememberBase,
+    createPublicRouter({ email: deps.email, config }, config.publicRateLimits),
+  );
+  app.use('/api/v1/auth', rememberBase, createAuthRouter({ config, limiter }, requireAuth));
 
   // Staff only: each route is mounted behind sign-in and its role check.
   for (const route of adminRoutes) {

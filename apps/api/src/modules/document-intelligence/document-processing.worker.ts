@@ -14,6 +14,7 @@ import {
 import type { DocumentParserLimits } from './document-parser-limits.js';
 import { persistDocumentEvidence } from './document-evidence.service.js';
 import { parseSupplierDocument } from './document-parsers.js';
+import { errorName, log } from '../../lib/logger.js';
 
 const LEASE_DURATION_MS = 120_000;
 const HEARTBEAT_INTERVAL_MS = 20_000;
@@ -142,18 +143,12 @@ export function startDocumentProcessingWorker(
             await processOne(job, options, scanner, timing);
           } catch (error) {
             if (error instanceof Error && error.name === 'JobLeaseLostError') continue;
-            console.error(
-              'Document processing attempt failed:',
-              error instanceof Error ? error.name : 'unknown',
-            );
+            log.error('Document processing attempt failed', { error: errorName(error) });
           }
           continue;
         }
       } catch (error) {
-        console.error(
-          'Document processing worker iteration failed:',
-          error instanceof Error ? error.name : 'unknown',
-        );
+        log.error('Document processing worker iteration failed', { error: errorName(error) });
       }
       if (!stopping) await wait();
     }

@@ -5,10 +5,10 @@ Read this file at the start of every session. Then read the doc named in the cur
 ## What we are building
 A bilingual (English + Urdu, RTL) Umrah planning and assisted-quote website for Pakistan-origin travelers, operated by a Pakistan SMC private limited company. Staff upload supplier rate sheets (PDF/image from WhatsApp); the system extracts them with the Claude API, staff review and publish, and the public calculator prices trips from the published rates. Customers request a confirmed quote; staff build and send a dated quote. **No online payments in this version.**
 
-Full detail: `docs/01-PRODUCT-SPEC.md`, `docs/02-DATA-MODEL-AND-API.md`, `docs/03-RATE-SHEET-INGESTION-AND-PRICING.md`, `docs/04-BUILD-PHASES.md`.
+Full detail: `docs/01-PRODUCT-SPEC.md`, `docs/02-DATA-MODEL-AND-API.md`, `docs/03-RATE-SHEET-INGESTION-AND-PRICING.md`, `docs/04-BUILD-PHASES.md`. Deployment, backups and the launch checklist: `docs/DEPLOY.md`.
 
 ## Stack (do not substitute without asking)
-- Monorepo (npm workspaces): `apps/web` (React + Vite + TypeScript + Tailwind + react-i18next), `apps/api` (Node 20 + Express + TypeScript), `packages/shared` (Zod schemas, enums, money helpers).
+- Monorepo (npm workspaces): `apps/web` (React + Vite + TypeScript + Tailwind + react-i18next), `apps/api` (Node 22 + Express + TypeScript), `packages/shared` (Zod schemas, enums, money helpers).
 - MongoDB with Mongoose. Validation: Zod on every request body and on every Claude extraction result.
 - Auth: staff = email + password (argon2), short-lived JWT in httpOnly cookie + refresh cookie, TOTP 2FA for admin role. Customers = no account; they open quotes by private token link.
 - Files: S3-compatible bucket (Cloudflare R2) via `@aws-sdk/client-s3`. Email: Resend. Errors: Sentry.
@@ -36,7 +36,7 @@ Full detail: `docs/01-PRODUCT-SPEC.md`, `docs/02-DATA-MODEL-AND-API.md`, `docs/0
 - Accessibility target: WCAG 2.2 AA. Mobile first (test at 360px width).
 
 ## Commands (create these scripts in Phase 0)
-`npm run dev` · `npm run build` · `npm test` · `npm run lint` · `npm run seed` · `npm run e2e`
+`npm run dev` · `npm run build` · `npm test` · `npm run lint` · `npm run seed` · `npm run e2e` · `npm run backup` · `npm run restore`
 
 ## Working method
 For each task: restate the goal in two lines, list files you will touch, write tests first for pricing/status/permissions, implement, run tests, then report: what changed, assumptions made, what to test by hand. If a requirement is ambiguous, pick the safest option in `docs/05-OPEN-DECISIONS.md`, note it, and continue; do not stop to ask unless data loss or security is involved.

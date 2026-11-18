@@ -25,6 +25,18 @@ export class FailureLimiter {
     if (this.entries.size > 10_000) this.sweep();
   }
 
+  /**
+   * Counts one attempt if the key is under its limit. Returns 0 when the
+   * attempt is allowed, otherwise the seconds until it may try again (and
+   * the refused attempt is not counted).
+   */
+  take(key: string): number {
+    const wait = this.retryAfterSeconds(key);
+    if (wait > 0) return wait;
+    this.recordFailure(key);
+    return 0;
+  }
+
   reset(key: string): void {
     this.entries.delete(key);
   }

@@ -23,6 +23,9 @@ export function testConfig(overrides: Partial<AppConfig> = {}): AppConfig {
     totpKey: Buffer.alloc(32, 7),
     secureCookies: true,
     trustProxy: true, // lets tests pick a client IP with X-Forwarded-For
+    // Off so suites can send many requests; public-limits.test.ts turns them on.
+    publicRateLimits: null,
+    webOrigins: [],
     accessTtlSeconds: 900,
     refreshTtlSeconds: 7 * 24 * 3600,
     mfaTtlSeconds: 300,

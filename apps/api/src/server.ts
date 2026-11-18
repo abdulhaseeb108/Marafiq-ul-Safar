@@ -10,6 +10,8 @@ import { createApp } from './app.js';
 import { configFromEnv } from './config/app-config.js';
 import { loadEnv, type Env } from './config/env.js';
 import { connectDb, disconnectDb, syncIndexes } from './db/connect.js';
+import { configureLogger, errorName, log } from './lib/logger.js';
+import { closeMonitoring, initMonitoring } from './lib/monitoring.js';
 import {
   startDocumentProcessingWorker,
   type DocumentProcessingWorker,
@@ -55,14 +57,25 @@ function chooseEmail(env: Env): EmailAdapter {
 
 async function main(): Promise<void> {
   const env = loadEnv();
+  configureLogger({ json: env.NODE_ENV === 'production', silent: false });
+  if (
+    initMonitoring({
+      dsn: env.SENTRY_DSN,
+      environment: env.NODE_ENV,
+      release: env.SENTRY_RELEASE,
+    })
+  ) {
+    log.info('Error reporting: Sentry on.');
+  }
   await connectDb(env.MONGODB_URI);
-  for (const problem of await syncIndexes()) {
-    console.warn(`Index could not be synced (${problem}). Fix the data, then restart.`);
+  // Production never drops an index on restart (db/connect.ts).
+  for (const problem of await syncIndexes({ drop: env.NODE_ENV !== 'production' })) {
+    log.warn('index problem: fix it, then restart', { problem });
   }
 
   const seeded = await seedFirstAdmin(env);
   if (seeded === 'created') {
-    console.log(
+    log.info(
       'First admin created from SEED_ADMIN_EMAIL. Sign in, set up 2FA, then remove SEED_ADMIN_PASSWORD from .env.',
     );
   }
@@ -71,12 +84,12 @@ async function main(): Promise<void> {
   const extraction = env.ANTHROPIC_API_KEY
     ? new AnthropicExtraction(env.ANTHROPIC_API_KEY, env.EXTRACTION_MODEL)
     : undefined;
-  console.log(
+  log.info(
     `Rate sheets: files in ${storage.name}; reading ${extraction ? `with ${extraction.model}` : 'by hand only (no ANTHROPIC_API_KEY)'}.`,
   );
 
   const email = chooseEmail(env);
-  console.log(`Email: ${email.name}.`);
+  log.info(`Email: ${email.name}.`);
 
   const host = env.NODE_ENV === 'development' ? '127.0.0.1' : undefined;
   const config = configFromEnv(env);
@@ -99,7 +112,7 @@ async function main(): Promise<void> {
   });
 
   apiServer.on('error', (error) => {
-    console.error('API server error:', error.message);
+    log.error('API server error', { error: errorName(error) });
     process.exitCode = 1;
     void shutdown('server error');
   });
@@ -109,16 +122,16 @@ async function main(): Promise<void> {
     storage,
     limits: config.documentParserLimits,
   });
-  console.warn(
+  log.warn(
     'Document intelligence: malware scanner is not configured; files will remain unparsed until scanning is available.',
   );
-  console.log(`API listening on http://localhost:${env.PORT} (${env.NODE_ENV})`);
+  log.info(`API listening on port ${env.PORT} (${env.NODE_ENV})`);
 }
 
 async function shutdown(reason: string): Promise<void> {
   if (shuttingDown) return;
   shuttingDown = true;
-  console.log(`API shutting down (${reason}).`);
+  log.info(`API shutting down (${reason}).`);
 
   const server = apiServer;
   if (server?.listening) {
@@ -127,10 +140,7 @@ async function shutdown(reason: string): Promise<void> {
         server.close((error) => (error ? reject(error) : resolve()));
       });
     } catch (error) {
-      console.error(
-        'API HTTP shutdown failed:',
-        error instanceof Error ? error.message : 'unknown error',
-      );
+      log.error('API HTTP shutdown failed', { error: errorName(error) });
       process.exitCode = 1;
     }
   }
@@ -141,10 +151,7 @@ async function shutdown(reason: string): Promise<void> {
     try {
       await worker.stop();
     } catch (error) {
-      console.error(
-        'Document processing worker shutdown failed:',
-        error instanceof Error ? error.name : 'unknown',
-      );
+      log.error('Document processing worker shutdown failed', { error: errorName(error) });
       process.exitCode = 1;
     }
   }
@@ -152,25 +159,25 @@ async function shutdown(reason: string): Promise<void> {
   try {
     await disconnectDb();
   } catch (error) {
-    console.error(
-      'API database shutdown failed:',
-      error instanceof Error ? error.message : 'unknown error',
-    );
+    log.error('API database shutdown failed', { error: errorName(error) });
     process.exitCode = 1;
   }
+  await closeMonitoring();
 }
 
 main().catch((error: unknown) => {
   // Message only: connection strings and secrets must not reach the logs.
-  console.error('API failed to start:', error instanceof Error ? error.message : 'unknown error');
+  // Configuration problems name the variable and the reason, never its value
+  // (config/env.ts), so the message is safe and is what the operator needs.
+  log.error('API failed to start', {
+    reason: error instanceof Error ? error.message : 'unknown error',
+  });
   void disconnectDb()
     .catch((disconnectError: unknown) => {
-      console.error(
-        'API database shutdown failed:',
-        disconnectError instanceof Error ? disconnectError.message : 'unknown error',
-      );
+      log.error('API database shutdown failed', { error: errorName(disconnectError) });
     })
     .finally(() => {
       process.exitCode = 1;
+      void closeMonitoring();
     });
 });
