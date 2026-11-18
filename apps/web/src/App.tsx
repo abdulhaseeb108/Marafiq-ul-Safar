@@ -5,6 +5,8 @@ import { FlightEstimatesPage } from './admin/FlightEstimatesPage';
 import { FxPage } from './admin/FxPage';
 import { HotelsPage } from './admin/HotelsPage';
 import { LoginPage } from './admin/LoginPage';
+import { RatePackagePage } from './admin/RatePackagePage';
+import { RateSheetsPage } from './admin/RateSheetsPage';
 import { SettingsPage } from './admin/SettingsPage';
 import { SuppliersPage } from './admin/SuppliersPage';
 import { UsersPage } from './admin/UsersPage';
@@ -28,6 +30,8 @@ export function App() {
         <Route element={<AdminShell />}>
           <Route index element={<DashboardPage />} />
           <Route path="users" element={<UsersPage />} />
+          <Route path="rate-sheets" element={<RateSheetsPage />} />
+          <Route path="rate-sheets/:packageId" element={<RatePackagePage />} />
           <Route path="suppliers" element={<SuppliersPage />} />
           <Route path="hotels" element={<HotelsPage />} />
           <Route path="settings" element={<SettingsPage />} />

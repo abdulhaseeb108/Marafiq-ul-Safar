@@ -7,7 +7,6 @@
  * result says so. No hotel names are invented (CLAUDE.md hard rule 8).
  */
 import { existsSync, readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { fxRateString } from '@marafiq/shared';
 import { z } from 'zod';
@@ -174,7 +173,8 @@ async function main(): Promise<void> {
 }
 
 // Only run when executed directly, not when imported by a test.
-if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+// pathToFileURL gives the same form as import.meta.url on Windows (file:///C:/...) and POSIX.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch((error: unknown) => {
     console.error('Seed failed:', error instanceof Error ? error.message : 'unknown error');
     process.exit(1);

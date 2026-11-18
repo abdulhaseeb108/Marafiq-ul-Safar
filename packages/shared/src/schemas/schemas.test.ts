@@ -6,7 +6,6 @@ const id2 = '64b7f0c2a1b2c3d4e5f60719';
 const now = '2026-11-11T08:00:00.000Z';
 const base = { _id: id, createdAt: now, updatedAt: now };
 
-const totals = { perPersonMinorPKR: 6_060_000, groupMinorPKR: 24_240_000, groupMinorSAR: 323_200 };
 const fx = { rate: '75.00', effectiveAt: now };
 
 /** One valid document per collection in docs/02 section 1. */
@@ -89,18 +88,40 @@ const valid = {
   },
   CalculationSchema: {
     ...base,
-    inputs: {},
+    inputs: {
+      departureCity: 'Islamabad',
+      arrivalDate: '2027-02-08',
+      flexibilityDays: 0,
+      nightsMakkah: 3,
+      nightsMadinah: 0,
+      order: 'makkah_first',
+      travelers: { adults: 2, children: 0, infants: 0 },
+      rooms: [{ occupancy: 'double', persons: 2 }],
+      hotels: { makkah: id2 },
+      visa: 'direct',
+      flight: 'self',
+      extras: [],
+    },
     rateVersionSnapshot: [{ packageId: id, version: 1, supplierId: id2, issueDate: '2026-10-27' }],
     fx,
     markupPercent: 0,
     lineItems: [],
-    missing: ['Flight: request a quote'],
+    missing: [{ kind: 'flight', code: 'flight_no_estimate', message: 'Flight: request a quote' }],
     assumptions: [],
     exclusions: [],
-    totals: { ...totals, isPartial: true },
+    totals: {
+      groupMinorSAR: 0,
+      groupMinorPKR: 0,
+      perPersonMinorSAR: 0,
+      perPersonMinorPKR: 0,
+      payingPersons: 2,
+      isPartial: true,
+      range: null,
+    },
+    calculatedAt: now,
     expiresAt: now,
-    hash: 'abc123',
-    engineVersion: '0.0.0',
+    hash: 'a'.repeat(64),
+    engineVersion: '1.0.0',
   },
   TravelerSchema: { ...base, name: 'Test Traveler', phone: '+923001234567', language: 'ur' },
   LeadSchema: {

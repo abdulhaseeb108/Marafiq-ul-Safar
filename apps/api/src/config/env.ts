@@ -5,6 +5,8 @@ const blankToUndefined = (value: unknown) =>
   typeof value === 'string' && value.trim() === '' ? undefined : value;
 
 const optionalString = z.preprocess(blankToUndefined, z.string().optional());
+const positiveInteger = (fallback: number, maximum = Number.MAX_SAFE_INTEGER) =>
+  z.preprocess(blankToUndefined, z.coerce.number().int().min(1).max(maximum).default(fallback));
 const secret = z.preprocess(
   blankToUndefined,
   z.string({ error: 'is required' }).min(32, 'must be at least 32 characters'),
@@ -27,12 +29,54 @@ const EnvSchema = z
       z.string({ error: 'is required' }).regex(/^[0-9a-fA-F]{64}$/, 'must be 64 hex characters'),
     ),
     COOKIE_DOMAIN: optionalString,
+    /** Rate sheet storage. All four set = Cloudflare R2; otherwise a local folder. */
+    R2_ENDPOINT: optionalString,
+    R2_ACCESS_KEY_ID: optionalString,
+    R2_SECRET_ACCESS_KEY: optionalString,
+    R2_BUCKET: optionalString,
+    /** Rate sheet reading. Without a key, sheets are entered by hand. */
+    ANTHROPIC_API_KEY: optionalString,
+    EXTRACTION_MODEL: z.preprocess(blankToUndefined, z.string().default('claude-sonnet-5-5')),
     SEED_ADMIN_EMAIL: optionalString,
     SEED_ADMIN_PASSWORD: optionalString,
+    DOCUMENT_MAX_FILE_BYTES: positiveInteger(20 * 1024 * 1024, 100 * 1024 * 1024),
+    DOCUMENT_MAX_PDF_PAGES: positiveInteger(100, 1_000),
+    DOCUMENT_MAX_PDF_PAGE_TEXT_BYTES: positiveInteger(1024 * 1024, 64 * 1024 * 1024),
+    DOCUMENT_MAX_IMAGE_SIDE: positiveInteger(10_000, 50_000),
+    DOCUMENT_MAX_IMAGE_PIXELS: positiveInteger(20_000_000, 500_000_000),
+    DOCUMENT_MAX_XLSX_SHEETS: positiveInteger(20, 100),
+    DOCUMENT_MAX_XLSX_CELLS: positiveInteger(200_000, 1_000_000),
+    DOCUMENT_MAX_XLSX_ZIP_ENTRIES: positiveInteger(1_000, 10_000),
+    DOCUMENT_MAX_XLSX_UNCOMPRESSED_BYTES: positiveInteger(64 * 1024 * 1024, 512 * 1024 * 1024),
+    DOCUMENT_MAX_XLSX_ENTRY_BYTES: positiveInteger(16 * 1024 * 1024, 128 * 1024 * 1024),
+    DOCUMENT_MAX_XLSX_COMPRESSION_RATIO: positiveInteger(250, 10_000),
+    DOCUMENT_MAX_CSV_RECORDS: positiveInteger(100_000, 2_000_000),
+    DOCUMENT_MAX_CSV_COLUMNS: positiveInteger(200, 10_000),
+    DOCUMENT_MAX_CSV_CELLS: positiveInteger(1_000_000, 5_000_000),
+    DOCUMENT_MAX_EVIDENCE_RECORDS: positiveInteger(10_000, 100_000),
+    DOCUMENT_MAX_EVIDENCE_BYTES: positiveInteger(32 * 1024 * 1024, 256 * 1024 * 1024),
+    DOCUMENT_EVIDENCE_CHUNK_BYTES: positiveInteger(48 * 1024, 64 * 1024),
+    DOCUMENT_MAX_CONCURRENT_UPLOADS: positiveInteger(2, 8),
   })
   .refine((env) => env.JWT_SECRET !== env.JWT_REFRESH_SECRET, {
     message: 'must differ from JWT_SECRET',
     path: ['JWT_REFRESH_SECRET'],
+  })
+  .superRefine((env, context) => {
+    if (env.DOCUMENT_MAX_XLSX_ENTRY_BYTES > env.DOCUMENT_MAX_XLSX_UNCOMPRESSED_BYTES) {
+      context.addIssue({
+        code: 'custom',
+        message: 'must not exceed DOCUMENT_MAX_XLSX_UNCOMPRESSED_BYTES',
+        path: ['DOCUMENT_MAX_XLSX_ENTRY_BYTES'],
+      });
+    }
+    if (env.DOCUMENT_EVIDENCE_CHUNK_BYTES > env.DOCUMENT_MAX_EVIDENCE_BYTES) {
+      context.addIssue({
+        code: 'custom',
+        message: 'must not exceed DOCUMENT_MAX_EVIDENCE_BYTES',
+        path: ['DOCUMENT_EVIDENCE_CHUNK_BYTES'],
+      });
+    }
   });
 
 export type Env = z.infer<typeof EnvSchema>;

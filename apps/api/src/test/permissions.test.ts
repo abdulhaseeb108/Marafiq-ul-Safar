@@ -9,16 +9,19 @@ import request from 'supertest';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { listAdminRoutes } from '../app.js';
 import {
-  makeApp,
+  fakePdf,
+  makeSheetApp,
   seedFlightEstimate,
   seedHotel,
+  seedSheetScenario,
   seedSupplier,
   seedUser,
+  signInAs,
   signInWithRole,
   TEST_PASSWORD,
 } from './helpers.js';
 
-type Method = 'get' | 'post' | 'patch' | 'put';
+type Method = 'get' | 'post' | 'patch' | 'put' | 'delete';
 
 interface RouteContext {
   userId: string;
@@ -26,6 +29,12 @@ interface RouteContext {
   hotelId: string;
   duplicateHotelId: string;
   flightEstimateId: string;
+  documentId: string;
+  intelligenceDocumentId: string;
+  reviewPackageId: string;
+  rateId: string;
+  candidateRateId: string;
+  rollbackPackageId: string;
 }
 
 interface ProtectedRoute {
@@ -36,6 +45,8 @@ interface ProtectedRoute {
   /** Which seeded entity fills :id. Defaults to the user. */
   id?: (ctx: RouteContext) => string;
   body?: (ctx: RouteContext) => object;
+  /** Sent as a multipart upload instead of JSON. */
+  upload?: (ctx: RouteContext) => { fields: Record<string, string>; file: Buffer; name: string };
 }
 
 const ANY_STAFF = ROLES;
@@ -176,12 +187,155 @@ const PROTECTED_ROUTES: ProtectedRoute[] = [
     id: (ctx) => ctx.flightEstimateId,
     body: () => ({ note: 'Updated note' }),
   },
+
+  // rate sheets: upload, review and publish are admin and ops
+  {
+    method: 'post',
+    pattern: '/api/v1/admin/source-documents',
+    allowed: ADMIN_OPS,
+    upload: (ctx) => ({
+      fields: { supplierId: ctx.supplierId },
+      file: fakePdf(`sweep ${Math.random()}`),
+      name: 'sheet.pdf',
+    }),
+  },
+  { method: 'get', pattern: '/api/v1/admin/source-documents', allowed: ADMIN_OPS },
+  {
+    method: 'post',
+    pattern: '/api/v1/admin/document-intelligence/source-documents',
+    allowed: ADMIN_OPS,
+    upload: (ctx) => ({
+      fields: { supplierId: ctx.supplierId },
+      file: fakePdf(`intelligence sweep ${Math.random()}`),
+      name: 'supplier.pdf',
+    }),
+  },
+  {
+    method: 'get',
+    pattern: '/api/v1/admin/document-intelligence/source-documents/:id/file',
+    allowed: ADMIN_OPS,
+    id: (ctx) => ctx.intelligenceDocumentId,
+  },
+  {
+    method: 'get',
+    pattern: '/api/v1/admin/document-intelligence/source-documents/:id/processing',
+    allowed: ADMIN_OPS,
+    id: (ctx) => ctx.intelligenceDocumentId,
+  },
+  {
+    method: 'get',
+    pattern: '/api/v1/admin/document-intelligence/source-documents/:id/evidence',
+    allowed: ADMIN_OPS,
+    id: (ctx) => ctx.intelligenceDocumentId,
+  },
+  {
+    method: 'post',
+    pattern: '/api/v1/admin/document-intelligence/source-documents/:id/retry',
+    allowed: ADMIN_OPS,
+    id: (ctx) => ctx.intelligenceDocumentId,
+  },
+  {
+    method: 'get',
+    pattern: '/api/v1/admin/source-documents/:id',
+    allowed: ADMIN_OPS,
+    id: (ctx) => ctx.documentId,
+  },
+  {
+    method: 'get',
+    pattern: '/api/v1/admin/source-documents/:id/file',
+    allowed: ADMIN_OPS,
+    id: (ctx) => ctx.documentId,
+  },
+  {
+    method: 'post',
+    pattern: '/api/v1/admin/source-documents/:id/extract',
+    allowed: ADMIN_OPS,
+    id: (ctx) => ctx.documentId,
+  },
+  {
+    method: 'post',
+    pattern: '/api/v1/admin/source-documents/:id/rate-packages',
+    allowed: ADMIN_OPS,
+    id: (ctx) => ctx.documentId,
+    body: () => ({ packName: 'Typed In' }),
+  },
+  { method: 'get', pattern: '/api/v1/admin/rate-packages', allowed: ADMIN_OPS },
+  {
+    method: 'get',
+    pattern: '/api/v1/admin/rate-packages/:id',
+    allowed: ADMIN_OPS,
+    id: (ctx) => ctx.reviewPackageId,
+  },
+  {
+    method: 'patch',
+    pattern: '/api/v1/admin/rate-packages/:id',
+    allowed: ADMIN_OPS,
+    id: (ctx) => ctx.reviewPackageId,
+    body: () => ({ packName: 'Renamed Pack' }),
+  },
+  {
+    method: 'post',
+    pattern: '/api/v1/admin/rate-packages/:id/validate',
+    allowed: ADMIN_OPS,
+    id: (ctx) => ctx.reviewPackageId,
+  },
+  {
+    method: 'post',
+    pattern: '/api/v1/admin/rate-packages/:id/publish',
+    allowed: ADMIN_OPS,
+    id: (ctx) => ctx.reviewPackageId,
+    body: () => ({ acknowledgeWarnings: true }),
+  },
+  {
+    method: 'post',
+    pattern: '/api/v1/admin/rate-packages/:id/reject',
+    allowed: ADMIN_OPS,
+    id: (ctx) => ctx.reviewPackageId,
+  },
+  {
+    method: 'post',
+    pattern: '/api/v1/admin/rate-packages/:id/rollback',
+    allowed: ADMIN_OPS,
+    id: (ctx) => ctx.rollbackPackageId,
+  },
+  {
+    method: 'post',
+    pattern: '/api/v1/admin/rate-packages/:id/hotel-rates',
+    allowed: ADMIN_OPS,
+    id: (ctx) => ctx.reviewPackageId,
+    body: (ctx) => ({ hotelId: ctx.duplicateHotelId, pricingMode: 'on_request' }),
+  },
+  {
+    method: 'patch',
+    pattern: '/api/v1/admin/hotel-rates/:id',
+    allowed: ADMIN_OPS,
+    id: (ctx) => ctx.rateId,
+    body: () => ({ flatNote: 'Checked against the sheet' }),
+  },
+  {
+    method: 'delete',
+    pattern: '/api/v1/admin/hotel-rates/:id',
+    allowed: ADMIN_OPS,
+    id: (ctx) => ctx.rateId,
+  },
+  {
+    method: 'post',
+    pattern: '/api/v1/admin/hotel-rates/:id/confirm-hotel',
+    allowed: ADMIN_OPS,
+    id: (ctx) => ctx.candidateRateId,
+    body: () => ({ action: 'create' }),
+  },
 ];
 
 function send(app: Express, route: ProtectedRoute, ctx: RouteContext, cookie?: string) {
   const path = route.pattern.replace(':id', route.id ? route.id(ctx) : ctx.userId);
   let req = request(app)[route.method](path);
   if (cookie) req = req.set('Cookie', cookie);
+  if (route.upload) {
+    const { fields, file, name } = route.upload(ctx);
+    for (const [key, value] of Object.entries(fields)) req = req.field(key, value);
+    return req.attach('file', file, { filename: name, contentType: 'application/pdf' });
+  }
   return route.body ? req.send(route.body(ctx)) : req;
 }
 
@@ -190,7 +344,8 @@ describe('permission sweep', () => {
   let ctx: RouteContext;
 
   beforeEach(async () => {
-    app = makeApp().app;
+    const sheets = makeSheetApp();
+    app = sheets.app;
     const [user, supplier, hotel, duplicate, flight] = await Promise.all([
       seedUser({ role: 'finance', email: 'target@example.com' }),
       seedSupplier(),
@@ -198,12 +353,28 @@ describe('permission sweep', () => {
       seedHotel({ canonicalName: 'Qila Ajyad Old' }),
       seedFlightEstimate(),
     ]);
+    const scenario = await seedSheetScenario(sheets.storage, {
+      supplierId: supplier.id,
+      hotelId: hotel.id,
+    });
+    const uploader = await seedUser({ role: 'ops' });
+    const upload = await request(app)
+      .post('/api/v1/admin/document-intelligence/source-documents')
+      .set('Cookie', (await signInAs(app, uploader)).header())
+      .field('supplierId', supplier.id)
+      .attach('file', fakePdf('permission sweep intelligence'), {
+        filename: 'supplier.pdf',
+        contentType: 'application/pdf',
+      });
+    expect(upload.status).toBe(201);
     ctx = {
       userId: user.id,
       supplierId: supplier.id,
       hotelId: hotel.id,
       duplicateHotelId: duplicate.id,
       flightEstimateId: flight.id,
+      intelligenceDocumentId: upload.body.documentId as string,
+      ...scenario,
     };
   });
 

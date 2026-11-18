@@ -1,5 +1,5 @@
 import type { PublicUser, Role } from '@marafiq/shared';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -49,6 +49,7 @@ describe('role-aware menu', () => {
   it('gives each role exactly the pages it may use (docs/02 section 3)', () => {
     expect(menuFor('admin').map((i) => i.to)).toEqual([
       '/admin',
+      '/admin/rate-sheets',
       '/admin/hotels',
       '/admin/suppliers',
       '/admin/flight-estimates',
@@ -58,6 +59,7 @@ describe('role-aware menu', () => {
     ]);
     expect(menuFor('ops').map((i) => i.to)).toEqual([
       '/admin',
+      '/admin/rate-sheets',
       '/admin/hotels',
       '/admin/suppliers',
       '/admin/flight-estimates',
@@ -73,7 +75,7 @@ describe('role-aware menu', () => {
     renderAt('/admin');
     expect(await screen.findByRole('link', { name: 'Dashboard' })).toBeInTheDocument();
     expect(await screen.findByRole('link', { name: 'Hotels' })).toBeInTheDocument();
-    for (const hidden of ['Users', 'Settings', 'Exchange rate', 'Suppliers']) {
+    for (const hidden of ['Users', 'Settings', 'Exchange rate', 'Suppliers', 'Rate sheets']) {
       expect(screen.queryByRole('link', { name: hidden })).not.toBeInTheDocument();
     }
   });
@@ -219,5 +221,313 @@ describe('master data pages', () => {
       lowMinor: 15_000_000,
       highMinor: 21_000_000,
     });
+  });
+});
+
+describe('rate sheet review', () => {
+  const PACK_ID = '64b7f0c2a1b2c3d4e5f60aaa';
+  const RATE_ID = '64b7f0c2a1b2c3d4e5f60bbb';
+  const DOC_ID = '64b7f0c2a1b2c3d4e5f60ccc';
+  const paged = (items: unknown[]) => json(200, { items, page: 1, limit: 50, total: items.length });
+
+  const pack = (overrides: Record<string, unknown> = {}) => ({
+    id: PACK_ID,
+    supplierId: 's1',
+    sourceDocumentId: DOC_ID,
+    supplierName: 'Waqar-e-Madina Group (WMT)',
+    packName: 'Ramadan Pack 01',
+    seasonLabel: 'Ramadan',
+    nightFrom: '2027-02-06',
+    nightTo: '2027-02-26',
+    issueDate: '2026-10-27',
+    effectiveFrom: '2026-10-27',
+    currency: 'SAR',
+    status: 'needs_review',
+    version: 1,
+    blockingCount: 0,
+    warningCount: 0,
+    publishedAt: null,
+    publishedByName: null,
+    supersedesId: null,
+    validation: { blocking: [], warnings: [] },
+    visa: {
+      directPerPersonMinor: 55_000,
+      indirectByGroupSizeMinor: { '1': 70_000, '2': 67_500, '3': 65_000, '4': 62_500 },
+      infantMinor: 46_000,
+      appliesNote: null,
+    },
+    rates: [
+      {
+        id: RATE_ID,
+        packageId: PACK_ID,
+        hotelId: 'h1',
+        hotelName: 'Qila Ajiyad',
+        printed: {
+          city: 'makkah',
+          name: 'QILA AJIYAD',
+          aliases: [],
+          distanceText: null,
+          distanceMeters: 1100,
+          transportText: null,
+        },
+        suggestedHotelId: null,
+        suggestedHotelName: null,
+        pricingMode: 'derived_per_person',
+        roomPriceMinor: 20_000,
+        perPersonMinor: { quint: 4000, quad: 5000, triple: 6700, double: 10_000 },
+        flatNote: null,
+        sourcePage: 1,
+        sourceRow: 3,
+        confidence: 0.99,
+        edited: false,
+      },
+    ],
+    replaceable: [],
+    canRollback: false,
+    ...overrides,
+  });
+
+  const routes = (detail: unknown, extra: Record<string, () => Response> = {}) => ({
+    'GET /auth/me': () => json(200, user('ops')),
+    [`GET /admin/rate-packages/${PACK_ID}`]: () => json(200, detail),
+    [`GET /admin/source-documents/${DOC_ID}`]: () =>
+      json(200, { id: DOC_ID, mimeType: 'application/pdf', fileName: 'sheet.pdf', packages: [] }),
+    'GET /admin/hotels?limit=200': () => paged([]),
+    ...extra,
+  });
+
+  it('shows the original beside the figures, in SAR', async () => {
+    mockApi(routes(pack()));
+    renderAt(`/admin/rate-sheets/${PACK_ID}`);
+
+    expect(await screen.findByRole('heading', { name: 'Ramadan Pack 01' })).toBeInTheDocument();
+    expect(await screen.findByTitle('Original sheet')).toHaveAttribute(
+      'src',
+      `/api/v1/admin/source-documents/${DOC_ID}/file`,
+    );
+    expect(screen.getByLabelText('Room price for Qila Ajiyad')).toHaveValue('200');
+    expect(screen.getByLabelText('Triple price for Qila Ajiyad')).toHaveValue('67');
+    expect(screen.getByLabelText('Direct flight')).toHaveValue('550');
+  });
+
+  it('cannot publish while a blocking problem exists, and shows it on its row', async () => {
+    const blocked = pack({
+      validation: {
+        blocking: [
+          {
+            code: 'derived_without_room',
+            message: '"Qila Ajiyad" has no room price.',
+            path: `rate:${RATE_ID}`,
+          },
+        ],
+        warnings: [],
+      },
+    });
+    mockApi(routes(blocked));
+    renderAt(`/admin/rate-sheets/${PACK_ID}`);
+
+    expect(
+      await screen.findByText('1 problem must be fixed before publishing'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('"Qila Ajiyad" has no room price.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Publish these rates' })).toBeDisabled();
+  });
+
+  it('makes staff tick the warnings before publishing, and sends that with the request', async () => {
+    const warned = pack({
+      validation: {
+        blocking: [],
+        warnings: [
+          { code: 'issue_date_old', message: 'The sheet was issued long ago.', path: 'header' },
+        ],
+      },
+    });
+    const fetchMock = mockApi(
+      routes(warned, {
+        [`POST /admin/rate-packages/${PACK_ID}/publish`]: () =>
+          json(200, pack({ status: 'published' })),
+      }),
+    );
+    const ui = userEvent.setup();
+    renderAt(`/admin/rate-sheets/${PACK_ID}`);
+
+    const publish = await screen.findByRole('button', { name: 'Publish these rates' });
+    expect(publish).toBeDisabled();
+    await ui.click(screen.getByRole('checkbox'));
+    await ui.click(publish);
+
+    const call = fetchMock.mock.calls.find(([url]) => String(url).endsWith('/publish'));
+    expect(call?.[1]?.body).toBe(JSON.stringify({ acknowledgeWarnings: true }));
+    // Once published, the figures are read-only.
+    expect(await screen.findByText(/can no longer be edited/)).toBeInTheDocument();
+    expect(screen.getByLabelText('Room price for Qila Ajiyad')).toBeDisabled();
+  });
+
+  it('saves an edited figure in halalas when the cursor leaves the box', async () => {
+    const fetchMock = mockApi(
+      routes(pack(), { [`PATCH /admin/hotel-rates/${RATE_ID}`]: () => json(200, pack()) }),
+    );
+    const ui = userEvent.setup();
+    renderAt(`/admin/rate-sheets/${PACK_ID}`);
+
+    const room = await screen.findByLabelText('Room price for Qila Ajiyad');
+    await ui.clear(room);
+    await ui.type(room, '210.50');
+    await ui.tab();
+
+    const call = fetchMock.mock.calls.find(([, init]) => init?.method === 'PATCH');
+    expect(call?.[1]?.body).toBe(JSON.stringify({ roomPriceMinor: 21_050 }));
+  });
+
+  it('lists uploaded sheets with their packs and says when reading failed', async () => {
+    mockApi({
+      'GET /auth/me': () => json(200, user('ops')),
+      'GET /admin/suppliers?limit=100': () => paged([{ id: 's1', name: 'WMT', active: true }]),
+      'GET /admin/source-documents?limit=50': () =>
+        paged([
+          {
+            id: DOC_ID,
+            supplierName: 'WMT',
+            fileName: 'WMT_RAMADAN.pdf',
+            receivedAt: '2026-11-12T00:00:00.000Z',
+            uploadedByName: 'Test ops',
+            extractionStatus: 'needs_review',
+            extractionError: 'Extraction failed — enter manually or retry',
+            packages: [
+              {
+                id: PACK_ID,
+                packName: 'Shawal',
+                nightFrom: '2027-03-11',
+                nightTo: '2027-04-06',
+                status: 'needs_review',
+                version: 1,
+                blockingCount: 2,
+                warningCount: 1,
+              },
+            ],
+          },
+        ]),
+    });
+    renderAt('/admin/rate-sheets');
+
+    expect(await screen.findByText('WMT_RAMADAN.pdf')).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('could not be read automatically');
+    expect(screen.getByRole('link', { name: 'Shawal' })).toHaveAttribute(
+      'href',
+      `/admin/rate-sheets/${PACK_ID}`,
+    );
+    expect(screen.getByText('2 problems')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Read it again' })).toBeInTheDocument();
+  });
+});
+
+describe('duplicate rate-sheet upload', () => {
+  const DOC_ID = '64b7f0c2a1b2c3d4e5f60ccc';
+  const PACK_ID = '64b7f0c2a1b2c3d4e5f60aaa';
+  const paged = (items: unknown[]) => json(200, { items, page: 1, limit: 50, total: items.length });
+  const existing = {
+    id: DOC_ID,
+    supplierName: 'Waqar-e-Madina Group (WMT)',
+    fileName: 'WMT RAMADAN 2027.pdf',
+    receivedAt: '2026-11-12T04:45:00.000Z',
+    uploadedByName: 'Administrator',
+    extractionStatus: 'needs_review',
+    extractionError: null,
+    packages: [
+      {
+        id: PACK_ID,
+        packName: 'WMT RAMADAN',
+        nightFrom: null,
+        nightTo: null,
+        status: 'needs_review',
+        version: 1,
+        blockingCount: 2,
+        warningCount: 2,
+      },
+    ],
+  };
+  const base = {
+    'GET /auth/me': () => json(200, user('ops')),
+    'GET /admin/suppliers?limit=100': () =>
+      paged([{ id: 's1', name: 'Waqar-e-Madina Group (WMT)', active: true }]),
+    'GET /admin/source-documents?limit=50': () => paged([existing]),
+  };
+
+  it('says the file is already here and links to the existing document and its pack', async () => {
+    const fetchMock = mockApi({
+      ...base,
+      'POST /admin/source-documents': () =>
+        json(409, {
+          error: {
+            code: 'duplicate_document',
+            message:
+              'This exact file was already uploaded for this supplier as "WMT RAMADAN 2027.pdf".',
+            fields: {
+              existingId: DOC_ID,
+              existingFileName: 'WMT RAMADAN 2027.pdf',
+              existingReceivedAt: '2026-11-12T04:45:00.000Z',
+            },
+          },
+        }),
+    });
+    const scrolled = vi.fn();
+    Element.prototype.scrollIntoView = scrolled;
+    const ui = userEvent.setup();
+    renderAt('/admin/rate-sheets');
+
+    const input = await screen.findByLabelText('Rate sheet file');
+    await ui.upload(
+      input,
+      new File(['%PDF-1.4 same bytes'], 'WMT RAMADAN 2027 (1).pdf', { type: 'application/pdf' }),
+    );
+    await ui.click(screen.getByRole('button', { name: 'Upload' }));
+
+    const notice = await screen.findByRole('alert');
+    expect(notice).toHaveTextContent('This file is already here. Nothing was uploaded.');
+    expect(notice).toHaveTextContent('“WMT RAMADAN 2027.pdf”');
+    expect(within(notice).getByRole('link', { name: 'Open the stored file' })).toHaveAttribute(
+      'href',
+      `/api/v1/admin/source-documents/${DOC_ID}/file`,
+    );
+    expect(within(notice).getByRole('link', { name: 'Open pack “WMT RAMADAN”' })).toHaveAttribute(
+      'href',
+      `/admin/rate-sheets/${PACK_ID}`,
+    );
+
+    await ui.click(within(notice).getByRole('link', { name: 'Show it in the list below' }));
+    expect(scrolled).toHaveBeenCalled();
+    expect(document.getElementById(`sheet-${DOC_ID}`)?.className).toContain('ring-2');
+
+    // The refused file is dropped from the form, and exactly one upload was sent.
+    expect((input as HTMLInputElement).files).toHaveLength(0);
+    expect(screen.getByRole('button', { name: 'Upload' })).toBeDisabled();
+    expect(fetchMock.mock.calls.filter(([, init]) => init?.method === 'POST')).toHaveLength(1);
+  });
+
+  it('links to the existing pack when the same pack is entered by hand again', async () => {
+    mockApi({
+      ...base,
+      [`POST /admin/source-documents/${DOC_ID}/rate-packages`]: () =>
+        json(409, {
+          error: {
+            code: 'pack_name_taken',
+            message: 'x',
+            fields: { existingId: PACK_ID, existingPackName: 'WMT RAMADAN' },
+          },
+        }),
+    });
+    const ui = userEvent.setup();
+    renderAt('/admin/rate-sheets');
+
+    await ui.click(await screen.findByRole('button', { name: 'Enter by hand' }));
+    await ui.type(screen.getByLabelText('Pack name, as printed'), 'WMT RAMADAN');
+    await ui.click(screen.getByRole('button', { name: 'Start entering' }));
+
+    const notice = await screen.findByRole('alert');
+    expect(notice).toHaveTextContent('already has a pack called “WMT RAMADAN”');
+    expect(within(notice).getByRole('link', { name: 'Open the existing pack' })).toHaveAttribute(
+      'href',
+      `/admin/rate-sheets/${PACK_ID}`,
+    );
   });
 });

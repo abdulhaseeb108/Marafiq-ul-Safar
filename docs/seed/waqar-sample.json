@@ -508,7 +508,7 @@
           "page": 1,
           "row": 10,
           "confidence": 0.99,
-          "pricingMode": "derived_per_person",
+          "pricingMode": "flat_per_room",
           "room": 600,
           "perPerson": {
             "quint": null,
@@ -516,7 +516,7 @@
             "triple": 200,
             "double": 300
           },
-          "flatNote": "Every price cell is labelled ROOM BASIS and the quint column has no number. The quad, triple and double figures still equal ceil(room / occupancy), so the row is priced per person from the room rate; the label means the whole room must be booked. Confirm with the supplier."
+          "flatNote": "Room-basis row (docs/03 section 1, row type 3): the quint column has no number and every price cell is labelled ROOM BASIS. Priced per room per night from the ROOM column. The quad, triple and double figures are kept as printed for reference; each equals ceil(room / occupancy)."
         },
         {
           "city": "makkah",
@@ -1135,7 +1135,7 @@
           "page": 2,
           "row": 10,
           "confidence": 0.99,
-          "pricingMode": "derived_per_person",
+          "pricingMode": "flat_per_room",
           "room": 1000,
           "perPerson": {
             "quint": null,
@@ -1143,7 +1143,7 @@
             "triple": 334,
             "double": 500
           },
-          "flatNote": "Every price cell is labelled ROOM BASIS and the quint column has no number. The quad, triple and double figures still equal ceil(room / occupancy), so the row is priced per person from the room rate; the label means the whole room must be booked. Confirm with the supplier."
+          "flatNote": "Room-basis row (docs/03 section 1, row type 3): the quint column has no number and every price cell is labelled ROOM BASIS. Priced per room per night from the ROOM column. The quad, triple and double figures are kept as printed for reference; each equals ceil(room / occupancy)."
         },
         {
           "city": "makkah",
@@ -1761,7 +1761,7 @@
           "page": 3,
           "row": 10,
           "confidence": 0.99,
-          "pricingMode": "derived_per_person",
+          "pricingMode": "flat_per_room",
           "room": 325,
           "perPerson": {
             "quint": null,
@@ -1769,7 +1769,7 @@
             "triple": 109,
             "double": 163
           },
-          "flatNote": "Every price cell is labelled ROOM BASIS and the quint column has no number. The quad, triple and double figures still equal ceil(room / occupancy), so the row is priced per person from the room rate; the label means the whole room must be booked. Confirm with the supplier."
+          "flatNote": "Room-basis row (docs/03 section 1, row type 3): the quint column has no number and every price cell is labelled ROOM BASIS. Priced per room per night from the ROOM column. The quad, triple and double figures are kept as printed for reference; each equals ceil(room / occupancy)."
         },
         {
           "city": "makkah",
@@ -2388,7 +2388,7 @@
           "page": 1,
           "row": 10,
           "confidence": 0.99,
-          "pricingMode": "derived_per_person",
+          "pricingMode": "flat_per_room",
           "room": 600,
           "perPerson": {
             "quint": null,
@@ -2396,7 +2396,7 @@
             "triple": 200,
             "double": 300
           },
-          "flatNote": "Every price cell is labelled ROOM BASIS and the quint column has no number. The quad, triple and double figures still equal ceil(room / occupancy), so the row is priced per person from the room rate; the label means the whole room must be booked. Confirm with the supplier."
+          "flatNote": "Room-basis row (docs/03 section 1, row type 3): the quint column has no number and every price cell is labelled ROOM BASIS. Priced per room per night from the ROOM column. The quad, triple and double figures are kept as printed for reference; each equals ceil(room / occupancy)."
         },
         {
           "city": "makkah",
@@ -3013,7 +3013,7 @@
           "page": 2,
           "row": 10,
           "confidence": 0.99,
-          "pricingMode": "derived_per_person",
+          "pricingMode": "flat_per_room",
           "room": 1000,
           "perPerson": {
             "quint": null,
@@ -3021,7 +3021,7 @@
             "triple": 334,
             "double": 500
           },
-          "flatNote": "Every price cell is labelled ROOM BASIS and the quint column has no number. The quad, triple and double figures still equal ceil(room / occupancy), so the row is priced per person from the room rate; the label means the whole room must be booked. Confirm with the supplier."
+          "flatNote": "Room-basis row (docs/03 section 1, row type 3): the quint column has no number and every price cell is labelled ROOM BASIS. Priced per room per night from the ROOM column. The quad, triple and double figures are kept as printed for reference; each equals ceil(room / occupancy)."
         },
         {
           "city": "makkah",
@@ -3637,7 +3637,7 @@
           "page": 3,
           "row": 10,
           "confidence": 0.99,
-          "pricingMode": "derived_per_person",
+          "pricingMode": "flat_per_room",
           "room": 325,
           "perPerson": {
             "quint": null,
@@ -3645,7 +3645,7 @@
             "triple": 109,
             "double": 163
           },
-          "flatNote": "Every price cell is labelled ROOM BASIS and the quint column has no number. The quad, triple and double figures still equal ceil(room / occupancy), so the row is priced per person from the room rate; the label means the whole room must be booked. Confirm with the supplier."
+          "flatNote": "Room-basis row (docs/03 section 1, row type 3): the quint column has no number and every price cell is labelled ROOM BASIS. Priced per room per night from the ROOM column. The quad, triple and double figures are kept as printed for reference; each equals ceil(room / occupancy)."
         },
         {
           "city": "makkah",
@@ -4044,7 +4044,7 @@
   ],
   "_notes": [
     "The two PDFs carry the same three packs at the same prices. They differ in two ways, both of which are useful test cases: the Madinah hotel is printed as 'ROSE PLATINUM / OLD NAME: RETAJ RAWDAH' in the first file and as 'RETAJ RAWDAH' alone in the second; and the Shawal page is issued 27-OCT-2026 in the first file and 17-OCT-2026 in the second. The second is the same-pack-different-issue-date conflict in docs/03 section 4 and test case T10.",
-    "Akabir Hijrah/Areej Wafa/Mather Elite is NOT a flat-room row, although docs/03 section 1 describes it as one. Its quad, triple and double figures equal ceil(room / occupancy) in all three packs, so it prices per person from the room rate. Treating it as flat_per_room would charge the full room price for a quad bed.",
+    "Akabir Hijrah/Areej Wafa/Mather Elite is a room-basis row: priced per room per night from the ROOM column, as docs/03 section 1 says. Its quad, triple and double figures (each equal to ceil(room / occupancy)) are kept for reference only.",
     "Al Kiswah Tower changes row type between packs: 300-SR flat in Ramadan Pack 01, ON BOOKING in Ramadan Pack 02, 100-SR flat in Shawal. Pricing mode must be read per pack, never carried over.",
     "Qasr Al Sharq Tower and Hiba Hijrah-6 share one printed line at one rate in Ramadan Pack 01 and 02, but are separate rows at different rates in Shawal. They are treated as two hotels here.",
     "Several names contain more than one hotel separated by a slash, at a single rate: Afwaj Al Momayaza /Shaza Wasam-3/4 Wahdat Al Khair, Badar Al Masa/Yasmin Al Majd, Akabir Hijrah/Areej Wafa/Mather Elite, Waqar Salmiya/Jood Marjan, Rua Al Khair/Burj Muktara. They are kept exactly as printed. Ask the supplier whether these are one property or several before splitting them.",

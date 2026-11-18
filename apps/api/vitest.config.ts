@@ -12,6 +12,7 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
+    globalSetup: ['./src/test/global-setup.ts'],
     setupFiles: ['./src/test/setup.ts'],
     testTimeout: 20_000,
     hookTimeout: 120_000, // first run downloads the in-memory MongoDB binary

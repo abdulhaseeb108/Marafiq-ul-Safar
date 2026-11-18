@@ -10,8 +10,10 @@ import type {
 import mongoose from 'mongoose';
 import { HttpError, notFound } from '../../lib/http-error.js';
 import { normalizeName, normalizedSet } from '../../lib/names.js';
+import { inTransaction } from '../../lib/transaction.js';
 import { recordAudit, type Actor } from '../audit/audit.service.js';
-import { HotelModel, type HotelDoc } from './hotel.model.js';
+import { HotelRateModel } from '../rate-sheets/rate-sheet.models.js';
+import { HotelModel, MERGED_NAME_PREFIX, type HotelDoc } from './hotel.model.js';
 
 export function toHotelView(doc: HotelDoc): HotelView {
   return {
@@ -174,14 +176,12 @@ export function deactivateHotel(id: string, actor: Actor): Promise<HotelView> {
 
 /**
  * Fold `duplicateId` into `targetId`: the duplicate's names become aliases of
- * the target, and the duplicate is deactivated but kept for history.
+ * the target, its rate rows move to the target, and the duplicate is
+ * deactivated but kept for history. Nothing is deleted.
  *
- * Done in two steps rather than a transaction, so it also works on a
- * standalone MongoDB. The duplicate releases its names first; if the second
- * step failed, the target would simply not have gained them yet and the merge
- * can be run again. Nothing is deleted at any point.
- *
- * Phase 3 adds hotelRates: repoint `hotelRates.hotelId` here as well.
+ * Runs in a transaction where the database supports one. The writes are also
+ * ordered so that a plain sequential run is safe: rates move first, then the
+ * duplicate releases its names, then the target takes them.
  */
 export async function mergeHotels(
   duplicateId: string,
@@ -211,26 +211,46 @@ export async function mergeHotels(
     }
   }
 
+  // A pack holds one row per hotel, so two hotels priced in the same pack
+  // cannot become one without someone choosing which price is right.
+  const [duplicatePacks, targetPacks] = await Promise.all([
+    HotelRateModel.distinct('packageId', { hotelId: duplicate._id }),
+    HotelRateModel.distinct('packageId', { hotelId: target._id }),
+  ]);
+  const targetPackIds = new Set(targetPacks.map(String));
+  if (duplicatePacks.some((packId) => targetPackIds.has(String(packId)))) {
+    throw new HttpError(
+      409,
+      'merge_conflict_rates',
+      'Both hotels have a rate in the same pack. Remove one of the two rows there first.',
+    );
+  }
+
   const duplicateBefore = snapshot(duplicate);
   const targetBefore = snapshot(target);
   const movedNames = [duplicate.canonicalName, ...duplicate.aliases];
 
-  // 1. Release the duplicate's names so the target can take them.
-  duplicate.searchNames = [];
-  duplicate.active = false;
-  duplicate.mergedIntoId = target._id;
-  await duplicate.save();
+  await inTransaction(async () => {
+    // 1. Rates follow the hotel, in every pack including published ones.
+    await HotelRateModel.updateMany({ hotelId: duplicate._id }, { hotelId: target._id });
 
-  // 2. Give them to the target, keeping the order and dropping repeats.
-  const seen = new Set(target.searchNames);
-  for (const name of movedNames) {
-    const key = normalizeName(name);
-    if (seen.has(key)) continue;
-    seen.add(key);
-    target.aliases.push(name);
-    target.searchNames.push(key);
-  }
-  await target.save();
+    // 2. Release the duplicate's names so the target can take them.
+    duplicate.searchNames = [`${MERGED_NAME_PREFIX}${duplicate.id as string}`];
+    duplicate.active = false;
+    duplicate.mergedIntoId = target._id;
+    await duplicate.save();
+
+    // 3. Give them to the target, keeping the order and dropping repeats.
+    const seen = new Set(target.searchNames);
+    for (const name of movedNames) {
+      const key = normalizeName(name);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      target.aliases.push(name);
+      target.searchNames.push(key);
+    }
+    await target.save();
+  });
 
   const detail = { mergedFrom: duplicate.canonicalName, mergedInto: target.canonicalName };
   await Promise.all([

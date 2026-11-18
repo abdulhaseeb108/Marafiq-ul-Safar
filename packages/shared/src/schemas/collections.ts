@@ -9,6 +9,7 @@
  * must be storable before staff fix it. Publish rules are enforced in Phase 3.
  */
 import { z } from 'zod';
+import { CalculationResultSchema } from './pricing.js';
 import {
   EXTRACTION_STATUSES,
   LANGUAGES,
@@ -139,7 +140,8 @@ export const perPersonMinorSchema = z.object({
 export const HotelRateSchema = z.object({
   ...baseDoc,
   packageId: objectId,
-  hotelId: objectId,
+  /** Absent while the printed name is an unconfirmed new-hotel candidate. */
+  hotelId: objectId.optional(),
   pricingMode: pricingModeSchema,
   /** Per room, per night. */
   roomPriceMinor: positiveMinor.nullish(),
@@ -210,35 +212,7 @@ export const FlightEstimateSchema = z
   });
 
 // calculations (immutable snapshot)
-export const CalculationSchema = z.object({
-  ...baseDoc,
-  /** Calculator inputs. Tightened in Phase 4 with the pricing engine. */
-  inputs: z.record(z.string(), z.unknown()),
-  rateVersionSnapshot: z.array(
-    z.object({
-      packageId: objectId,
-      version: z.number().int().positive(),
-      supplierId: objectId,
-      issueDate: isoDate.nullable(),
-    }),
-  ),
-  fx: fxSnapshot,
-  markupPercent: z.number().min(0).max(100),
-  /** Line-item shape is defined in Phase 4 with the pricing engine. */
-  lineItems: z.array(z.record(z.string(), z.unknown())),
-  missing: z.array(z.string()),
-  assumptions: z.array(z.string()),
-  exclusions: z.array(z.string()),
-  totals: z.object({
-    perPersonMinorPKR: minor,
-    groupMinorPKR: minor,
-    groupMinorSAR: minor,
-    isPartial: z.boolean(),
-  }),
-  expiresAt: timestamp,
-  hash: z.string().min(1),
-  engineVersion: z.string().min(1),
-});
+export const CalculationSchema = CalculationResultSchema.extend({ ...baseDoc });
 
 // travelers — contact details only; no passport, CNIC or card data
 export const TravelerSchema = z.object({
