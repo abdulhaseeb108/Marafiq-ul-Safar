@@ -1,5 +1,6 @@
 import { RATE_SHEET_MAX_BYTES } from '@marafiq/shared';
-import type { Env } from './env.js';
+import { DEFAULT_PUBLIC_RATE_LIMITS, type PublicRateLimits } from '../lib/public-limits.js';
+import { parseWebOrigins, type Env } from './env.js';
 import type { DocumentParserLimits } from '../modules/document-intelligence/document-parser-limits.js';
 
 /** The Vite dev server (apps/web/vite.config.ts: port 5175). */
@@ -15,8 +16,18 @@ export interface AppConfig {
   totpKey: Buffer;
   cookieDomain?: string;
   secureCookies: boolean;
-  /** Trust one reverse proxy hop for the client IP (rate limits, audit). */
-  trustProxy: boolean;
+  /**
+   * Reverse proxies in front of the API, for the client IP (rate limits,
+   * audit). A number is a hop count; false trusts none. Tests use true (one
+   * hop) so they can pick a client IP with X-Forwarded-For.
+   */
+  trustProxy: boolean | number;
+  /** Per-IP limits on /public; null turns them off (tests only). */
+  publicRateLimits: PublicRateLimits | null;
+  /** Origins allowed by CORS; empty for the same-origin deployment. */
+  webOrigins: string[];
+  /** When set, only requests carrying it (from the site proxy) are served. */
+  originProxySecret?: string;
   accessTtlSeconds: number;
   refreshTtlSeconds: number;
   /** How long a "password OK, 2FA pending" step stays valid. */
@@ -47,7 +58,10 @@ export function configFromEnv(env: Env): AppConfig {
         : undefined,
     // Plain-http localhost cannot store Secure cookies in every browser.
     secureCookies: env.NODE_ENV !== 'development',
-    trustProxy: production,
+    trustProxy: production ? env.TRUST_PROXY_HOPS : false,
+    publicRateLimits: DEFAULT_PUBLIC_RATE_LIMITS,
+    webOrigins: parseWebOrigins(env.WEB_ORIGIN),
+    originProxySecret: env.ORIGIN_PROXY_SECRET,
     accessTtlSeconds: 15 * 60,
     refreshTtlSeconds: 7 * 24 * 60 * 60,
     mfaTtlSeconds: 5 * 60,

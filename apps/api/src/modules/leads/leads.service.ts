@@ -3,7 +3,7 @@
  * new -> contacted -> quote_in_progress -> quote_sent -> accepted | declined | lost.
  * There is no "confirmed" or "booked" status in v1 (owner's decision).
  */
-import { createHash } from 'node:crypto';
+import { createHash, randomInt } from 'node:crypto';
 import {
   LEAD_TRANSITIONS,
   StatusTransitionError,
@@ -27,6 +27,7 @@ import mongoose, { type Types } from 'mongoose';
 import type { EmailAdapter } from '../../adapters/email/email.js';
 import type { AppConfig } from '../../config/app-config.js';
 import { HttpError, notFound } from '../../lib/http-error.js';
+import { log } from '../../lib/logger.js';
 import { inTransaction } from '../../lib/transaction.js';
 import { recordAudit, type Actor } from '../audit/audit.service.js';
 import { canonicalJson } from '../pricing/engine.js';
@@ -161,6 +162,26 @@ function adminLeadLink(config: LeadsDeps['config'], leadId: string): string {
   return `${config.publicSiteUrl}/admin/leads/${leadId}`;
 }
 
+const URL_PATTERN = /https?:\/\/|www\./gi;
+const MAX_LINKS_IN_NOTES = 2;
+
+/**
+ * Captcha-free spam check (docs/01 section 9): the honeypot is filled, or the
+ * notes carry more links than a traveler would paste. Returns the reason.
+ */
+export function spamReason(body: InquiryData): 'honeypot' | 'links' | null {
+  if (body.website && body.website.trim() !== '') return 'honeypot';
+  if ((body.notes.match(URL_PATTERN) ?? []).length > MAX_LINKS_IN_NOTES) return 'links';
+  return null;
+}
+
+/** Looks like a real reference, so a bot cannot tell it was ignored. Never stored. */
+function decoyReference(now: Date): string {
+  const year = todayInPakistan(now).slice(0, 4);
+  const number = String(randomInt(1, 1_000_000)).padStart(6, '0');
+  return `MSF-${year}-${number}`;
+}
+
 /** POST /public/inquiries (docs/01 section 5, steps 1-2). */
 export async function createInquiry(
   body: InquiryData,
@@ -170,6 +191,13 @@ export async function createInquiry(
 ): Promise<InquiryResponse> {
   const settings = await getSettings();
   const responseTimeText = settings.responseTimeText;
+
+  // Spam gets the same answer as a real inquiry, but nothing is stored or sent.
+  const spam = spamReason(body);
+  if (spam) {
+    log.info('inquiry ignored', { reason: spam });
+    return { reference: decoyReference(now), duplicate: false, responseTimeText };
+  }
 
   // Price the trip again on the server; the browser's numbers are never trusted.
   let calculation: CalculationResult | null = null;

@@ -13,8 +13,8 @@ const secret = z.preprocess(
 );
 
 /**
- * Variables the API needs so far. Later phases add theirs here
- * (R2, Resend, Anthropic, Sentry) with validation.
+ * Every variable the API reads, validated once at startup (docs/DEPLOY.md
+ * lists them per environment).
  */
 const EnvSchema = z
   .object({
@@ -47,6 +47,24 @@ const EnvSchema = z
      * production (https only, checked below); defaults to the dev site otherwise.
      */
     PUBLIC_SITE_URL: optionalString,
+    /**
+     * Comma-separated browser origins allowed to call the API across origins
+     * (CORS). Blank when the site and API share one origin, the standard set-up.
+     */
+    WEB_ORIGIN: optionalString,
+    /** Reverse proxies in front of the API in production (docs/DEPLOY.md). */
+    TRUST_PROXY_HOPS: z.preprocess(
+      blankToUndefined,
+      z.coerce.number().int().min(0).max(5).default(1),
+    ),
+    /** Shared with the site's proxy; when set, requests that skip the proxy are refused. */
+    ORIGIN_PROXY_SECRET: z.preprocess(
+      blankToUndefined,
+      z.string().min(32, 'must be at least 32 characters').optional(),
+    ),
+    /** Error reporting. Blank = off. */
+    SENTRY_DSN: z.preprocess(blankToUndefined, z.url('must be a valid URL').optional()),
+    SENTRY_RELEASE: optionalString,
     SEED_ADMIN_EMAIL: optionalString,
     SEED_ADMIN_PASSWORD: optionalString,
     DOCUMENT_MAX_FILE_BYTES: positiveInteger(20 * 1024 * 1024, 100 * 1024 * 1024),
@@ -94,6 +112,21 @@ const EnvSchema = z
         path: ['MAIL_FROM'],
       });
     }
+    const originProblem = webOriginsProblem(env.WEB_ORIGIN, env.NODE_ENV);
+    if (originProblem) {
+      context.addIssue({ code: 'custom', message: originProblem, path: ['WEB_ORIGIN'] });
+    }
+    // The origin lock only admits requests from the site's proxy. In a split
+    // deployment browsers call the API directly and cannot carry the secret,
+    // so every request (and every CORS preflight) would be refused.
+    if (env.ORIGIN_PROXY_SECRET && parseWebOrigins(env.WEB_ORIGIN).length > 0) {
+      context.addIssue({
+        code: 'custom',
+        message:
+          'cannot be used with WEB_ORIGIN: browsers calling the API directly cannot send the proxy secret. Use one set-up or the other (docs/DEPLOY.md)',
+        path: ['ORIGIN_PROXY_SECRET'],
+      });
+    }
     const siteUrlProblem = publicSiteUrlProblem(env.PUBLIC_SITE_URL, env.NODE_ENV);
     if (siteUrlProblem) {
       context.addIssue({ code: 'custom', message: siteUrlProblem, path: ['PUBLIC_SITE_URL'] });
@@ -121,6 +154,36 @@ function publicSiteUrlProblem(value: string | undefined, nodeEnv: string): strin
   if (nodeEnv === 'production') {
     if (url.protocol !== 'https:') return 'must use https in production';
     if (LOCAL_HOSTS.has(url.hostname)) return 'must not be a local address in production';
+  }
+  return null;
+}
+
+/** WEB_ORIGIN as a list; empty when not set. */
+export function parseWebOrigins(value: string | undefined): string[] {
+  return (value ?? '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter((origin) => origin !== '');
+}
+
+/**
+ * Each entry must be a bare origin (scheme, host, optional port), exactly as a
+ * browser sends it in the Origin header; https only in production.
+ */
+function webOriginsProblem(value: string | undefined, nodeEnv: string): string | null {
+  for (const origin of parseWebOrigins(value)) {
+    let url: URL;
+    try {
+      url = new URL(origin);
+    } catch {
+      return `"${origin}" is not a valid origin`;
+    }
+    if (url.origin !== origin) {
+      return `"${origin}" must be an origin only, e.g. https://example.com (no path or trailing slash)`;
+    }
+    if (nodeEnv === 'production' && url.protocol !== 'https:') {
+      return 'must use https in production';
+    }
   }
   return null;
 }

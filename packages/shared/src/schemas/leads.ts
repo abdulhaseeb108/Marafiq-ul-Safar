@@ -67,6 +67,11 @@ export const InquiryBodySchema = z.object({
   }),
   /** The calculator inputs; the server prices them again and stores the snapshot. */
   inputs: CalculateInputSchema.optional(),
+  /**
+   * Honeypot (docs/01 section 9). The form hides this field from people and
+   * assistive technology; only bots fill it. Never stored.
+   */
+  website: z.string().max(500).optional(),
 });
 export type InquiryBody = z.input<typeof InquiryBodySchema>;
 export type InquiryData = z.infer<typeof InquiryBodySchema>;

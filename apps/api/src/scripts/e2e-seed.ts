@@ -99,7 +99,7 @@ export async function resetAndSeed(
   const refusal = resetRefusal(env, db?.databaseName);
   if (!db || refusal) throw new Error(refusal ?? 'Not connected to a database.');
   for (const collection of await db.collections()) await collection.deleteMany({});
-  await syncIndexes();
+  await syncIndexes({ drop: true });
 
   await runSeed({ env: { SEED_FX_RATE: '75.00' } });
   await UserModel.create({

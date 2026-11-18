@@ -1,0 +1,31 @@
+# Cloudflare Pages response headers for the web app (docs/DEPLOY.md).
+# These apply to the static site only. /api/* is answered by the proxy in
+# functions/api/[[path]].ts, and the API sets its own headers (helmet).
+#
+# Content-Security-Policy: everything is served from this origin. Fonts are
+# self-hosted (@fontsource), the 2FA QR code is a data: image, and staff view
+# supplier PDFs in a same-origin frame from /api. No third-party scripts.
+
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Cross-Origin-Opener-Policy: same-origin
+
+# Hashed build files never change, so browsers may keep them for a year.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Customer quote links carry a secret token in the path: never cache, index or
+# pass the address on to another site.
+/q/*
+  Cache-Control: no-store
+  X-Robots-Tag: noindex, nofollow
+  Referrer-Policy: no-referrer
+
+/admin/*
+  Cache-Control: no-store
+  X-Robots-Tag: noindex, nofollow
