@@ -1,4 +1,4 @@
-# Marafiq us Safar — Build Pack
+# Marafiq Us Safar — Build Pack
 
 Give this folder to an AI coding agent (Claude Code with Claude Fable 5.2) and it can build the MVP in phases.
 

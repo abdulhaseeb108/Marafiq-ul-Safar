@@ -1,4 +1,4 @@
-# CLAUDE.md — Marafiq us Safar
+# CLAUDE.md — Marafiq Us Safar
 
 Read this file at the start of every session. Then read the doc named in the current phase prompt.
 

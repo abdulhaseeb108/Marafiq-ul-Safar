@@ -11,6 +11,10 @@ export default defineConfig(({ mode }) => ({
     // Tests run against shared source so they do not need a prior build.
     alias: mode === 'test' ? [{ find: '@marafiq/shared', replacement: sharedSource }] : [],
   },
+  build: {
+    // The public bundle is ~160 KB gzipped (Lighthouse 99 at 360px); admin loads separately.
+    chunkSizeWarningLimit: 600,
+  },
   server: {
     port: 5175,
     strictPort: true,
@@ -19,5 +23,7 @@ export default defineConfig(({ mode }) => ({
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test-setup.ts'],
+    // Playwright owns e2e/; Vitest runs the unit tests in src/.
+    include: ['src/**/*.test.{ts,tsx}'],
   },
 }));

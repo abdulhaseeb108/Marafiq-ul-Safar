@@ -609,7 +609,7 @@ export function calculate(input: CalculateInput, ctx: PricingContext): Calculati
       if (!hotel) {
         missing.push({
           kind: 'hotel',
-          code: 'hotel_no_rate',
+          code: 'hotel_unknown',
           message: `${cityLabel(city)}: the chosen hotel has no published rates — Request a quote`,
           params: { city },
         });

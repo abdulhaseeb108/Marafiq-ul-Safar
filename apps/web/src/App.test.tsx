@@ -21,14 +21,14 @@ const renderHome = () =>
     </MemoryRouter>,
   );
 
-describe('hello page', () => {
+describe('home page', () => {
   beforeEach(async () => {
     await i18n.changeLanguage('en');
   });
 
   it('renders in English, left to right', () => {
     renderHome();
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(en.hello.title);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(en.home.title);
     expect(document.documentElement.dir).toBe('ltr');
     expect(document.documentElement.lang).toBe('en');
   });
@@ -38,7 +38,7 @@ describe('hello page', () => {
     renderHome();
 
     await user.click(screen.getByRole('button', { name: 'اردو' }));
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(ur.hello.title);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(ur.home.title);
     expect(document.documentElement.dir).toBe('rtl');
     expect(document.documentElement.lang).toBe('ur');
     expect(screen.getByRole('button', { name: 'اردو' })).toHaveAttribute('aria-pressed', 'true');

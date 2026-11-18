@@ -44,7 +44,7 @@ export function configFromEnv(env: Env): AppConfig {
     accessTtlSeconds: 15 * 60,
     refreshTtlSeconds: 7 * 24 * 60 * 60,
     mfaTtlSeconds: 5 * 60,
-    totpIssuer: 'Marafiq us Safar',
+    totpIssuer: 'Marafiq Us Safar',
     loginLimit: { maxFailures: 5, windowMs: 15 * 60 * 1000 },
     maxUploadBytes: RATE_SHEET_MAX_BYTES,
     documentParserLimits: {

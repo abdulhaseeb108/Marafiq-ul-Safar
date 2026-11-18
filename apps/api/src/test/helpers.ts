@@ -26,7 +26,7 @@ export function testConfig(overrides: Partial<AppConfig> = {}): AppConfig {
     accessTtlSeconds: 900,
     refreshTtlSeconds: 7 * 24 * 3600,
     mfaTtlSeconds: 300,
-    totpIssuer: 'Marafiq us Safar',
+    totpIssuer: 'Marafiq Us Safar',
     loginLimit: { maxFailures: 5, windowMs: 15 * 60 * 1000 },
     maxUploadBytes: 20 * 1024 * 1024,
     documentParserLimits: { ...DEFAULT_DOCUMENT_PARSER_LIMITS },

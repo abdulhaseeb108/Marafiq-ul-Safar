@@ -57,7 +57,14 @@ function AmountInput({
   onCommit: (minor: number | null) => void;
 }) {
   const [text, setText] = useState(toSar(value));
-  useEffect(() => setText(toSar(value)), [value]);
+  // Resync the box when the saved figure changes. Done during render, not in an
+  // effect: an effect also runs once after mount, and if that run is still pending
+  // when someone starts typing it puts the old figure back over their edit.
+  const [syncedValue, setSyncedValue] = useState(value);
+  if (value !== syncedValue) {
+    setSyncedValue(value);
+    setText(toSar(value));
+  }
 
   function commit() {
     const parsed = fromSar(text);
