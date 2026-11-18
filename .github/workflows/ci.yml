@@ -43,3 +43,30 @@ jobs:
         with:
           name: playwright-results
           path: apps/web/test-results
+
+  e2e-flow:
+    runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:8
+        ports:
+          - 27017:27017
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+        working-directory: apps/web
+      - run: npm run e2e:flow
+        env:
+          E2E_MONGODB_URI: mongodb://127.0.0.1:27017/marafiq_e2e
+          # The seed wipes this database; it refuses to run without this confirmation.
+          E2E_ALLOW_DB_RESET: 'true'
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-flow-results
+          path: apps/web/test-results

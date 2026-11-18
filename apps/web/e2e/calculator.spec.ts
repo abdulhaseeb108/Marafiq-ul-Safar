@@ -5,7 +5,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import en from '../src/locales/en.json' with { type: 'json' };
 import ur from '../src/locales/ur.json' with { type: 'json' };
-import { ARRIVAL, MAKKAH, MADINAH, config, hotels, t1Result } from './fixtures';
+import { ARRIVAL, MAKKAH, MADINAH, config, hotels, sampleQuote, t1Result } from './fixtures';
 
 async function mockApi(page: Page) {
   await page.route('**/api/v1/public/config', (route) => route.fulfill({ json: config }));
@@ -13,6 +13,7 @@ async function mockApi(page: Page) {
     route.fulfill({ json: { items: hotels } }),
   );
   await page.route('**/api/v1/public/calculate', (route) => route.fulfill({ json: t1Result() }));
+  await page.route('**/api/v1/public/quotes/**', (route) => route.fulfill({ json: sampleQuote }));
 }
 
 async function startIn(page: Page, language: 'en' | 'ur') {
@@ -81,6 +82,8 @@ test('every public page fits a 360px screen in Urdu', async ({ page }) => {
     '/faq',
     '/contact',
     '/policies/privacy',
+    '/request-quote?topic=umrah',
+    `/q/${'A'.repeat(43)}`,
   ]) {
     await page.goto(path);
     await expect(page.locator('h1')).toBeVisible();

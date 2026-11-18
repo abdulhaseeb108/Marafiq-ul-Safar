@@ -2,6 +2,8 @@ import { Suspense, lazy } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { AdminLoadBoundary } from './AdminLoadBoundary';
 import { UmrahPage } from './public/calculator/UmrahPage';
+import { InquiryPage } from './public/InquiryPage';
+import { QuotePage } from './public/QuotePage';
 import {
   ContactPage,
   FaqPage,
@@ -33,6 +35,8 @@ export function App() {
         <Route path="faq" element={<FaqPage />} />
         <Route path="contact" element={<ContactPage />} />
         <Route path="policies/:policy" element={<PolicyPage />} />
+        <Route path="request-quote" element={<InquiryPage />} />
+        <Route path="q/:token" element={<QuotePage />} />
       </Route>
       <Route
         path="/admin/*"

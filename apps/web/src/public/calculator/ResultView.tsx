@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useCurrency } from '../CurrencyContext';
 import { formatDay, formatMoment, ltr, money } from '../format';
-import { PENDING_QUOTE_KEY } from '../site';
+import { PENDING_TRIP_KEY } from '../site';
 import { buttonPrimary } from '../ui';
 import { noteText } from './notes';
 
@@ -133,28 +133,6 @@ function LineRow({ line }: { line: LineItem }) {
   );
 }
 
-/** A plain-text trip summary for staff (English), passed to the Contact page. */
-export function tripSummary(result: CalculationResult): string {
-  const i = result.inputs;
-  const lines = [
-    `Umrah estimate ${result.hash.slice(0, 10)}`,
-    `Arrival ${i.arrivalDate}${i.flexibilityDays ? ` (±${i.flexibilityDays} days)` : ''}, from ${i.departureCity || 'not given'}`,
-    `Makkah ${i.nightsMakkah} nights, Madinah ${i.nightsMadinah} nights, ${i.order === 'makkah_first' ? 'Makkah first' : 'Madinah first'}`,
-    `Travelers: ${i.travelers.adults} adults, ${i.travelers.children} children, ${i.travelers.infants} infants`,
-    `Rooms: ${i.rooms.map((r) => `${r.occupancy} (${r.persons})`).join(', ')}`,
-    ...result.lineItems.map((l) =>
-      l.kind === 'flight'
-        ? `${l.label}: PKR ${l.lowMinorPKR / 100}–${l.highMinorPKR / 100}`
-        : `${l.label}: SAR ${l.amountMinorSAR / 100} / PKR ${l.amountMinorPKR / 100}`,
-    ),
-    ...result.missing.map((m) => `Request a quote: ${m.message}`),
-    `Total priced items: SAR ${result.totals.groupMinorSAR / 100} / PKR ${result.totals.groupMinorPKR / 100}`,
-    `Visa: ${i.visa}; flights: ${i.flight === 'self' ? 'own arrangement' : 'estimate'}`,
-    `Valid until ${new Date(result.expiresAt).toISOString()}`,
-  ];
-  return lines.join('\n');
-}
-
 export const ResultView = forwardRef<HTMLHeadingElement, { result: CalculationResult }>(
   function ResultView({ result }, headingRef) {
     const { t, i18n } = useTranslation();
@@ -164,11 +142,11 @@ export const ResultView = forwardRef<HTMLHeadingElement, { result: CalculationRe
 
     function requestQuote() {
       try {
-        window.sessionStorage.setItem(PENDING_QUOTE_KEY, tripSummary(result));
+        window.sessionStorage.setItem(PENDING_TRIP_KEY, JSON.stringify(result));
       } catch {
-        // without storage the Contact page just shows no summary
+        // Without storage the form still works; the trip is just not attached.
       }
-      void navigate('/contact?topic=umrah');
+      void navigate('/request-quote?topic=umrah');
     }
 
     return (

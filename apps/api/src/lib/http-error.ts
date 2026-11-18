@@ -24,3 +24,18 @@ export const rateLimited = (retryAfterSeconds: number) =>
   new HttpError(429, 'rate_limited', 'Too many attempts. Please try again later.', undefined, {
     'Retry-After': String(retryAfterSeconds),
   });
+
+/** MongoDB's "duplicate key": a unique index refused a write (E11000). */
+export function isDuplicateKeyError(error: unknown): boolean {
+  return (
+    typeof error === 'object' && error !== null && (error as { code?: unknown }).code === 11000
+  );
+}
+
+/** Two requests changed the same thing at the same moment; the other one won. */
+export const conflict = () =>
+  new HttpError(
+    409,
+    'conflict',
+    'This was changed by someone else at the same time. Reload and try again.',
+  );

@@ -18,7 +18,8 @@ export default defineConfig(({ mode }) => ({
   server: {
     port: 5175,
     strictPort: true,
-    proxy: { '/api': 'http://localhost:4002' },
+    // The flow test (npm run e2e:flow) points this at its own API with VITE_API_PROXY.
+    proxy: { '/api': process.env.VITE_API_PROXY ?? 'http://localhost:4002' },
   },
   test: {
     environment: 'jsdom',

@@ -5,7 +5,10 @@ import { AuthProvider } from './AuthContext';
 import { FlightEstimatesPage } from './FlightEstimatesPage';
 import { FxPage } from './FxPage';
 import { HotelsPage } from './HotelsPage';
+import { LeadPage } from './LeadPage';
+import { LeadsPage } from './LeadsPage';
 import { LoginPage } from './LoginPage';
+import { QuoteBuilderPage } from './QuoteBuilderPage';
 import { RatePackagePage } from './RatePackagePage';
 import { RateSheetsPage } from './RateSheetsPage';
 import { SettingsPage } from './SettingsPage';
@@ -28,6 +31,9 @@ export default function AdminRoutes() {
         <Route element={<AdminShell />}>
           <Route index element={<DashboardPage />} />
           <Route path="users" element={<UsersPage />} />
+          <Route path="leads" element={<LeadsPage />} />
+          <Route path="leads/:leadId" element={<LeadPage />} />
+          <Route path="quotes/:quoteId" element={<QuoteBuilderPage />} />
           <Route path="rate-sheets" element={<RateSheetsPage />} />
           <Route path="rate-sheets/:packageId" element={<RatePackagePage />} />
           <Route path="suppliers" element={<SuppliersPage />} />

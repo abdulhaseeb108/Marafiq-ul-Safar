@@ -12,5 +12,5 @@ export const CONTACT = {
   hours: null as string | null,
 };
 
-/** Trip summary handed from the calculator to the Contact page. */
-export const PENDING_QUOTE_KEY = 'msf.pendingQuote';
+/** The estimate handed from the calculator to the quote request form (this tab only). */
+export const PENDING_TRIP_KEY = 'msf.pendingTrip';

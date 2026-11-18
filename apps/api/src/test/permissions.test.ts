@@ -13,6 +13,7 @@ import {
   makeSheetApp,
   seedFlightEstimate,
   seedHotel,
+  seedLeadScenario,
   seedSheetScenario,
   seedSupplier,
   seedUser,
@@ -35,6 +36,9 @@ interface RouteContext {
   rateId: string;
   candidateRateId: string;
   rollbackPackageId: string;
+  leadId: string;
+  draftQuoteId: string;
+  sentQuoteId: string;
 }
 
 interface ProtectedRoute {
@@ -52,6 +56,9 @@ interface ProtectedRoute {
 const ANY_STAFF = ROLES;
 const ADMIN_ONLY = ['admin'] as const;
 const ADMIN_OPS = ['admin', 'ops'] as const;
+const ADMIN_SALES = ['admin', 'sales'] as const;
+const QUOTE_READERS = ['admin', 'sales', 'finance'] as const;
+const inThreeDays = () => new Date(Date.now() + 3 * 24 * 3_600_000).toISOString().slice(0, 10);
 
 const PROTECTED_ROUTES: ProtectedRoute[] = [
   { method: 'get', pattern: '/api/v1/auth/me', allowed: ANY_STAFF },
@@ -325,6 +332,89 @@ const PROTECTED_ROUTES: ProtectedRoute[] = [
     id: (ctx) => ctx.candidateRateId,
     body: () => ({ action: 'create' }),
   },
+
+  // leads: every staff role reads; admin and sales manage (Phase 6)
+  { method: 'get', pattern: '/api/v1/admin/leads', allowed: ANY_STAFF },
+  { method: 'get', pattern: '/api/v1/admin/leads/assignees', allowed: ADMIN_SALES },
+  {
+    method: 'get',
+    pattern: '/api/v1/admin/leads/:id',
+    allowed: ANY_STAFF,
+    id: (ctx) => ctx.leadId,
+  },
+  {
+    method: 'patch',
+    pattern: '/api/v1/admin/leads/:id',
+    allowed: ADMIN_SALES,
+    id: (ctx) => ctx.leadId,
+    body: () => ({ status: 'contacted' }),
+  },
+  {
+    method: 'post',
+    pattern: '/api/v1/admin/leads/:id/notes',
+    allowed: ADMIN_SALES,
+    id: (ctx) => ctx.leadId,
+    body: () => ({ body: 'Called; will send a quote today' }),
+  },
+  {
+    method: 'post',
+    pattern: '/api/v1/admin/leads/:id/messages',
+    allowed: ADMIN_SALES,
+    id: (ctx) => ctx.leadId,
+    body: () => ({ body: 'Sent the hotel options on WhatsApp', channel: 'whatsapp_manual' }),
+  },
+  {
+    method: 'post',
+    pattern: '/api/v1/admin/leads/:id/quotes',
+    allowed: ADMIN_SALES,
+    id: (ctx) => ctx.leadId,
+  },
+
+  // quotes: admin and sales build and send; finance reads; ops has no access
+  {
+    method: 'get',
+    pattern: '/api/v1/admin/quotes/:id',
+    allowed: QUOTE_READERS,
+    id: (ctx) => ctx.draftQuoteId,
+  },
+  {
+    method: 'put',
+    pattern: '/api/v1/admin/quotes/:id',
+    allowed: ADMIN_SALES,
+    id: (ctx) => ctx.draftQuoteId,
+    body: () => ({
+      lineItems: [
+        {
+          description: 'Visa',
+          supplier: 'WMT',
+          quantity: 2,
+          unitAmountMinor: 55_000,
+          currency: 'SAR',
+        },
+      ],
+      exclusions: ['Meals'],
+      terms: 'Terms',
+      expiresOn: inThreeDays(),
+    }),
+  },
+  {
+    method: 'post',
+    pattern: '/api/v1/admin/quotes/:id/send',
+    allowed: ADMIN_SALES,
+    id: (ctx) => ctx.draftQuoteId,
+  },
+  {
+    method: 'post',
+    pattern: '/api/v1/admin/quotes/:id/new-version',
+    allowed: ADMIN_SALES,
+    id: (ctx) => ctx.sentQuoteId,
+  },
+  {
+    method: 'post',
+    pattern: '/api/v1/admin/quotes/:id/link',
+    allowed: ADMIN_SALES,
+    id: (ctx) => ctx.sentQuoteId,
+  },
 ];
 
 function send(app: Express, route: ProtectedRoute, ctx: RouteContext, cookie?: string) {
@@ -367,6 +457,7 @@ describe('permission sweep', () => {
         contentType: 'application/pdf',
       });
     expect(upload.status).toBe(201);
+    const leads = await seedLeadScenario();
     ctx = {
       userId: user.id,
       supplierId: supplier.id,
@@ -375,6 +466,7 @@ describe('permission sweep', () => {
       flightEstimateId: flight.id,
       intelligenceDocumentId: upload.body.documentId as string,
       ...scenario,
+      ...leads,
     };
   });
 

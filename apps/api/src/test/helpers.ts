@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import type { Role, SourceDocumentView, SupplierType } from '@marafiq/shared';
+import type { LeadStatus, Role, SourceDocumentView, SupplierType } from '@marafiq/shared';
 import type { Express } from 'express';
 import type { Types } from 'mongoose';
 import { generate, generateSecret } from 'otplib';
@@ -31,6 +31,7 @@ export function testConfig(overrides: Partial<AppConfig> = {}): AppConfig {
     maxUploadBytes: 20 * 1024 * 1024,
     documentParserLimits: { ...DEFAULT_DOCUMENT_PARSER_LIMITS },
     maxConcurrentDocumentUploads: 2,
+    publicSiteUrl: 'https://site.test',
     ...overrides,
   };
 }
@@ -415,5 +416,70 @@ export async function seedSheetScenario(
     rateId: rate.id as string,
     candidateRateId: candidate.id as string,
     rollbackPackageId: current.id as string,
+  };
+}
+
+/**
+ * Leads and quotes for the permission sweep: a new lead, a lead with a draft
+ * quote ready to send, and a lead with a sent quote. Written straight to the
+ * database, with an FX rate so quotes can be priced.
+ */
+export async function seedLeadScenario(): Promise<{
+  leadId: string;
+  draftQuoteId: string;
+  sentQuoteId: string;
+}> {
+  const { FxRateModel } = await import('../modules/fx/fx.model.js');
+  const { LeadModel, QuoteModel, TravelerModel } = await import('../modules/leads/lead.models.js');
+  await FxRateModel.create({ rate: '75.00', effectiveAt: new Date(Date.now() - 60_000) });
+  const traveler = await TravelerModel.create({
+    name: 'Aisha Khan',
+    phone: `+92300${String(Math.floor(Math.random() * 1e7)).padStart(7, '0')}`,
+    language: 'en',
+  });
+  const lead = (reference: string, status: LeadStatus) =>
+    LeadModel.create({
+      reference,
+      travelerId: traveler._id,
+      source: 'umrah',
+      status,
+      consent: { textVersion: 'test', acceptedAt: new Date() },
+      dedupeKey: `seed-${reference}`,
+    });
+  const [fresh, drafting, sent] = await Promise.all([
+    lead('MSF-2026-900001', 'new'),
+    lead('MSF-2026-900002', 'quote_in_progress'),
+    lead('MSF-2026-900003', 'quote_sent'),
+  ]);
+  const line = {
+    description: 'Hotel',
+    supplier: 'WMT',
+    quantity: 2,
+    unitAmountMinor: 10_000,
+    currency: 'SAR',
+  };
+  const base = {
+    lineItems: [line],
+    exclusions: [],
+    terms: 'Terms',
+    fx: { rate: '75.00', effectiveAt: new Date() },
+    totals: { totalMinorPKR: 1_500_000, totalMinorSAR: 20_000 },
+    expiresAt: new Date(Date.now() + 3 * 24 * 3_600_000),
+  };
+  const [draft, sentQuote] = await Promise.all([
+    QuoteModel.create({ ...base, leadId: drafting._id, version: 1, status: 'draft' }),
+    QuoteModel.create({
+      ...base,
+      leadId: sent._id,
+      version: 1,
+      status: 'sent',
+      sentAt: new Date(),
+      publicTokenHash: `seed-${Math.random()}`,
+    }),
+  ]);
+  return {
+    leadId: fresh.id as string,
+    draftQuoteId: draft.id as string,
+    sentQuoteId: sentQuote.id as string,
   };
 }
