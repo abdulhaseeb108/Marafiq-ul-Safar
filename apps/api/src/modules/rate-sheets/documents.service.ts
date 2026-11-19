@@ -444,6 +444,51 @@ export async function completeExtraction(
   });
 }
 
+/**
+ * Extraction runs inside the API process. If the process stops mid-way (a
+ * restart or deploy), the document would stay "extracting" for ever and the
+ * staff page would keep showing "reading". Once a reading is older than
+ * EXTRACTION_STALE_MS it is marked failed exactly as a failed reading is, so
+ * staff see "Extraction failed — enter manually or retry" and can retry.
+ * Run at start-up and every minute (server.ts). Returns how many it marked.
+ */
+export async function recoverStaleExtractions(
+  actor: Actor,
+  now: Date = new Date(),
+): Promise<number> {
+  const cutoff = new Date(now.getTime() - EXTRACTION_STALE_MS);
+  const stuck = await SourceDocumentModel.find({
+    extractionStatus: 'extracting',
+    $or: [{ extractionStartedAt: { $lt: cutoff } }, { extractionStartedAt: { $exists: false } }],
+  })
+    .select('_id extractionStartedAt')
+    .limit(100)
+    .lean();
+  let marked = 0;
+  for (const doc of stuck) {
+    // Only if it is still the same stuck reading: a reading that has just
+    // finished, or a fresh retry, is left alone.
+    const result = await SourceDocumentModel.updateOne(
+      {
+        _id: doc._id,
+        extractionStatus: 'extracting',
+        extractionStartedAt: doc.extractionStartedAt ?? { $exists: false },
+      },
+      { $set: { extractionStatus: 'needs_review', extractionError: EXTRACTION_FAILED_MESSAGE } },
+    );
+    if (result.modifiedCount !== 1) continue;
+    marked += 1;
+    await recordAudit({
+      actor,
+      action: 'sourceDocument.extract_failed',
+      entityType: 'sourceDocument',
+      entityId: String(doc._id),
+      after: { failure: 'interrupted' },
+    });
+  }
+  return marked;
+}
+
 /** "Ramadan Pack 01", "ramadan  pack 01." and "RAMADAN PACK-01" are one name. */
 function comparablePackName(name: string): string {
   return normalizeName(name.replace(/[^\p{L}\p{N}]+/gu, ' '));

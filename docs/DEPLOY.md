@@ -18,6 +18,7 @@ Browser ──https──▶ Cloudflare Pages  (your-domain.com)
                                       ├─▶ Cloudflare R2: rate-sheet bucket (private)
                                       ├─▶ Resend (email)
                                       ├─▶ Anthropic API (rate-sheet reading)
+                                      ├─▶ ClamAV clamd (private network; document scanning)
                                       └─▶ Sentry (errors)
 
 Backup job (nightly) ──▶ mongodump ──▶ Cloudflare R2: backup bucket (private, separate)
@@ -27,7 +28,7 @@ Why the proxy: the browser only ever talks to `your-domain.com`. Staff cookies, 
 
 Why the origin secret: the API host also has its own public address. Without the secret, anyone could call it directly and put a fake IP in `X-Forwarded-For` to dodge the rate limits. With `ORIGIN_PROXY_SECRET` set, the API refuses every request that did not come through the Pages Function (the health check stays open).
 
-**Run exactly one API process.** Login and public rate-limit counters and the document worker live in memory (docs/05 decision 44; `lib/rate-limiter.ts`). Do not scale the API service to more than one instance or replica.
+**Run exactly one API process.** The public rate-limit counters live in memory (`lib/public-limits.ts`), so a second process would double them. Sign-in lock-outs are kept in MongoDB and survive restarts (`modules/auth/login-limiter.ts`). Do not scale the API service to more than one instance or replica.
 
 ## 2. Accounts you need
 
@@ -106,12 +107,26 @@ To load the starting supplier, hotels and FX rate, run `npm run seed` once with 
 | `STAFF_NOTIFY_EMAIL` | Staff inbox for new inquiries and accepted quotes | No |
 | `ANTHROPIC_API_KEY` | From Anthropic. Blank = sheets entered by hand. | No |
 | `EXTRACTION_MODEL` | `claude-sonnet-5-5` | No |
+| `CLAMAV_HOST`, `CLAMAV_PORT` | The clamd service's private address and port (`3310`); section 6.3. Blank = no scanner, documents stay unparsed. | Before document intelligence is used |
 | `SENTRY_DSN` | From the Sentry project | Strongly recommended |
 | `SENTRY_RELEASE` | The deployed commit id, if the host provides one | No |
 | `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD` | First start only; then delete the password | First start |
 | `DOCUMENT_*` | Leave unset (safe defaults) | No |
 
-The API refuses to start in production without R2, Resend and an https `PUBLIC_SITE_URL`, and refuses an http `WEB_ORIGIN`. The start-up error names the variable and the reason, never the value.
+The API refuses to start in production without R2, Resend and an https `PUBLIC_SITE_URL`, and refuses an http `WEB_ORIGIN`. These are checked before the database is contacted. The start-up error names the variable and the reason, never the value.
+
+### 6.3 Malware scanning (ClamAV)
+
+Document intelligence parses supplier files (PDF, images, spreadsheets) only after a malware scanner has called them clean. Without a scanner, files are stored but never parsed; nothing unscanned is ever opened by the parsers. Uploads are staff-only (`admin`, `ops`); there is no public upload.
+
+1. Run ClamAV's daemon beside the API, on the host's **private** network only (never a public port): the official image `clamav/clamav` (Docker Hub) as a second service. It downloads virus definitions on start and keeps them updated (freshclam).
+2. Give it 2–3 GB of memory; clamd loads the whole signature database.
+3. Set `CLAMAV_HOST` (the service's private hostname) and `CLAMAV_PORT` (`3310`) on the API.
+4. clamd's `StreamMaxLength` must be at least `DOCUMENT_MAX_FILE_BYTES` (20 MB by default; ClamAV's own default is 25 MB). A larger file gets "size limit exceeded" and stays unparsed.
+5. Restart the API. The log says `files are scanned by ClamAV at <host>:3310`, or `is not answering` if clamd is unreachable (files then wait, unparsed).
+6. Check: upload the EICAR test file (eicar.org) through the staff portal as a document-intelligence source. Its processing status must become `infected`, and it must never be parsed. A normal sheet must reach `processed` (or `partial` / `unmapped`), never `scan_unavailable`.
+
+Rate-sheet uploads (the AI reading path) are not scanned yet; they go to Anthropic, are stored in R2 and are previewed by staff in the browser.
 
 ## 7. The web app (Cloudflare Pages)
 

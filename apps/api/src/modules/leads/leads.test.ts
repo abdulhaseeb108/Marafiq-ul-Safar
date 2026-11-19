@@ -225,6 +225,58 @@ describe('POST /public/inquiries', () => {
     expect(later.body.reference).not.toBe(first.body.reference);
   });
 
+  describe('the same inquiry sent several times at the same moment (double tap)', () => {
+    async function sendTogether() {
+      const replies = await Promise.all([1, 2, 3].map(() => submit(inquiry())));
+      expect(replies.map((r) => r.status)).toEqual([201, 201, 201]);
+      const references = new Set(replies.map((r) => r.body.reference));
+      expect(references.size).toBe(1);
+      expect(replies.filter((r) => r.body.duplicate === false)).toHaveLength(1);
+      expect(await LeadModel.countDocuments()).toBe(1);
+      // One acknowledgement and one staff notice, not three of each.
+      expect(email.sent.filter((m) => m.kind === 'inquiry.ack')).toHaveLength(1);
+      expect(email.sent.filter((m) => m.kind === 'staff.new_inquiry')).toHaveLength(1);
+    }
+
+    it('stores one lead and gives every reply its reference (with transactions)', async () => {
+      await sendTogether();
+    });
+
+    it('stores one lead without transactions too (a single server)', async () => {
+      withoutTransactions();
+      await sendTogether();
+    });
+
+    it('keeps no phone number in the claim, only the hashed key', async () => {
+      await submit(inquiry());
+      const claims = await mongoose.connection.collection('inquiryClaims').find().toArray();
+      expect(claims).toHaveLength(1);
+      expect(String(claims[0]?._id)).toMatch(/^[0-9a-f]{64}$/);
+      expect(JSON.stringify(claims)).not.toMatch(/300|1234567/);
+    });
+
+    it('a failed attempt does not block the traveler from sending again', async () => {
+      withoutTransactions();
+      vi.spyOn(LeadModel, 'create').mockRejectedValueOnce(new Error('disk full'));
+      const failed = await submit(inquiry());
+      expect(failed.status).toBe(500);
+      vi.restoreAllMocks();
+      const retry = await submit(inquiry());
+      expect(retry.status).toBe(201);
+      expect(retry.body.duplicate).toBe(false);
+      expect(await LeadModel.countDocuments()).toBe(1);
+    });
+
+    it('a claim with no lead behind it does not block a new inquiry', async () => {
+      const first = await submit(inquiry());
+      await LeadModel.deleteMany({}); // e.g. a crash after the claim on a single server
+      const again = await submit(inquiry());
+      expect(again.status).toBe(201);
+      expect(again.body.duplicate).toBe(false);
+      expect(again.body.reference).not.toBe(first.body.reference);
+    });
+  });
+
   it('accepts an inquiry without a trip (from the Hotels page)', async () => {
     const res = await submit(inquiry({ source: 'hotels', inputs: undefined }));
     expect(res.status).toBe(201);

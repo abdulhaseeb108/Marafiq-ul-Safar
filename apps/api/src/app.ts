@@ -12,11 +12,11 @@ import { corsAllowList } from './lib/cors.js';
 import { errorName, log } from './lib/logger.js';
 import { reportError } from './lib/monitoring.js';
 import { requireOriginSecret } from './lib/origin-lock.js';
-import { FailureLimiter } from './lib/rate-limiter.js';
 import { rememberBase, requestLog, routeLabel } from './lib/request-log.js';
 import { auditAdminRoutes } from './modules/audit/audit.routes.js';
 import { makeAuthMiddleware } from './modules/auth/auth.middleware.js';
 import { createAuthRouter } from './modules/auth/auth.routes.js';
+import { MongoLoginLimiter } from './modules/auth/login-limiter.js';
 import { dashboardAdminRoutes } from './modules/dashboard/dashboard.routes.js';
 import { DEFAULT_DOCUMENT_PARSER_LIMITS } from './modules/document-intelligence/document-parser-limits.js';
 import { documentIntelligenceAdminRoutes } from './modules/document-intelligence/document-intelligence.routes.js';
@@ -163,7 +163,8 @@ export function createApp(options: { config: AppConfig; deps?: Partial<AppDeps> 
     email: options.deps?.email ?? new LogEmail(),
   };
   const adminRoutes = buildAdminRoutes(config, deps);
-  const limiter = new FailureLimiter(config.loginLimit);
+  // Sign-in lock-outs are kept in MongoDB, so a restart does not reset them.
+  const limiter = new MongoLoginLimiter(config.loginLimit);
   const { requireAuth, requireRole } = makeAuthMiddleware(config);
 
   const app = express();

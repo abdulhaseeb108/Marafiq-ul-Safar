@@ -4,7 +4,7 @@ import { generateSecret, generateURI, verify } from 'otplib';
 import type { AppConfig } from '../../config/app-config.js';
 import { decryptSecret, encryptSecret } from '../../lib/crypto.js';
 import { HttpError, rateLimited, unauthenticated } from '../../lib/http-error.js';
-import type { FailureLimiter } from '../../lib/rate-limiter.js';
+import type { LoginLimiter } from './login-limiter.js';
 import { recordAudit } from '../audit/audit.service.js';
 import { UserModel, type UserDoc } from '../users/user.model.js';
 import { burnPasswordCheck, verifyPassword } from './password.js';
@@ -19,7 +19,7 @@ import { signMfaToken, type MfaPurpose } from './tokens.js';
 
 export interface AuthContext {
   config: AppConfig;
-  limiter: FailureLimiter;
+  limiter: LoginLimiter;
 }
 
 export type LoginOutcome =
@@ -36,9 +36,14 @@ const ipKey = (ip: string) => `ip:${ip}`;
 const emailKey = (email: string) => `email:${email}`;
 const codeKey = (userId: string) => `2fa:${userId}`;
 
-function assertNotLimited(limiter: FailureLimiter, keys: string[]): void {
-  const wait = Math.max(...keys.map((key) => limiter.retryAfterSeconds(key)));
+async function assertNotLimited(limiter: LoginLimiter, keys: string[]): Promise<void> {
+  let wait = 0;
+  for (const key of keys) wait = Math.max(wait, await limiter.retryAfterSeconds(key));
   if (wait > 0) throw rateLimited(wait);
+}
+
+async function recordFailures(limiter: LoginLimiter, keys: string[]): Promise<void> {
+  for (const key of keys) await limiter.recordFailure(key);
 }
 
 const sessionUser = (user: UserDoc) => ({ id: user.id as string, role: user.role as Role });
@@ -49,8 +54,8 @@ async function completeLogin(
   mfa: boolean,
   ip: string,
 ): Promise<SessionTokens> {
-  ctx.limiter.reset(emailKey(user.email));
-  ctx.limiter.reset(codeKey(user.id as string));
+  await ctx.limiter.reset(emailKey(user.email));
+  await ctx.limiter.reset(codeKey(user.id as string));
   const tokens = await issueSession(sessionUser(user), mfa, ctx.config);
   user.lastLoginAt = new Date();
   await user.save();
@@ -67,7 +72,7 @@ async function completeLogin(
 
 export async function login(ctx: AuthContext, body: LoginBody, ip: string): Promise<LoginOutcome> {
   const keys = [ipKey(ip), emailKey(body.email)];
-  assertNotLimited(ctx.limiter, keys);
+  await assertNotLimited(ctx.limiter, keys);
 
   const user = await UserModel.findOne({ email: body.email });
   let passwordOk = false;
@@ -75,7 +80,7 @@ export async function login(ctx: AuthContext, body: LoginBody, ip: string): Prom
   else await burnPasswordCheck(body.password);
 
   if (!user || !passwordOk || !user.active) {
-    keys.forEach((key) => ctx.limiter.recordFailure(key));
+    await recordFailures(ctx.limiter, keys);
     await recordAudit({
       actor: { role: 'public' },
       action: 'auth.login_failure',
@@ -169,7 +174,7 @@ export async function completeTwoFactor(
   },
 ): Promise<{ user: UserDoc; tokens: SessionTokens }> {
   const keys = [ipKey(input.ip), codeKey(input.userId)];
-  assertNotLimited(ctx.limiter, keys);
+  await assertNotLimited(ctx.limiter, keys);
 
   const user = await loadActiveUser(input.userId);
   const secretEnc = input.purpose === 'enroll' ? user.totpPendingSecretEnc : user.totpSecretEnc;
@@ -178,7 +183,7 @@ export async function completeTwoFactor(
   }
 
   if (!(await codeMatches(secretEnc, input.code, ctx.config.totpKey))) {
-    keys.forEach((key) => ctx.limiter.recordFailure(key));
+    await recordFailures(ctx.limiter, keys);
     await recordAudit({
       actor: { role: 'public' },
       action: 'auth.login_failure',

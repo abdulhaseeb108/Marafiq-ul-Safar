@@ -36,6 +36,15 @@ const EnvSchema = z
     R2_BUCKET: optionalString,
     /** Rate sheet reading. Without a key, sheets are entered by hand. */
     ANTHROPIC_API_KEY: optionalString,
+    /**
+     * ClamAV (clamd) for document intelligence. Without it uploads are kept
+     * but never parsed: the pipeline needs a clean scan first.
+     */
+    CLAMAV_HOST: optionalString,
+    CLAMAV_PORT: z.preprocess(
+      blankToUndefined,
+      z.coerce.number().int().min(1).max(65535).default(3310),
+    ),
     EXTRACTION_MODEL: z.preprocess(blankToUndefined, z.string().default('claude-sonnet-5-5')),
     /** Email. Without a key, emails are only logged (never in production). */
     RESEND_API_KEY: optionalString,
