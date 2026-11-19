@@ -99,6 +99,34 @@ export function hostsFromUri(uri: string): string | undefined {
   return /^mongodb(?:\+srv)?:\/\/(?:[^@/]*@)?([^/?]+)/.exec(uri)?.[1]?.toLowerCase();
 }
 
+/**
+ * The connection string without its database path, for mongorestore. With
+ * --archive, a database in the URI acts as a filter on the archive's own
+ * namespaces, so restoring under another name would silently restore nothing.
+ * The target database is chosen with --nsInclude / --nsTo instead.
+ *
+ * The database path is also the default authentication database of a plain
+ * mongodb:// URI with credentials, so it is kept as authSource there. A
+ * mongodb+srv:// host (Atlas) supplies authSource through DNS; it is left alone.
+ */
+export function serverUri(uri: string): string {
+  const match = /^(mongodb(?:\+srv)?:\/\/)([^/?]+)(?:\/([^?]*))?(?:\?(.*))?$/.exec(uri);
+  if (!match) throw new Error('Not a MongoDB connection string');
+  const [, scheme = '', authority = '', path = '', query = ''] = match;
+  const params = new URLSearchParams(query);
+  const database = decodeURIComponent(path);
+  if (
+    database !== '' &&
+    scheme === 'mongodb://' &&
+    authority.includes('@') &&
+    !params.has('authSource')
+  ) {
+    params.set('authSource', database);
+  }
+  const rest = params.toString();
+  return `${scheme}${authority}/${rest ? `?${rest}` : ''}`;
+}
+
 /** The connection string with any password replaced, for messages. */
 export function redactUri(uri: string): string {
   return uri.replace(/\/\/([^:/@]+):[^@]*@/, '//$1:***@');
