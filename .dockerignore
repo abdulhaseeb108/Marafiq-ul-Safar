@@ -1,0 +1,16 @@
+# Build context for deploy/*/Dockerfile. Secrets and local data must never
+# reach an image: no .env files, no local storage, backups or test output.
+.env
+.env.*
+!.env.example
+.git
+.github
+node_modules
+**/node_modules
+**/dist
+.local-storage
+.local-backups
+**/test-results
+**/playwright-report
+docs
+*.log

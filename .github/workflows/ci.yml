@@ -72,3 +72,67 @@ jobs:
         with:
           name: playwright-flow-results
           path: apps/web/test-results
+
+  # docs/DEPLOY.md sections 10-11: a real mongodump -> mongorestore with the
+  # backup job's own image, between two throwaway databases on this runner.
+  backup-rehearsal:
+    runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:8
+        ports:
+          - 27017:27017
+    env:
+      SOURCE_URI: mongodb://127.0.0.1:27017/marafiq_e2e
+      RESTORE_URI: mongodb://127.0.0.1:27017/marafiq_restore
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build -w @marafiq/shared && npm run build -w @marafiq/api
+      - name: Fill the source database (e2e seed; refuses any other database name)
+        working-directory: apps/api
+        run: npx tsx src/scripts/e2e-seed.ts
+        env:
+          NODE_ENV: development
+          MONGODB_URI: ${{ env.SOURCE_URI }}
+          E2E_ALLOW_DB_RESET: 'true'
+      - name: Build the backup job image (deploy/backup/Dockerfile)
+        run: docker build -f deploy/backup/Dockerfile -t marafiq-backup .
+      - name: Tools in the image
+        run: docker run --rm marafiq-backup sh -c 'node --version && mongodump --version && mongorestore --version'
+      - name: Back up with the image (local store, no bucket)
+        run: |
+          mkdir -m 777 backups
+          docker run --rm --network host -e NODE_ENV=development -e MONGODB_URI="$SOURCE_URI" \
+            -v "$PWD/backups:/app/.local-backups" marafiq-backup
+          ls -l backups
+      - name: Restore into a separate database
+        run: |
+          docker run --rm --network host -e NODE_ENV=development -e MONGODB_URI="$SOURCE_URI" \
+            -v "$PWD/backups:/app/.local-backups" marafiq-backup \
+            node apps/api/dist/scripts/restore.js --from latest --target-uri "$RESTORE_URI" --yes
+      - name: Restored collections, counts and indexes match the source
+        working-directory: apps/api
+        run: npx tsx src/scripts/verify-restore.ts --source-uri "$SOURCE_URI" --target-uri "$RESTORE_URI"
+      - name: The application reads the restored data
+        run: |
+          NODE_ENV=development PORT=4020 MONGODB_URI="$RESTORE_URI" \
+          JWT_SECRET=ci-access-secret-ci-access-secret-00001 \
+          JWT_REFRESH_SECRET=ci-refresh-secret-ci-refresh-secret-002 \
+          TOTP_ENC_KEY=0000000000000000000000000000000000000000000000000000000000000001 \
+            node apps/api/dist/server.js > api.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:4020/api/v1/health > /dev/null && break; sleep 1; done
+          hotels=$(curl -sf http://127.0.0.1:4020/api/v1/public/hotels | jq '.items | length')
+          echo "hotels with published rates: $hotels"
+          test "$hotels" -gt 0
+          status=$(curl -s -o /dev/null -w '%{http_code}' -H 'content-type: application/json' \
+            -d '{"email":"e2e-sales@example.com","password":"e2e-sales-password-1"}' \
+            http://127.0.0.1:4020/api/v1/auth/login)
+          echo "restored staff sign-in: HTTP $status"
+          test "$status" = 200
+      - if: always()
+        run: cat api.log 2>/dev/null || true
