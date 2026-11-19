@@ -26,6 +26,7 @@ import {
   hostsFromUri,
   loadBackupEnv,
   redactUri,
+  serverUri,
   runMongoTool,
   sha256File,
 } from './backup-lib.js';
@@ -90,12 +91,15 @@ async function main(): Promise<void> {
     if ((await sha256File(archive)) !== meta.sha256) {
       throw new Error('The downloaded backup does not match its checksum; refusing to restore.');
     }
+    // Select the backed-up database explicitly and rename it to the target.
+    // The tool gets the server only: a database in its URI would filter the
+    // archive by that name and restore nothing (see serverUri).
     const rename =
       meta.database === targetDb ? [] : [`--nsFrom=${meta.database}.*`, `--nsTo=${targetDb}.*`];
     await runMongoTool(
       env.MONGORESTORE_PATH,
-      targetUri,
-      [`--archive=${archive}`, '--gzip', '--drop', ...rename],
+      serverUri(targetUri),
+      [`--archive=${archive}`, '--gzip', '--drop', `--nsInclude=${meta.database}.*`, ...rename],
       workDir,
     );
   } finally {
@@ -108,10 +112,19 @@ async function main(): Promise<void> {
     const db = connection.db;
     if (!db) throw new Error('Could not open the target database');
     const names = (await db.listCollections().toArray()).map((c) => c.name).sort();
-    console.log('Restored. Documents per collection:');
+    let total = 0;
+    const lines: string[] = [];
     for (const name of names) {
-      console.log(`  ${name}: ${await db.collection(name).countDocuments()}`);
+      const count = await db.collection(name).countDocuments();
+      total += count;
+      lines.push(`  ${name}: ${count}`);
     }
+    // A restore that leaves the target empty must never look like a success.
+    if (names.length === 0 || total === 0) {
+      throw new Error(`Nothing was restored into ${targetDb}; check the backup and the target.`);
+    }
+    console.log('Restored. Documents per collection:');
+    for (const line of lines) console.log(line);
   } finally {
     await connection.close();
   }

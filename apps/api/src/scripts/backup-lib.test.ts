@@ -11,11 +11,44 @@ import {
   LocalBackupStore,
   parseToolVersion,
   redactUri,
+  serverUri,
   sha256File,
   supportsConfigFile,
 } from './backup-lib.js';
 
 const DAY = 24 * 60 * 60 * 1000;
+
+describe('serverUri (what mongorestore connects to)', () => {
+  it('drops the database, which mongorestore would treat as an archive filter', () => {
+    expect(serverUri('mongodb://127.0.0.1:27017/marafiq_restore')).toBe(
+      'mongodb://127.0.0.1:27017/',
+    );
+    expect(serverUri('mongodb://h1:27017,h2:27017/live?replicaSet=rs0')).toBe(
+      'mongodb://h1:27017,h2:27017/?replicaSet=rs0',
+    );
+  });
+
+  it('keeps the authentication database a plain URI implied by its path', () => {
+    expect(serverUri('mongodb://u:p@db.example:27017/staging')).toBe(
+      'mongodb://u:p@db.example:27017/?authSource=staging',
+    );
+    expect(serverUri('mongodb://u:p@db.example/staging?authSource=admin&tls=true')).toBe(
+      'mongodb://u:p@db.example/?authSource=admin&tls=true',
+    );
+  });
+
+  it('leaves Atlas (mongodb+srv) authentication to DNS', () => {
+    expect(
+      serverUri(
+        'mongodb+srv://u:p@cluster0.x.mongodb.net/marafiq_restore?retryWrites=true&w=majority',
+      ),
+    ).toBe('mongodb+srv://u:p@cluster0.x.mongodb.net/?retryWrites=true&w=majority');
+  });
+
+  it('refuses something that is not a MongoDB URI', () => {
+    expect(() => serverUri('postgres://x')).toThrow(/Not a MongoDB connection string/);
+  });
+});
 
 describe('backup naming and connection strings', () => {
   it('names backups by UTC time so they sort in order', () => {

@@ -4,14 +4,18 @@ What must exist before the first **staging** deployment, and the checks to run o
 
 **As of 18 Nov 2026:** nothing below has been created yet. No host, staging database, bucket, email domain or Sentry project is set up, and the repository has no deployment environments, secrets or variables. Staging has therefore **not** been deployed.
 
-## 1. Decisions needed first
+## 1. Decisions (approved 19 Nov 2026)
 
-| Decision | Options (docs/DEPLOY.md) | Blocks |
-|---|---|---|
-| API host (APR-01) | Railway service, or a small VPS | Everything below |
-| Backup schedule (APR-12) | VPS cron, Railway cron service (image must include MongoDB Database Tools), or Atlas Cloud Backup plus one copy outside Atlas | Backups |
-| Staging address | e.g. a `staging.` subdomain on Cloudflare, or the Pages preview address | `PUBLIC_SITE_URL`, emails |
-| Where ClamAV runs | Second service beside the API (private network, 2–3 GB memory) | Document intelligence |
+| Decision | Choice |
+|---|---|
+| API host (APR-01) | Railway: services `api`, `backup` (cron), `clamav` (private) |
+| Web | Cloudflare Pages, a separate staging project |
+| Database | A dedicated MongoDB Atlas staging database |
+| Files | Separate private R2 buckets and tokens for sheets and for backups |
+| Backups (APR-12) | Railway cron `0 2 * * *` (02:00 UTC), 30-day retention, newest 7 always kept |
+| Email, errors, scanning | Resend, Sentry, private ClamAV |
+
+Step-by-step set-up: `docs/STAGING_SETUP.md`.
 
 ## 2. Accounts and resources to create (staging only)
 

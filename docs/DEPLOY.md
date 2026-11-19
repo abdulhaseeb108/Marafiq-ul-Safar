@@ -198,14 +198,21 @@ It needs **MongoDB Database Tools 100.3 or newer** (`mongodump`, `mongorestore`)
 | `MONGODUMP_PATH`, `MONGORESTORE_PATH` | Only if the tools are not on `PATH` |
 | `SENTRY_DSN` | Optional, for failure alerts |
 
-### Scheduling (choose one; decision APR-12)
+### Scheduling (decided: Railway cron, daily 02:00 UTC, 30-day retention)
 
-- **VPS cron**, nightly at 02:15 Pakistan time (21:15 UTC):
-  ```
-  15 21 * * * cd /srv/marafiq && /usr/bin/node apps/api/dist/scripts/backup.js >> /var/log/marafiq-backup.log 2>&1
-  ```
-- **Railway cron service:** a second service from the same repository, with the backup variables above, start command `node apps/api/dist/scripts/backup.js`, and a cron schedule of `15 21 * * *`. Its image must include MongoDB Database Tools; the default build image does not. **Not yet tried.**
-- **Atlas Cloud Backup** (paid cluster tiers) can replace or complement this. Even then, keep one copy outside Atlas and test a restore.
+The backup job is its own Railway service, built from `deploy/backup/Dockerfile` (Node 22 plus MongoDB Database Tools), which runs one backup and exits:
+
+| Setting | Value |
+|---|---|
+| Source | This GitHub repository, branch `main` |
+| Service variable `RAILWAY_DOCKERFILE_PATH` | `deploy/backup/Dockerfile` |
+| Settings → Cron Schedule | `0 2 * * *` (Railway schedules in UTC: 07:00 Pakistan time) |
+| Variables | The backup job variables above; `BACKUP_RETENTION_DAYS=30`, `BACKUP_KEEP_MIN=7` |
+| Public domain | None |
+
+CI builds this image and rehearses a real backup and restore with it on every pull request (`.github/workflows/ci.yml`, job `backup-rehearsal`). If a run is still going when the next one is due, Railway skips the new one.
+
+Other options, not used: a VPS cron line running `node apps/api/dist/scripts/backup.js`; Atlas Cloud Backup (paid tiers), which can complement this, but keep one copy outside Atlas.
 
 A backup that has never been restored is not a backup. Do section 11 into a scratch database at least once a month.
 
@@ -214,6 +221,7 @@ A backup that has never been restored is not a backup. Do section 11 into a scra
 ```
 npm run restore -w @marafiq/api -- --list
 npm run restore -w @marafiq/api -- --from latest --target-uri "mongodb+srv://.../marafiq_restore_check" --yes
+npm run verify-restore -w @marafiq/api -- --source-uri "<source>" --target-uri "mongodb+srv://.../marafiq_restore_check"
 ```
 
 - The target is always named on the command line. It is never taken from `MONGODB_URI`.
@@ -221,7 +229,7 @@ npm run restore -w @marafiq/api -- --from latest --target-uri "mongodb+srv://...
 - The archive's SHA-256 is checked before anything is touched; a mismatch stops the restore.
 - If the target database name differs from the backed-up one, collections are renamed on the way in.
 - Collections present in the backup are **dropped and replaced** in the target.
-- At the end it prints the document count of every collection. Compare with the source.
+- At the end it prints the document count of every collection. `verify-restore` then compares every collection, document count and index with the source (read-only on both) and exits with code 1 on any difference.
 
 **Disaster recovery into the live database:** stop the API first, then add `--allow-live-database`. Afterwards start the API, sign in, and open a recent quote link to confirm.
 
